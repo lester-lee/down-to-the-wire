@@ -160,7 +160,7 @@ Game.UIMode.shipScreen = {
       this.renderShipOptions(display);
     },
     handleInput: function(inputType, inputData) {
-<<<<<<< HEAD
+
       var action = Game.KeyBinding.getInput(inputType, inputData);
       if (!action) {return false;}
       switch (action.key){
@@ -188,9 +188,7 @@ Game.UIMode.shipScreen = {
    fromJSON: function(json) {
        return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
    }
-=======
 
-    }
 };
 
 Game.UIMode.navigation = {
@@ -217,33 +215,21 @@ Game.UIMode.navigation = {
     },
 
     handleInput: function(inputType, inputData) {
-      var action = Game.KeyBinding.getInput(inputType, inputData).key;
-      switch (action) {
-          case 'PERSISTENCE_SAVE':
-              this.saveGame();
-              break;
-          case 'PERSISTENCE_LOAD':
-              this.loadGame();
-              break;
-          case 'PERSISTENCE_NEW':
-              this.newGame();
-              break;
-          case 'CANCEL':
-              Game.switchUIMode(Game.UIMode.gamePlay);
-              break;
-          default:
-              break;
+      var action = Game.KeyBinding.getInput(inputType, inputData);
+      if (!action) {return false;}
+      switch (action.key){
+        case 'NUM_0':
+        
+        break;
+        case 'NUM_1':
+
+          break;
+        case 'NUM_2':
+
+          break;
+        default:
+          break;
     }
->>>>>>> f20170114_navmap
-};
+  }
 
-Game.UIMode.navigation = {
-    enter: function() {},
-    exit: function() {},
-    render: function(display) {
-
-    },
-    handleInput: function(inputType, inputData) {
-
-    }
 };
