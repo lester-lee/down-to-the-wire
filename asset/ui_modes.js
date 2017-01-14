@@ -55,7 +55,7 @@ Game.UIMode.persistence = {
     },
     saveGame: function() {
         if (this.localStorageAvailable()) {
-            Game.DATASTORE.GAME_PLAY = Game.UIMode.gamePlay.attr;
+            Game.DATASTORE.SHIP_SCREEN = Game.UIMode.shipScreen.attr;
             Game.DATASTORE.MESSAGES = Game.Message.attr;
             window.localStorage.setItem(Game.PERSISTENCE_NAMESPACE, JSON.stringify(Game.DATASTORE));
             Game.switchUIMode(Game.UIMode.shipScreen);
@@ -90,7 +90,7 @@ Game.UIMode.persistence = {
               }
         */
         // load gamePlay
-        Game.UIMode.gamePlay.attr = state_data.GAME_PLAY;
+        Game.UIMode.shipScreen.attr = state_data.SHIP_SCREEN;
         Game.Message.attr = state_data.MESSAGES;
 
         Game.switchUIMode(Game.UIMode.shipScreen);
@@ -176,10 +176,10 @@ Game.UIMode.shipScreen = {
       }
     },
     toJSON: function() {
-       return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
+       return Game.UIMode.persistence.BASE_toJSON.call(this);
    },
    fromJSON: function(json) {
-       return Game.UIMode.gamePersistence.BASE_fromJSON.call(this, json);
+       return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
    }
 };
 

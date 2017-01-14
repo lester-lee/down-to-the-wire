@@ -131,7 +131,7 @@ var Game = {
     clearDatastore: function() {
         this.DATASTORE = {
             ENTITY: {},
-            GAME_PLAY: {},
+            SHIP_SCREEN: {},
             MAP: {},
             gameRandomSeed: 0
         }
