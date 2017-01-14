@@ -5,15 +5,7 @@ var fg = Game.UIMode.DEFAULT_FG;
 var bg = Game.UIMode.DEFAULT_BG;
 
 Game.UIMode.titleScreen = {
-    enter: function() {
-      //Navmap test
-      const navmap = new Graph();
-      navmap.addEdge("earth", "moon");
-      navmap.addEdge("earth", "venus");
-      navmap.addEdge("venus", "mercury");
-      navmap.addEdge("mercury", "sun");
-      navmap.printNodes();
-    },
+    enter: function() {},
     exit: function() {},
     render: function(display) {
         display.drawText(1, 4, "this is a title screen");
@@ -169,13 +161,45 @@ Game.UIMode.shipScreen = {
 };
 
 Game.UIMode.navigation = {
-    enter: function() {},
-    exit: function() {},
-    render: function(display) {
+    curNode: null,
 
+    enter: function() {
+      //Navmap test
+      const navmap = new Graph();
+      navmap.addEdge("earth", "moon");
+      navmap.addEdge("earth", "venus");
+      navmap.addEdge("venus", "mercury");
+      navmap.addEdge("mercury", "sun");
+      navmap.printNodes();
+      curNode = navmap.getNode('earth');
+      console.log(curNode.name + " — Current Node");
     },
-    handleInput: function(inputType, inputData) {
+    exit: function() {},
 
+    render: function(display) {
+      display.drawText(0,1, "NAVIGATION MODE");
+      for (var i = 0;i < curNode.edge_list.length;i++){
+        display.drawText(0,3+i, '['+i+'] '+curNode.edge_list[i]);
+      }
+    },
+
+    handleInput: function(inputType, inputData) {
+      var action = Game.KeyBinding.getInput(inputType, inputData).key;
+      switch (action) {
+          case 'PERSISTENCE_SAVE':
+              this.saveGame();
+              break;
+          case 'PERSISTENCE_LOAD':
+              this.loadGame();
+              break;
+          case 'PERSISTENCE_NEW':
+              this.newGame();
+              break;
+          case 'CANCEL':
+              Game.switchUIMode(Game.UIMode.gamePlay);
+              break;
+          default:
+              break;
     }
 };
 

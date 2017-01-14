@@ -68,3 +68,14 @@ Graph.prototype.printNodes = function() {
     console.log(this.node_list[i].edge_list);
   }
 };
+
+Graph.prototype.getNode = function(name) {
+  for(var i = 0;i < this.node_list.length;i++){ //iterate over all nodes
+    if(this.node_list[i].name.localeCompare(name)==0){ //if the node has the given name
+      return this.node_list[i];
+    }else{
+      console.log('no node of given name')
+      return false;
+    }
+  }
+};
