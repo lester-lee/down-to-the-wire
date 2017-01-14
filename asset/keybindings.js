@@ -99,6 +99,87 @@ Game.KeyBinding = {
             }
         },
 
+        NUM_0: {
+            all: {
+                inputMatch: ROT.VK_0,
+                inputType: 'keydown',
+                inputShift: false,
+                inputCtrl: false
+            }
+        },
+        NUM_1: {
+            all: {
+                inputMatch: ROT.VK_1,
+                inputType: 'keydown',
+                inputShift: false,
+                inputCtrl: false
+            }
+        },
+        NUM_2: {
+            all: {
+                inputMatch: ROT.VK_2,
+                inputType: 'keydown',
+                inputShift: false,
+                inputCtrl: false
+            }
+        },
+        NUM_3: {
+            all: {
+                inputMatch: ROT.VK_3,
+                inputType: 'keydown',
+                inputShift: false,
+                inputCtrl: false
+            }
+        },
+        NUM_4: {
+            all: {
+                inputMatch: ROT.VK_4,
+                inputType: 'keydown',
+                inputShift: false,
+                inputCtrl: false
+            }
+        },
+        NUM_5: {
+            all: {
+                inputMatch: ROT.VK_5,
+                inputType: 'keydown',
+                inputShift: false,
+                inputCtrl: false
+            }
+        },
+        NUM_6: {
+            all: {
+                inputMatch: ROT.VK_6,
+                inputType: 'keydown',
+                inputShift: false,
+                inputCtrl: false
+            }
+        },
+        NUM_7: {
+            all: {
+                inputMatch: ROT.VK_7,
+                inputType: 'keydown',
+                inputShift: false,
+                inputCtrl: false
+            }
+        },
+        NUM_8: {
+            all: {
+                inputMatch: ROT.VK_8,
+                inputType: 'keydown',
+                inputShift: false,
+                inputCtrl: false
+            }
+        },
+        NUM_9: {
+            all: {
+                inputMatch: ROT.VK_9,
+                inputType: 'keydown',
+                inputShift: false,
+                inputCtrl: false
+            }
+        },
+
         MOVE_UL: {
             waxd: {
                 inputMatch: ROT.VK_Q,

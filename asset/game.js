@@ -117,13 +117,13 @@ var Game = {
         }
     },
 
-    switchUIMode: function(newMode) {
+    switchUIMode: function(newMode, args) {
         if (this._curUIMode) {
             this._curUIMode.exit();
         }
         this._curUIMode = newMode;
         if (this._curUIMode) {
-            this._curUIMode.enter();
+            this._curUIMode.enter(args);
         }
         this.renderAll();
     },

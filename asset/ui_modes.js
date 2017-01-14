@@ -152,7 +152,7 @@ Game.UIMode.shipScreen = {
   attr: {
     playerName: null
   },
-    shipOptions: ["navigate","outfit drones","outfit ship"],
+    shipOptions: ["navigate","outfit drones","outfit ship","heist"],
     enter: function() {},
     exit: function() {},
     render: function(display) {
@@ -163,6 +163,12 @@ Game.UIMode.shipScreen = {
       var action = Game.KeyBinding.getInput(inputType, inputData);
       if (!action) {return false;}
       switch (action.key){
+        case 'NUM_0':
+        Game.switchUIMode(Game.UIMode.navigation);
+        break;
+        case 'NUM_3':
+          Game.switchUIMode(Game.UIMode.heist,'dungeon');
+          break;
         case 'PERSISTENCE':
           Game.switchUIMode(Game.UIMode.persistence);
           break;
@@ -184,18 +190,6 @@ Game.UIMode.shipScreen = {
 };
 
 Game.UIMode.navigation = {
-    enter: function() {},
-    exit: function() {},
-    render: function(display) {
-
-    },
-    handleInput: function(inputType, inputData) {
-
-    }
-};
-
-Game.UIMode.gamePlay = {
-    attr: {},
     enter: function() {},
     exit: function() {},
     render: function(display) {

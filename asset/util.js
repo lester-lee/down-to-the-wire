@@ -33,3 +33,8 @@ Game.Util = {
 Game.Util.Idioms = ['idiom1','idiom2','idiom3','idiom4'];
 Game.Util.Adjectives = ['adj1','adj2'];
 Game.Util.Nouns = ['noun1','noun2'];
+
+Game.Coordinate = function(x,y){
+    this.x = x;
+    this.y = y;
+}
