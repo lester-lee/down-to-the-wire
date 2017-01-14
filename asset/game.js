@@ -58,6 +58,8 @@ var Game = {
                 width: this._display[display_key].w,
                 height: this._display[display_key].h,
                 spacing: Game._SPACING,
+                fg: Game.UIMode.DEFAULT_FG,
+                bg: Game.UIMode.DEFAULT_BG
                 // forceSquareRatio: true
             });
         }

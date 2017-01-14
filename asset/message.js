@@ -16,7 +16,7 @@ Game.Message = {
         var sLen = this.attr.staleMessages.length;
 
         for (freshIdx = fLen; freshIdx >= 0 && dispRow < dispRowMax; freshIdx--) {
-            dispRow += display.drawText(1, dispRow, '%c{#fff}' + this.attr.freshMessages[freshIdx], dispColMax);
+            dispRow += display.drawText(1, dispRow, '%c{#ddd}' + this.attr.freshMessages[freshIdx], dispColMax);
         }
         for (staleIdx = 0; staleIdx < sLen && dispRow < dispRowMax; staleIdx++) {
             dispRow += display.drawText(1, dispRow, '%c{#999}' + this.attr.staleMessages[staleIdx], dispColMax);

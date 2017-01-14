@@ -1,5 +1,5 @@
 Game.UIMode = {};
-Game.UIMode.DEFAULT_FG = '#fff';
+Game.UIMode.DEFAULT_FG = '#ddd';
 Game.UIMode.DEFAULT_BG = '#000';
 var fg = Game.UIMode.DEFAULT_FG;
 var bg = Game.UIMode.DEFAULT_BG;
@@ -124,11 +124,14 @@ Game.UIMode.gameIntro = {
     enter: function() {
         Game.Message.clear();
         Game.Message.send('yer embarkin on a new journey');
+        var inputDisplay = document.getElementById('user-input');
+        inputDisplay.parentElement.style.display = "block";
+        setTimeout(function(){inputDisplay.focus()},100);
     },
     exit: function() {},
     render: function(display) {
         display.drawText(1, 4, "here is some story introduction");
-        display.drawText(1, 5, "press a key to continue");
+        display.drawText(1, 5, "please enter your name");
     },
     handleInput: function(inputType, inputData) {
         // if (inputData.charCode !== 0) {
