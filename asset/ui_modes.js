@@ -40,7 +40,7 @@ Game.UIMode.persistence = {
                 this.newGame();
                 break;
             case 'CANCEL':
-                Game.switchUIMode(Game.UIMode.gamePlay);
+                Game.switchUIMode(Game.UIMode.shipScreen);
                 break;
             default:
                 break;
@@ -50,17 +50,18 @@ Game.UIMode.persistence = {
         Game.clearDatastore();
         Game.setRandomSeed(5 + Math.floor(ROT.RNG.getUniform() * 100000));
         // Game.switchUIMode(Game.UIMode.gameIntro);
-        Game.switchUIMode(Game.UIMode.shipScreen);
+        Game.UIMode.shipScreen.attr.playerName = Game.Util.randomShipName();
+        Game.switchUIMode(Game.UIMode.gameIntro);
     },
     saveGame: function() {
         if (this.localStorageAvailable()) {
             Game.DATASTORE.GAME_PLAY = Game.UIMode.gamePlay.attr;
             Game.DATASTORE.MESSAGES = Game.Message.attr;
             window.localStorage.setItem(Game.PERSISTENCE_NAMESPACE, JSON.stringify(Game.DATASTORE));
-            Game.switchUIMode(Game.UIMode.gamePlay);
+            Game.switchUIMode(Game.UIMode.shipScreen);
         } else {
             Game.Message.send("Your browser does not support save files.");
-            Game.switchUIMode(Game.UIMode.gamePlay);
+            Game.switchUIMode(Game.UIMode.shipScreen);
         }
     },
     loadGame: function() {
@@ -92,7 +93,7 @@ Game.UIMode.persistence = {
         Game.UIMode.gamePlay.attr = state_data.GAME_PLAY;
         Game.Message.attr = state_data.MESSAGES;
 
-        Game.switchUIMode(Game.UIMode.gamePlay);
+        Game.switchUIMode(Game.UIMode.shipScreen);
     },
     localStorageAvailable: function() { // NOTE: see https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
         try {
@@ -123,8 +124,6 @@ Game.UIMode.persistence = {
 
 Game.UIMode.gameIntro = {
     enter: function() {
-        Game.Message.clear();
-        Game.Message.send('yer embarkin on a new journey');
         // var inputDisplay = document.getElementById('user-input');
         // inputDisplay.parentElement.style.display = "block";
         // setTimeout(function(){inputDisplay.focus()},100);
@@ -150,14 +149,38 @@ Game.UIMode.gameIntro = {
 };
 
 Game.UIMode.shipScreen = {
+  attr: {
+    playerName: null
+  },
+    shipOptions: ["navigate","outfit drones","outfit ship"],
     enter: function() {},
     exit: function() {},
     render: function(display) {
-      display.drawText(0,1, "SHIP SCREEN");
+      display.drawText(0,1, this.attr.playerName + " STATUS");
+      this.renderShipOptions(display);
     },
     handleInput: function(inputType, inputData) {
-
-    }
+      var action = Game.KeyBinding.getInput(inputType, inputData);
+      if (!action) {return false;}
+      switch (action.key){
+        case 'PERSISTENCE':
+          Game.switchUIMode(Game.UIMode.persistence);
+          break;
+        default:
+          break;
+      }
+    },
+    renderShipOptions: function(display){
+      for (var i=0; i < this.shipOptions.length; i++){
+        display.drawText(0,i+3,'['+i+'] '+this.shipOptions[i]);
+      }
+    },
+    toJSON: function() {
+       return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
+   },
+   fromJSON: function(json) {
+       return Game.UIMode.gamePersistence.BASE_fromJSON.call(this, json);
+   }
 };
 
 Game.UIMode.navigation = {
