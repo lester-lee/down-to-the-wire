@@ -49,7 +49,8 @@ Game.UIMode.persistence = {
     newGame: function() {
         Game.clearDatastore();
         Game.setRandomSeed(5 + Math.floor(ROT.RNG.getUniform() * 100000));
-        Game.switchUIMode(Game.UIMode.gameIntro);
+        // Game.switchUIMode(Game.UIMode.gameIntro);
+        Game.switchUIMode(Game.UIMode.shipScreen);
     },
     saveGame: function() {
         if (this.localStorageAvailable()) {
@@ -124,19 +125,27 @@ Game.UIMode.gameIntro = {
     enter: function() {
         Game.Message.clear();
         Game.Message.send('yer embarkin on a new journey');
-        var inputDisplay = document.getElementById('user-input');
-        inputDisplay.parentElement.style.display = "block";
-        setTimeout(function(){inputDisplay.focus()},100);
+        // var inputDisplay = document.getElementById('user-input');
+        // inputDisplay.parentElement.style.display = "block";
+        // setTimeout(function(){inputDisplay.focus()},100);
     },
     exit: function() {},
     render: function(display) {
         display.drawText(1, 4, "here is some story introduction");
-        display.drawText(1, 5, "please enter your name");
+        display.drawText(1, 5, "press [enter] to continue");
     },
     handleInput: function(inputType, inputData) {
-        // if (inputData.charCode !== 0) {
-        //     Game.switchUIMode(Game.UIMode.shipScreen);
-        // }
+      var action = Game.KeyBinding.getInput(inputType, inputData);
+      if (!action) {return false;}
+      switch (action.key){
+        case 'CONFIRM':
+          // var inputText = document.getElementById('user-input').value;
+          // console.log(inputText);
+          Game.switchUIMode(Game.UIMode.shipScreen);
+          break;
+        default:
+          break;
+      }
     }
 };
 
@@ -144,7 +153,7 @@ Game.UIMode.shipScreen = {
     enter: function() {},
     exit: function() {},
     render: function(display) {
-
+      display.drawText(0,1, "SHIP SCREEN");
     },
     handleInput: function(inputType, inputData) {
 

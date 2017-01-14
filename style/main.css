@@ -34,19 +34,23 @@ body {
   padding: 0px;
   clear: both;
   display: none;
+  font-size: 15px;
+  font-family: monospace;
+  letter-spacing: 2px;
+  color: #ddd;
 }
 
 #user-input {
-  width: 100%;
+  width: 96%;
   height: 100%;
   background: #000;
   border: 0px;
   outline: 0px;
   padding: 0px;
-  padding-left: 11px;
   box-sizing: border-box;
   font-size: 15px;
   font-family: monospace;
-  letter-spacing: 1.1px;
-  color: #fff;
+  letter-spacing: 2px;
+  color: #ddd;
+  color: #ddd;
 }

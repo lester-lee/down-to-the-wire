@@ -250,6 +250,14 @@ Game.KeyBinding = {
                 inputCtrl: false
             }
         },
+        CONFIRM: {
+            all: {
+                inputMatch: ROT.VK_RETURN,
+                inputType: 'keydown',
+                inputShift: false,
+                inputCtrl: false
+            }
+        },
         CANCEL: {
             all: {
                 inputMatch: ROT.VK_ESCAPE,
