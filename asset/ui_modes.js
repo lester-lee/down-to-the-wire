@@ -5,7 +5,15 @@ var fg = Game.UIMode.DEFAULT_FG;
 var bg = Game.UIMode.DEFAULT_BG;
 
 Game.UIMode.titleScreen = {
-    enter: function() {},
+    enter: function() {
+      //Navmap test
+      const navmap = new Graph();
+      navmap.addEdge("earth", "moon");
+      navmap.addEdge("earth", "venus");
+      navmap.addEdge("venus", "mercury");
+      navmap.addEdge("mercury", "sun");
+      navmap.printNodes();
+    },
     exit: function() {},
     render: function(display) {
         display.drawText(1, 4, "this is a title screen");
