@@ -196,14 +196,14 @@ Game.UIMode.navigation = {
 
     enter: function() {
       //Navmap test
-      const navmap = new Graph();
+      navmap = new Graph();
       navmap.addEdge("earth", "moon");
       navmap.addEdge("earth", "venus");
       navmap.addEdge("venus", "mercury");
       navmap.addEdge("mercury", "sun");
       navmap.printNodes();
       curNode = navmap.getNode('earth');
-      console.log(curNode.name + " — Current Node");
+      console.log("Current Node — " + curNode.name);
     },
     exit: function() {},
 
@@ -219,13 +219,28 @@ Game.UIMode.navigation = {
       if (!action) {return false;}
       switch (action.key){
         case 'NUM_0':
-        
+        var target = navmap.getNode(curNode.edge_list[0]);
+        if(target){
+          curNode = target;
+          Game.refresh();
+        }
+        console.log("Current Node — " + curNode.name);
         break;
         case 'NUM_1':
-
+        var target = navmap.getNode(curNode.edge_list[1]);
+        if(target){
+          curNode = target;
+          Game.refresh();
+        }
+        console.log("Current Node — " + curNode.name);
           break;
         case 'NUM_2':
-
+        var target = navmap.getNode(curNode.edge_list[2]);
+        if(target){
+          curNode = target;
+          Game.refresh();
+        }
+        console.log("Current Node — " + curNode.name);
           break;
         default:
           break;
