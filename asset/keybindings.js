@@ -323,6 +323,15 @@ Game.KeyBinding = {
           }
         },
 
+        NAVIGATE_DOCK: {
+            all: {
+                inputMatch: ROT.VK_D,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            }
+        },
+
         CHANGE_BINDINGS: {
             all: {
                 inputMatch: ROT.VK_BACK_SLASH,

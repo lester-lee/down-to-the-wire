@@ -134,117 +134,130 @@ Game.UIMode.gameIntro = {
         display.drawText(1, 5, "press [enter] to continue");
     },
     handleInput: function(inputType, inputData) {
-      var action = Game.KeyBinding.getInput(inputType, inputData);
-      if (!action) {return false;}
-      switch (action.key){
-        case 'CONFIRM':
-          // var inputText = document.getElementById('user-input').value;
-          // console.log(inputText);
-          Game.switchUIMode(Game.UIMode.shipScreen);
-          break;
-        default:
-          break;
-      }
+        var action = Game.KeyBinding.getInput(inputType, inputData);
+        if (!action) {
+            return false;
+        }
+        switch (action.key) {
+            case 'CONFIRM':
+                // var inputText = document.getElementById('user-input').value;
+                // console.log(inputText);
+                Game.switchUIMode(Game.UIMode.shipScreen);
+                break;
+            default:
+                break;
+        }
     }
 };
 
 Game.UIMode.shipScreen = {
-  attr: {
-    playerName: null
-  },
-    shipOptions: ["navigate","outfit drones","outfit ship","heist"],
+    attr: {
+        playerName: null
+    },
+    shipOptions: ["navigate", "outfit drones", "outfit ship", "heist"],
     enter: function() {},
     exit: function() {},
     render: function(display) {
-      display.drawText(0,1, this.attr.playerName + " STATUS");
-      this.renderShipOptions(display);
+        display.drawText(0, 1, this.attr.playerName + " STATUS");
+        this.renderShipOptions(display);
     },
     handleInput: function(inputType, inputData) {
-
-      var action = Game.KeyBinding.getInput(inputType, inputData);
-      if (!action) {return false;}
-      switch (action.key){
-        case 'NUM_0':
-        Game.switchUIMode(Game.UIMode.navigation);
-        break;
-        case 'NUM_3':
-          Game.switchUIMode(Game.UIMode.heist,'dungeon');
-          break;
-        case 'PERSISTENCE':
-          Game.switchUIMode(Game.UIMode.persistence);
-          break;
-        default:
-          break;
-      }
+        var action = Game.KeyBinding.getInput(inputType, inputData);
+        if (!action) {
+            return false;
+        }
+        switch (action.key) {
+            case 'NUM_0':
+                Game.switchUIMode(Game.UIMode.navigation);
+                break;
+            case 'NUM_3':
+                Game.switchUIMode(Game.UIMode.heist, 'dungeon');
+                break;
+            case 'PERSISTENCE':
+                Game.switchUIMode(Game.UIMode.persistence);
+                break;
+            default:
+                break;
+        }
     },
-    renderShipOptions: function(display){
-      for (var i=0; i < this.shipOptions.length; i++){
-        display.drawText(0,i+3,'['+i+'] '+this.shipOptions[i]);
-      }
+    renderShipOptions: function(display) {
+        for (var i = 0; i < this.shipOptions.length; i++) {
+            display.drawText(0, i + 3, '[' + i + '] ' + this.shipOptions[i]);
+        }
     },
     toJSON: function() {
-       return Game.UIMode.persistence.BASE_toJSON.call(this);
-   },
-   fromJSON: function(json) {
-       return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
-   }
-
+        return Game.UIMode.persistence.BASE_toJSON.call(this);
+    },
+    fromJSON: function(json) {
+        return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
+    }
 };
 
 Game.UIMode.navigation = {
     curNode: null,
-
     enter: function() {
-      //Navmap test
-      navmap = new Graph();
-      navmap.addEdge("earth", "moon");
-      navmap.addEdge("earth", "venus");
-      navmap.addEdge("venus", "mercury");
-      navmap.addEdge("mercury", "sun");
-      navmap.printNodes();
-      curNode = navmap.getNode('earth');
-      console.log("Current Node — " + curNode.name);
+        //Navmap test
+        navmap = new Graph();
+        navmap.addEdge("earth", "moon");
+        navmap.addEdge("earth", "venus");
+        navmap.addEdge("venus", "mercury");
+        navmap.addEdge("mercury", "sun");
+        navmap.printNodes();
+        curNode = navmap.getNode('earth');
+        console.log("Current Node — " + curNode.name);
     },
     exit: function() {},
-
     render: function(display) {
-      display.drawText(0,1, "NAVIGATION MODE");
-      for (var i = 0;i < curNode.edge_list.length;i++){
-        display.drawText(0,3+i, '['+i+'] '+curNode.edge_list[i]);
-      }
+        display.drawText(0, 1, "NAVIGATION MODE " + curNode.name);
+        display.drawText(0, 3, "[D] Dock");
+        for (var i = 0; i < curNode.edge_list.length; i++) {
+            display.drawText(0, i + 4, '[' + i + '] ' + curNode.edge_list[i]);
+        }
     },
-
     handleInput: function(inputType, inputData) {
-      var action = Game.KeyBinding.getInput(inputType, inputData);
-      if (!action) {return false;}
-      switch (action.key){
-        case 'NUM_0':
-        var target = navmap.getNode(curNode.edge_list[0]);
-        if(target){
-          curNode = target;
-          Game.refresh();
+        var action = Game.KeyBinding.getInput(inputType, inputData);
+        if (!action) {
+            return false;
         }
-        console.log("Current Node — " + curNode.name);
-        break;
-        case 'NUM_1':
-        var target = navmap.getNode(curNode.edge_list[1]);
-        if(target){
-          curNode = target;
-          Game.refresh();
+        switch (action.key) {
+            case 'NUM_0':
+                var target = navmap.getNode(curNode.edge_list[0]);
+                if (target) {
+                    curNode = target;
+                    Game.refresh();
+                }
+                console.log("Current Node — " + curNode.name);
+                break;
+            case 'NUM_1':
+                var target = navmap.getNode(curNode.edge_list[1]);
+                if (target) {
+                    curNode = target;
+                    Game.refresh();
+                }
+                console.log("Current Node — " + curNode.name);
+                break;
+            case 'NUM_2':
+                var target = navmap.getNode(curNode.edge_list[2]);
+                if (target) {
+                    curNode = target;
+                    Game.refresh();
+                }
+                console.log("Current Node — " + curNode.name);
+                break;
+            case 'NAVIGATE_DOCK':
+                var target = navmap.getNode(curNode.edge_list[2]);
+                if (target) {
+                    curNode = target;
+                    Game.refresh();
+                }
+                Game.switchUIMode(Game.UIMode.heist, 'dungeon');
+                console.log("Current Node — " + curNode.name);
+                break;
+            case 'PERSISTENCE':
+                Game.switchUIMode(Game.UIMode.persistence);
+                break;
+            default:
+                break;
         }
-        console.log("Current Node — " + curNode.name);
-          break;
-        case 'NUM_2':
-        var target = navmap.getNode(curNode.edge_list[2]);
-        if(target){
-          curNode = target;
-          Game.refresh();
-        }
-        console.log("Current Node — " + curNode.name);
-          break;
-        default:
-          break;
     }
-  }
-
 };
