@@ -160,6 +160,7 @@ Game.UIMode.shipScreen = {
       this.renderShipOptions(display);
     },
     handleInput: function(inputType, inputData) {
+
       var action = Game.KeyBinding.getInput(inputType, inputData);
       if (!action) {return false;}
       switch (action.key){
@@ -187,15 +188,63 @@ Game.UIMode.shipScreen = {
    fromJSON: function(json) {
        return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
    }
+
 };
 
 Game.UIMode.navigation = {
-    enter: function() {},
-    exit: function() {},
-    render: function(display) {
+    curNode: null,
 
+    enter: function() {
+      //Navmap test
+      navmap = new Graph();
+      navmap.addEdge("earth", "moon");
+      navmap.addEdge("earth", "venus");
+      navmap.addEdge("venus", "mercury");
+      navmap.addEdge("mercury", "sun");
+      navmap.printNodes();
+      curNode = navmap.getNode('earth');
+      console.log("Current Node — " + curNode.name);
     },
-    handleInput: function(inputType, inputData) {
+    exit: function() {},
 
+    render: function(display) {
+      display.drawText(0,1, "NAVIGATION MODE");
+      for (var i = 0;i < curNode.edge_list.length;i++){
+        display.drawText(0,3+i, '['+i+'] '+curNode.edge_list[i]);
+      }
+    },
+
+    handleInput: function(inputType, inputData) {
+      var action = Game.KeyBinding.getInput(inputType, inputData);
+      if (!action) {return false;}
+      switch (action.key){
+        case 'NUM_0':
+        var target = navmap.getNode(curNode.edge_list[0]);
+        if(target){
+          curNode = target;
+          Game.refresh();
+        }
+        console.log("Current Node — " + curNode.name);
+        break;
+        case 'NUM_1':
+        var target = navmap.getNode(curNode.edge_list[1]);
+        if(target){
+          curNode = target;
+          Game.refresh();
+        }
+        console.log("Current Node — " + curNode.name);
+          break;
+        case 'NUM_2':
+        var target = navmap.getNode(curNode.edge_list[2]);
+        if(target){
+          curNode = target;
+          Game.refresh();
+        }
+        console.log("Current Node — " + curNode.name);
+          break;
+        default:
+          break;
     }
+  }
+
 };
