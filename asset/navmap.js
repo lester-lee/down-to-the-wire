@@ -10,9 +10,11 @@ Array.prototype.contains = function(name) {
   return false;
 };
 
-function Node(name) {
+function Node(attr) {
   this.edge_list = [];
-  this.name = name;
+  this.name = attr.name;
+  this.mapType = attr.mapType;
+  this.starSystem = attr.starSystem;
 };
 
 Node.prototype.addEdge = function(end) {
@@ -24,14 +26,14 @@ function Graph() {
 };
 
 Graph.prototype.addEdge = function(start, end) {
-  const first = this.node_list.contains(start);
-  const second = this.node_list.contains(end);
+  const first = this.node_list.contains(start.name);
+  const second = this.node_list.contains(end.name);
 
   if(first){
     //get start node
     var i = this.node_list.length;
     while (i--) {
-      if (this.node_list[i].name === start) {
+      if (this.node_list[i].name === start.name) {
         this.node_list[i].addEdge(end);
         break;
       }
@@ -41,7 +43,7 @@ Graph.prototype.addEdge = function(start, end) {
     //get end node
     i = this.node_list.length;
     while (i--) {
-      if (this.node_list[i].name === end) {
+      if (this.node_list[i].name === end.name) {
         this.node_list[i].addEdge(start);
         break;
       }

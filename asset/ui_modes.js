@@ -158,10 +158,10 @@ Game.UIMode.shipScreen = {
     },
     shipOptions: ["navigate", "outfit drones", "outfit ship", "heist"],
     shipFunctions: {
-      "navigate": function(){
+      navigate: function(){
           Game.addUIMode(Game.UIMode.navigation);
         },
-      "heist": function(){
+      heist: function(){
           Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
       }
     },
@@ -232,26 +232,30 @@ Game.UIMode.navigation = {
         display.drawText(0, 4, "[T] Travel");
         for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
             var bg = (this.attr._tarNodeID == i)? '#333':Game.UIMode.DEFAULT_BG;
-            display.drawText(0, i + 5, '%b{'+bg+'}[' + i + '] ' + this.attr._curNode.edge_list[i] + '%b{}');
+            display.drawText(0, i + 5, '%b{'+bg+'}[' + i + '] ' + this.attr._curNode.edge_list[i].name + '%b{}');
         }
+    },
+    renderAvatarInfo: function(display){
+      display.drawText(0,1, this.attr._curNode.starSystem);
     },
     setupNavMap: function(){
       this.attr._navMap = new Graph();
       var navMap = this.attr._navMap;
       var nextShip = this.createStarSystem();
-      navMap.addEdge("somewhere in space",nextShip);
+      navMap.addEdge({name:"somewhere in space",starSystem:"system undefined"},nextShip);
       this.attr._curNode = navMap.getNode("somewhere in space");
     },
     createStarSystem: function(){
       var navMap = this.attr._navMap;
       var ships = [];
+      var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform()*10000);
       for (var i = 0; i < ROT.RNG.getUniform()*2 + 2; i++){
-        ships.push(Game.Util.randomDroneName());
+        var ship = {name: Game.Util.randomDroneName(), starSystem: systemName, mapType: 'ship_easy'};
+        ships.push(ship);
       }
       var nextSys = ships;
       for (var i = 0; i < ships.length; i++){
         var ship = ships.pop();
-
         for (var j = 0; j < ships.length; j++){
           if (ROT.RNG.getUniform() >= 0.2){
             navMap.addEdge(ship,ships[j]);
@@ -291,11 +295,11 @@ Game.UIMode.navigation = {
                 this.attr._tarNodeID %= this.attr._curNode.edge_list.length;
                 break;
             case 'NAVIGATE_DOCK':
-                Game.switchUIMode(Game.UIMode.heist, 'dungeon');
+                Game.switchUIMode(Game.UIMode.heist, this.attr._curNode.mapType);
                 console.log("Current Node — " + this.attr._curNode.name);
                 break;
             case 'NAVIGATE_TRAVEL':
-                this.attr._curNode = this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._tarNodeID]); //changes current location to target location
+                this.attr._curNode = this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._tarNodeID].name); //changes current location to target location
                 console.log("Current Node — " + this.attr._curNode.name);
                 break;
             case 'CANCEL':
