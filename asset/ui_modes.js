@@ -153,9 +153,18 @@ Game.UIMode.gameIntro = {
 
 Game.UIMode.shipScreen = {
     attr: {
-        playerName: null
+        playerName: null,
+        _curOption: 0
     },
     shipOptions: ["navigate", "outfit drones", "outfit ship", "heist"],
+    shipFunctions: {
+      "navigate": function(){
+          Game.addUIMode(Game.UIMode.navigation);
+        },
+      "heist": function(){
+          Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
+      }
+    },
     enter: function() {},
     exit: function() {},
     render: function(display) {
@@ -169,10 +178,22 @@ Game.UIMode.shipScreen = {
         }
         switch (action.key) {
             case 'NUM_0':
-                Game.addUIMode(Game.UIMode.navigation);
+                this.shipFunctions['navigate']();
                 break;
             case 'NUM_3':
-                Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
+                this.shipFunctions['heist']();
+                break;
+            case 'MOVE_DOWN':
+                this.attr._curOption++;
+                this.attr._curOption %= this.shipOptions.length;
+                break;
+            case 'MOVE_UP':
+                this.attr._curOption--;
+                this.attr._curOption = (this.attr._curOption < 0) ? this.shipOptions.length-1 : this.attr._curOption;
+                this.attr._curOption %= this.shipOptions.length;
+                break;
+            case 'CONFIRM':
+                this.shipFunctions[this.shipOptions[this.attr._curOption]]();
                 break;
             case 'PERSISTENCE':
                 Game.switchUIMode(Game.UIMode.persistence);
@@ -183,7 +204,8 @@ Game.UIMode.shipScreen = {
     },
     renderShipOptions: function(display) {
         for (var i = 0; i < this.shipOptions.length; i++) {
-            display.drawText(0, i + 3, '[' + i + '] ' + this.shipOptions[i]);
+            var bg = (this.attr._curOption == i)? '#333':Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 3, '%b{'+bg+'}[' + i + '] ' + this.shipOptions[i]);
         }
     },
     toJSON: function() {
@@ -201,15 +223,7 @@ Game.UIMode.navigation = {
         _tarNodeID: null
     },
     enter: function() {
-        //Navmap test
-        // navmap = new Graph();
-        // navmap.addEdge("earth", "moon");
-        // navmap.addEdge("earth", "venus");
-        // navmap.addEdge("venus", "mercury");
-        // navmap.addEdge("mercury", "sun");
-        // navmap.printNodes();
-        // curNode = navmap.getNode('earth');
-        // console.log("Current Node — " + curNode.name);
+        this.attr._tarNodeID = 0;
     },
     exit: function() {},
     render: function(display) {
@@ -217,9 +231,8 @@ Game.UIMode.navigation = {
         display.drawText(0, 3, "[D] Dock");
         display.drawText(0, 4, "[T] Travel");
         for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
-            var bg = Game.UIMode.DEFAULT_BG;
-            if (this.attr._tarNodeID === i){bg = '#333'}
-            display.drawText(0, i + 5, '[' + i + '] %b{'+bg+'}' + this.attr._curNode.edge_list[i] + '%b{}');
+            var bg = (this.attr._tarNodeID == i)? '#333':Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 5, '%b{'+bg+'}[' + i + '] ' + this.attr._curNode.edge_list[i] + '%b{}');
         }
     },
     setupNavMap: function(){
@@ -267,6 +280,15 @@ Game.UIMode.navigation = {
                 this.attr._tarNodeID = 2;
                 Game.refresh();
                 console.log("Current Node — " + this.attr._curNode.name);
+                break;
+            case 'MOVE_DOWN':
+                this.attr._tarNodeID++;
+                this.attr._tarNodeID %= this.attr._curNode.edge_list.length;
+                break;
+            case 'MOVE_UP':
+                this.attr._tarNodeID--;
+                this.attr._tarNodeID = (this.attr._tarNodeID < 0) ? this.attr._curNode.edge_list.length-1 : this.attr._tarNodeID;
+                this.attr._tarNodeID %= this.attr._curNode.edge_list.length;
                 break;
             case 'NAVIGATE_DOCK':
                 Game.switchUIMode(Game.UIMode.heist, 'dungeon');

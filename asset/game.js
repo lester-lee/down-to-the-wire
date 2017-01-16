@@ -147,6 +147,7 @@ var Game = {
         this.DATASTORE = {
             ENTITY: {},
             SHIP_SCREEN: {},
+            MAP: {},
             NAV_MAP: {},
             gameRandomSeed: 0
         }
