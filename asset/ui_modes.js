@@ -171,7 +171,7 @@ Game.UIMode.shipScreen = {
                 Game.switchUIMode(Game.UIMode.navigation);
                 break;
             case 'NUM_3':
-                Game.switchUIMode(Game.UIMode.heist, 'dungeon');
+                Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
                 break;
             case 'PERSISTENCE':
                 Game.switchUIMode(Game.UIMode.persistence);

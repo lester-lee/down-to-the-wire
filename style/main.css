@@ -5,7 +5,7 @@ body {
 }
 
 .console {
-  /*padding: 4px;*/
+  padding: 4px;
   background: #000;
   float: left;
 }
@@ -22,9 +22,7 @@ body {
 
 #message-display {
   clear: both;
-  /*border-top: 2px solid #fff;*/
-  /*padding-left: 8px;*/
-  /*padding-right: 12px;*/
+  padding-right: 12px;
 }
 
 #user-input-display {

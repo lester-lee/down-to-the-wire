@@ -94,7 +94,7 @@ Game.UIMode.heist = {
       this.getMap().addEntity(this.getAvatar(), this.getMap().getRandomTileWalkable());
       this.setCameraToAvatar();
 
-      this.addMobs(25);
+      // this.addMobs(25);
   },
   addMobs: function(n){
     for (var ecount = 0; ecount < n; ecount++) {
@@ -154,7 +154,7 @@ Game.UIMode.heist = {
               this.moveAvatar(-1, 0);
               break;
           case 'MOVE_STILL':
-              this.moveAvatar(0, 0);
+              this.getAvatar().raiseEntityEvent('tookTurn');
               break;
           case 'MOVE_RIGHT':
               this.moveAvatar(1, 0);
