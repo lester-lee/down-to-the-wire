@@ -50,6 +50,7 @@ Game.UIMode.persistence = {
         Game.clearDatastore();
         Game.setRandomSeed(5 + Math.floor(ROT.RNG.getUniform() * 100000));
         // Game.switchUIMode(Game.UIMode.gameIntro);
+        Game.UIMode.navigation.setupNavMap();
         Game.UIMode.shipScreen.attr.playerName = Game.Util.randomShipName();
         Game.switchUIMode(Game.UIMode.gameIntro);
     },
@@ -194,29 +195,57 @@ Game.UIMode.shipScreen = {
 };
 
 Game.UIMode.navigation = {
-    curNode: null, //current location
-    tarNode: null, //targeted location
+    attr: {
+        _navMap: null,
+        _curNode: null,
+        _tarNodeID: null
+    },
     enter: function() {
         //Navmap test
-        navmap = new Graph();
-        navmap.addEdge("earth", "moon");
-        navmap.addEdge("earth", "venus");
-        navmap.addEdge("venus", "mercury");
-        navmap.addEdge("mercury", "sun");
-        navmap.printNodes();
-        curNode = navmap.getNode('earth');
-        console.log("Current Node — " + curNode.name);
+        // navmap = new Graph();
+        // navmap.addEdge("earth", "moon");
+        // navmap.addEdge("earth", "venus");
+        // navmap.addEdge("venus", "mercury");
+        // navmap.addEdge("mercury", "sun");
+        // navmap.printNodes();
+        // curNode = navmap.getNode('earth');
+        // console.log("Current Node — " + curNode.name);
     },
     exit: function() {},
     render: function(display) {
-        display.drawText(0, 1, "NAVIGATION MODE " + curNode.name);
+        display.drawText(0, 1, "NAVIGATION MODE " + this.attr._curNode.name);
         display.drawText(0, 3, "[D] Dock");
         display.drawText(0, 4, "[T] Travel");
-        for (var i = 0; i < curNode.edge_list.length; i++) {
+        for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
             var bg = Game.UIMode.DEFAULT_BG;
-            if (this.tarNode === i){bg = '#f00'}
-            display.drawText(0, i + 5, '[' + i + '] %b{'+bg+'}' + curNode.edge_list[i] + '%b{}');
+            if (this.attr._tarNodeID === i){bg = '#333'}
+            display.drawText(0, i + 5, '[' + i + '] %b{'+bg+'}' + this.attr._curNode.edge_list[i] + '%b{}');
         }
+    },
+    setupNavMap: function(){
+      this.attr._navMap = new Graph();
+      var navMap = this.attr._navMap;
+      var nextShip = this.createStarSystem();
+      navMap.addEdge("somewhere in space",nextShip);
+      this.attr._curNode = navMap.getNode("somewhere in space");
+    },
+    createStarSystem: function(){
+      var navMap = this.attr._navMap;
+      var ships = [];
+      for (var i = 0; i < ROT.RNG.getUniform()*2 + 2; i++){
+        ships.push(Game.Util.randomDroneName());
+      }
+      var nextSys = ships;
+      for (var i = 0; i < ships.length; i++){
+        var ship = ships.pop();
+
+        for (var j = 0; j < ships.length; j++){
+          if (ROT.RNG.getUniform() >= 0.2){
+            navMap.addEdge(ship,ships[j]);
+          }
+        }
+      }
+      return nextSys[Math.floor(ROT.RNG.getUniform()*nextSys.length)];
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData);
@@ -225,28 +254,28 @@ Game.UIMode.navigation = {
         }
         switch (action.key) {
             case 'NUM_0':
-                this.tarNode = 0;
+                this.attr._tarNodeID = 0;
                 Game.refresh();
-                console.log("Current Node — " + curNode.name);
+                console.log("Current Node — " + this.attr._curNode.name);
                 break;
             case 'NUM_1':
-                this.tarNode = 1;
+                this.attr._tarNodeID = 1;
                 Game.refresh();
-                console.log("Current Node — " + curNode.name);
+                console.log("Current Node — " + this.attr._curNode.name);
                 break;
             case 'NUM_2':
-                this.tarNode = 2;
+                this.attr._tarNodeID = 2;
                 Game.refresh();
-                console.log("Current Node — " + curNode.name);
+                console.log("Current Node — " + this.attr._curNode.name);
                 break;
             case 'NAVIGATE_DOCK':
                 Game.switchUIMode(Game.UIMode.heist, 'dungeon');
-                console.log("Current Node — " + curNode.name);
+                console.log("Current Node — " + this.attr._curNode.name);
                 break;
             case 'NAVIGATE_TRAVEL':
-                curNode = navmap.getNode(curNode.edge_list[this.tarNode]); //changes current location to target location
-                console.log("Current Node — " + curNode.name);
-                break;                
+                this.attr._curNode = this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._tarNodeID]); //changes current location to target location
+                console.log("Current Node — " + this.attr._curNode.name);
+                break;
             case 'CANCEL':
                 Game.removeUIMode();
                 break;

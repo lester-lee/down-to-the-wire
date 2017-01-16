@@ -27,11 +27,18 @@ Game.Util = {
 
  randomShipName: function(){
    return Game.Util.Idioms[Math.floor(ROT.RNG.getUniform()*Game.Util.Idioms.length)];
+ },
+
+ randomDroneName: function(){
+   return Game.Util.Adjectives[Math.floor(ROT.RNG.getUniform()*Game.Util.Adjectives.length)] +
+   " " + Game.Util.Nouns[Math.floor(ROT.RNG.getUniform()*Game.Util.Nouns.length)];
  }
 };
 
-Game.Util.Idioms = ['idiom1','idiom2','idiom3','idiom4'];
-Game.Util.Adjectives = ['adj1','adj2'];
+Game.Util.Idioms = ['idiom1','idiom2','idiom3','idiom4', 'idiom5', 'idiom6'];
+Game.Util.Adjectives = ['aback','abaft','abandoned','abashed','aberrant','abhorrent','abiding','abject','ablaze','able','abnormal','aboard','aboriginal','abortive','abounding','abrasive','abrupt','absent','absorbed','absorbing','abstracted','absurd','abundant',
+'abusive','acceptable','accessible','accidental','accurate','acid','acidic','acoustic','acrid','actually','ad','hoc','adamant','adaptable','addicted','adhesive','adjoining','adorable','adventurous','afraid','aggressive','agonizing','agreeable','ahead','ajar',
+'alcoholic','alert','alike','alive','alleged','alluring','aloof','amazing','ambiguous','ambitious','amuck','amused','amusing','ancient','angry','animated','annoyed','annoying','anxious','apathetic','aquatic','aromatic','arrogant','ashamed','aspiring','assorted','astonishing','attractive','auspicious','automatic','available','average','awake','aware','awesome','awful','axiomatic'];
 Game.Util.Nouns = ['noun1','noun2'];
 
 Game.Coordinate = function(x,y){
