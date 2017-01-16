@@ -58,6 +58,7 @@ Game.UIMode.persistence = {
         if (this.localStorageAvailable()) {
             Game.DATASTORE.SHIP_SCREEN = Game.UIMode.shipScreen.attr;
             Game.DATASTORE.MESSAGES = Game.Message.attr;
+            Game.DATASTORE.NAV_MAP = Game.UIMode.navigation.attr;
             window.localStorage.setItem(Game.PERSISTENCE_NAMESPACE, JSON.stringify(Game.DATASTORE));
             Game.switchUIMode(Game.UIMode.shipScreen);
         } else {
@@ -93,6 +94,11 @@ Game.UIMode.persistence = {
         // load gamePlay
         Game.UIMode.shipScreen.attr = state_data.SHIP_SCREEN;
         Game.Message.attr = state_data.MESSAGES;
+
+        // load nav_maps
+        Game.UIMode.navigation.attr = state_data.NAV_MAP;
+        Game.UIMode.navigation.attr._navMap = new Graph(state_data.NAV_MAP._navMap.node_list);
+
 
         Game.switchUIMode(Game.UIMode.shipScreen);
     },
@@ -300,6 +306,7 @@ Game.UIMode.navigation = {
                 break;
             case 'NAVIGATE_TRAVEL':
                 this.attr._curNode = this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._tarNodeID].name); //changes current location to target location
+                this.attr._tarNodeID = 0;
                 console.log("Current Node — " + this.attr._curNode.name);
                 break;
             case 'CANCEL':
@@ -308,5 +315,11 @@ Game.UIMode.navigation = {
             default:
                 break;
         }
+    },
+    toJSON: function() {
+        return Game.UIMode.persistence.BASE_toJSON.call(this);
+    },
+    fromJSON: function(json) {
+        return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
     }
 };

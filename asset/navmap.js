@@ -21,8 +21,8 @@ Node.prototype.addEdge = function(end) {
   this.edge_list.push(end);
 };
 
-function Graph() {
-  this.node_list = [];
+function Graph(node_list) {
+  this.node_list = node_list || [];
 };
 
 Graph.prototype.addEdge = function(start, end) {
