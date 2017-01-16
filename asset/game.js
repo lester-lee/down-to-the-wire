@@ -50,6 +50,7 @@ var Game = {
         }
     },
     _curUIMode: null,
+    _UIStack: [],
 
     init: function() {
         // set up displays
@@ -122,10 +123,24 @@ var Game = {
             this._curUIMode.exit();
         }
         this._curUIMode = newMode;
+        this._UIStack = [newMode];
         if (this._curUIMode) {
             this._curUIMode.enter(args);
         }
-        this.renderAll();
+        Game.refresh();
+    },
+
+    addUIMode: function(newMode){
+        this._UIStack.unshift(newMode);
+        this._curUIMode = this._UIStack[0];
+        this._curUIMode.enter();
+        Game.refresh();
+    },
+    removeUIMode: function(){
+        var oldMode = this._UIStack.shift();
+        oldMode.exit();
+        this._curUIMode = this._UIStack[0];
+        Game.refresh();
     },
 
     clearDatastore: function() {

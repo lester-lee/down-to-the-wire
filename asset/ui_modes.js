@@ -168,7 +168,7 @@ Game.UIMode.shipScreen = {
         }
         switch (action.key) {
             case 'NUM_0':
-                Game.switchUIMode(Game.UIMode.navigation);
+                Game.addUIMode(Game.UIMode.navigation);
                 break;
             case 'NUM_3':
                 Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
@@ -221,40 +221,17 @@ Game.UIMode.navigation = {
         }
         switch (action.key) {
             case 'NUM_0':
-                var target = navmap.getNode(curNode.edge_list[0]);
-                if (target) {
-                    curNode = target;
-                    Game.refresh();
-                }
-                console.log("Current Node — " + curNode.name);
                 break;
             case 'NUM_1':
-                var target = navmap.getNode(curNode.edge_list[1]);
-                if (target) {
-                    curNode = target;
-                    Game.refresh();
-                }
-                console.log("Current Node — " + curNode.name);
                 break;
             case 'NUM_2':
-                var target = navmap.getNode(curNode.edge_list[2]);
-                if (target) {
-                    curNode = target;
-                    Game.refresh();
-                }
-                console.log("Current Node — " + curNode.name);
                 break;
             case 'NAVIGATE_DOCK':
-                var target = navmap.getNode(curNode.edge_list[2]);
-                if (target) {
-                    curNode = target;
-                    Game.refresh();
-                }
                 Game.switchUIMode(Game.UIMode.heist, 'dungeon');
                 console.log("Current Node — " + curNode.name);
                 break;
-            case 'PERSISTENCE':
-                Game.switchUIMode(Game.UIMode.persistence);
+            case 'CANCEL':
+                Game.removeUIMode();
                 break;
             default:
                 break;
