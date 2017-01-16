@@ -332,6 +332,15 @@ Game.KeyBinding = {
             }
         },
 
+        NAVIGATE_TRAVEL: {
+            all: {
+                inputMatch: ROT.VK_T,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            }
+        },
+
         CHANGE_BINDINGS: {
             all: {
                 inputMatch: ROT.VK_BACK_SLASH,

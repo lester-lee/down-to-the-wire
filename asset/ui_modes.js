@@ -194,7 +194,8 @@ Game.UIMode.shipScreen = {
 };
 
 Game.UIMode.navigation = {
-    curNode: null,
+    curNode: null, //current location
+    tarNode: null, //targeted location
     enter: function() {
         //Navmap test
         navmap = new Graph();
@@ -210,8 +211,11 @@ Game.UIMode.navigation = {
     render: function(display) {
         display.drawText(0, 1, "NAVIGATION MODE " + curNode.name);
         display.drawText(0, 3, "[D] Dock");
+        display.drawText(0, 4, "[T] Travel");
         for (var i = 0; i < curNode.edge_list.length; i++) {
-            display.drawText(0, i + 4, '[' + i + '] ' + curNode.edge_list[i]);
+            var bg = Game.UIMode.DEFAULT_BG;
+            if (this.tarNode === i){bg = '#f00'}
+            display.drawText(0, i + 5, '[' + i + '] %b{'+bg+'}' + curNode.edge_list[i] + '%b{}');
         }
     },
     handleInput: function(inputType, inputData) {
@@ -221,15 +225,28 @@ Game.UIMode.navigation = {
         }
         switch (action.key) {
             case 'NUM_0':
+                this.tarNode = 0;
+                Game.refresh();
+                console.log("Current Node — " + curNode.name);
                 break;
             case 'NUM_1':
+                this.tarNode = 1;
+                Game.refresh();
+                console.log("Current Node — " + curNode.name);
                 break;
             case 'NUM_2':
+                this.tarNode = 2;
+                Game.refresh();
+                console.log("Current Node — " + curNode.name);
                 break;
             case 'NAVIGATE_DOCK':
                 Game.switchUIMode(Game.UIMode.heist, 'dungeon');
                 console.log("Current Node — " + curNode.name);
                 break;
+            case 'NAVIGATE_TRAVEL':
+                curNode = navmap.getNode(curNode.edge_list[this.tarNode]); //changes current location to target location
+                console.log("Current Node — " + curNode.name);
+                break;                
             case 'CANCEL':
                 Game.removeUIMode();
                 break;
