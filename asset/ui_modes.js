@@ -231,7 +231,7 @@ Game.UIMode.navigation = {
     navOptions: ['Begin docking procedure'],
     navFunctions: {
       'Begin docking procedure': function(){
-          Game.switchUIMode(Game.UIMode.heist, Game.UIMode.navigation.attr._curNode.mapType);
+          Game.UIMode.navigation.dock();
       }
     },
     enter: function() {
@@ -256,10 +256,17 @@ Game.UIMode.navigation = {
       this.navOptions = ['Begin docking procedure'];
       this.navFunctions = {
         'Begin docking procedure': function(){
-            Game.switchUIMode(Game.UIMode.heist, Game.UIMode.navigation.attr._curNode.mapType);
+            Game.UIMode.navigation.dock();
         }
       };
       this.attr._curOption = 0;
+    },
+    dock: function(){
+      if (Game.UIMode.navigation.attr._curNode.mapType.localeCompare('void') != 0){
+        Game.switchUIMode(Game.UIMode.heist, Game.UIMode.navigation.attr._curNode.mapType);
+      }else{
+        Game.Message.send('There is nothing to dock with here.');
+      }
     },
     setupNavOptions: function(){
       this.resetNavOptions();
@@ -269,8 +276,8 @@ Game.UIMode.navigation = {
               Game.UIMode.navigation.travelToTarget();
           };
       }
-      this.navOptions.push('Warp to another star system');
-      this.navFunctions['Warp to another star system'] = function(){
+      this.navOptions.push('One-way warp to another star system');
+      this.navFunctions['One-way warp to another star system'] = function(){
           Game.UIMode.navigation.createStarSystem();
       };
     },
@@ -281,7 +288,7 @@ Game.UIMode.navigation = {
     setupNavMap: function(){
       this.attr._navMap = new Graph();
       var navMap = this.attr._navMap;
-      navMap.addNode({name:"Somewhere in Space",starSystem:"system undefined",prefix:""});
+      navMap.addNode({name:"Somewhere in Space",starSystem:"system undefined",prefix:"",mapType:'void'});
       this.attr._curNode = navMap.getNode("Somewhere in Space");
     },
     createStarSystem: function(){
