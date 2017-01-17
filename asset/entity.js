@@ -64,9 +64,14 @@ Game.Entity.prototype.raiseEntityEvent = function(evtLabel, evtData) {
     }
 };
 
+Game.Entity.prototype.destroy = function() {
+    this.getMap().extractEntity(this);
+    Game.DATASTORE.ENTITY[this.getID()] = undefined;
+};
+
 Game.Entity.prototype.getID = function() {
     return this.attr._ID;
-}
+};
 
 Game.Entity.prototype.getMap = function() {
     return Game.DATASTORE.MAP[this.attr._mapID];

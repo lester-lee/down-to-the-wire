@@ -13,6 +13,7 @@ Game.Map = function(mapKey) {
         _nextMapID: ''
     };
     Game.DATASTORE.MAP[this.attr._id] = this;
+    Game.HeistPresets[mapKey].addMobs(this);
 };
 
 Game.Map.prototype.getID = function() {
@@ -27,19 +28,19 @@ Game.Map.prototype.getHeight = function() {
     return this.attr._height;
 };
 
-Game.Map.prototype.setPrevMap = function(id){
+Game.Map.prototype.setPrevMap = function(id) {
     this.attr._prevMapID = id;
 };
 
-Game.Map.prototype.setNextMap = function(id){
+Game.Map.prototype.setNextMap = function(id) {
     this.attr._nextMapID = id;
 };
 
-Game.Map.prototype.getPrevMap = function(){
+Game.Map.prototype.getPrevMap = function() {
     return Game.DATASTORE.MAP[this.attr._prevMapID];
 };
 
-Game.Map.prototype.getNextMap = function(){
+Game.Map.prototype.getNextMap = function() {
     return Game.DATASTORE.MAP[this.attr._nextMapID];
 };
 
@@ -63,7 +64,7 @@ Game.Map.prototype.addEntity = function(ent, pos) {
 Game.Map.prototype.updateEntityLocation = function(ent) {
     var origLoc = this.attr._locationsByEntity[ent.getID()];
     if (origLoc) {
-        this.attr._entitiesByLocation[origLoc.x+','+origLoc.y] = undefined;
+        this.attr._entitiesByLocation[origLoc.x + ',' + origLoc.y] = undefined;
     }
     var pos = ent.getPos();
     this.attr._entitiesByLocation[pos.x + ',' + pos.y] = ent.getID();
@@ -76,6 +77,12 @@ Game.Map.prototype.getEntity = function(pos) {
         return Game.DATASTORE.ENTITY[entID];
     }
     return false;
+}
+
+Game.Map.prototype.extractEntity = function(ent) {
+    this.attr._entitiesByLocation[ent.getPos().x + "," + ent.getPos().y] = undefined;
+    this.attr._locationsByEntity[ent.getID()] = undefined;
+    return ent;
 }
 
 Game.Map.prototype.getRandomTile = function(filter) {

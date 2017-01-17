@@ -88,6 +88,20 @@ Game.EntityTraits.StatHitPoints = {
         init: function(template) {
             this.attr._HP_attr.maxHP = template.maxHP || 1;
             this.attr._HP_attr.curHP = template.curHP || this.attr._HP_attr.maxHP;
+        },
+        listeners: {
+            'attacked': function(evtData) {
+                this.takeDamage(evtData.attackPower);
+                if (this.getCurHP() <= 0) {
+                    this.raiseEntityEvent('killed', {
+                        entKilled: this,
+                        killedBy: evtData.attacker
+                    });
+                }
+            },
+            'killed': function(evtData) {
+                this.destroy();
+            }
         }
     },
     getMaxHP: function() {
@@ -108,4 +122,29 @@ Game.EntityTraits.StatHitPoints = {
     recover: function(amt) {
         this.attr._HP_attr.curHP = Math.min(this.attr._HP_attr.curHP + amt, this.attr._HitPoints_attr.maxHP);
     }
-}
+};
+
+Game.EntityTraits.MeleeAttacker = {
+    META: {
+        traitName: 'MeleeAttacker',
+        traitGroup: 'Attacker',
+        stateNamespace: '_MeleeAttacker_attr',
+        stateModel: {
+            attackPower: 1
+        },
+        init: function(template) {
+            this.attr._MeleeAttacker_attr.attackPower = template.attackPower || 1;
+        },
+        listeners: {
+            'bumpEntity': function(evtData) {
+                evtData.target.raiseEntityEvent('attacked', {
+                    attacker: evtData.actor,
+                    attackPower: this.getAttackPower()
+                });
+            }
+        }
+    },
+    getAttackPower: function() {
+        return this.attr._MeleeAttacker_attr.attackPower;
+    }
+};

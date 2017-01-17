@@ -5,7 +5,7 @@ Game.EntityGenerator.learn({
     chr: '@',
     fg: '#f00',
     maxHP: 10,
-    traits: [Game.EntityTraits.WalkerCorporeal, Game.EntityTraits.Chronicle, Game.EntityTraits.StatHitPoints, Game.EntityTraits.PlayerMessager]
+    traits: [Game.EntityTraits.WalkerCorporeal, Game.EntityTraits.Chronicle, Game.EntityTraits.StatHitPoints, Game.EntityTraits.MeleeAttacker, Game.EntityTraits.PlayerMessager]
 });
 
 Game.EntityGenerator.learn({
