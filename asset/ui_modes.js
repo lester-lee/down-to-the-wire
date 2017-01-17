@@ -262,6 +262,7 @@ Game.UIMode.navigation = {
       this.attr._curOption = 0;
     },
     setupNavOptions: function(){
+      this.resetNavOptions();
       for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
           this.navOptions.push('Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name);
           this.navFunctions['Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name] = function(){
@@ -275,7 +276,6 @@ Game.UIMode.navigation = {
     },
     travelToTarget: function(targetNode){
       this.attr._curNode = targetNode || this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption-1].name); //changes current location to target location
-      this.resetNavOptions();
       this.setupNavOptions();
     },
     setupNavMap: function(){
