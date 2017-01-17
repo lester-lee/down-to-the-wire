@@ -8,8 +8,13 @@ Game.UIMode.titleScreen = {
     enter: function() {},
     exit: function() {},
     render: function(display) {
-        display.drawText(1, 4, "this is a title screen");
-        display.drawText(1, 5, "Press any key to continue.");
+        // display.drawText(1, 4, "this is a title screen");
+        // display.drawText(1, 5, "Press any key to continue.");
+        display.drawText(0,0,"1%c{#999}***%c{}2");
+        display.drawText(0,1,"%c{#999}** **%c{}");
+        display.drawText(0,2,"%c{#999}* * *%c{}");
+        display.drawText(0,3,"%c{#999}** **%c{}");
+        display.drawText(0,4,"3%c{#999}***%c{}4");
     },
     handleInput: function(inputType, inputData) {
         if (inputData.charCode !== 0) {
