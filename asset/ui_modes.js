@@ -256,7 +256,7 @@ Game.UIMode.navigation = {
       var ships = [];
       var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform()*10000);
       for (var i = 0; i < ROT.RNG.getUniform()*2 + 2; i++){
-        var ship = {name: Game.Util.randomDroneName(), starSystem: systemName, mapType: 'ship_easy'};
+        var ship = {name: Game.Util.randomShipName(), starSystem: systemName, mapType: 'ship_easy'};
         ships.push(ship);
       }
       var nextSys = ships;
