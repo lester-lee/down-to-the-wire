@@ -226,37 +226,68 @@ Game.UIMode.navigation = {
     attr: {
         _navMap: null,
         _curNode: null,
-        _tarNodeID: null
+        _curOption: 0
+    },
+    navOptions: ['Begin docking procedure'],
+    navFunctions: {
+      'Begin docking procedure': function(){
+          Game.switchUIMode(Game.UIMode.heist, Game.UIMode.navigation.attr._curNode.mapType);
+      }
     },
     enter: function() {
-        this.attr._tarNodeID = 0;
+        for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
+            this.navOptions.push('Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name);
+            this.navFunctions['Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name] = function(){
+                Game.UIMode.navigation.travelToTarget();
+            };
+        }
     },
     exit: function() {},
     render: function(display) {
         display.drawText(0, 1, "NAVIGATION MODE " + this.attr._curNode.name);
-        display.drawText(0, 3, "[D] Dock");
-        display.drawText(0, 4, "[T] Travel");
-        for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
-            var bg = (this.attr._tarNodeID == i)? '#333':Game.UIMode.DEFAULT_BG;
-            display.drawText(0, i + 5, '%b{'+bg+'}[' + i + '] ' + this.attr._curNode.edge_list[i].name + '%b{}');
-        }
+        display.drawText(0, 3, this.attr._curNode.edge_list.length+" hyperspace KEYBOARDGUNK open");
+        this.renderNavOptions(display);
+    },
+    renderNavOptions: function(display){
+      for (var i = 0; i < this.navOptions.length; i++){
+        var bg = (this.attr._curOption == i)? '#333':Game.UIMode.DEFAULT_BG;
+        display.drawText(0, i+5, '%b{'+bg+'}['+i+'] ' + this.navOptions[i]);
+      }
     },
     renderAvatarInfo: function(display){
       display.drawText(0,1, this.attr._curNode.starSystem);
+    },
+    resetNavOptions: function(){
+      this.navOptions = ['Begin docking procedure'];
+      this.navFunctions = {
+        'Begin docking procedure': function(){
+            Game.switchUIMode(Game.UIMode.heist, Game.UIMode.navigation.attr._curNode.mapType);
+        }
+      };
+    },
+    travelToTarget: function(){
+      this.attr._curNode = this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption-1].name); //changes current location to target location
+      this.resetNavOptions();
+      for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
+          this.navOptions.push('Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name);
+          this.navFunctions['Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name] = function(){
+              Game.UIMode.navigation.travelToTarget();
+          };
+      }
     },
     setupNavMap: function(){
       this.attr._navMap = new Graph();
       var navMap = this.attr._navMap;
       var nextShip = this.createStarSystem();
-      navMap.addEdge({name:"somewhere in space",starSystem:"system undefined"},nextShip);
-      this.attr._curNode = navMap.getNode("somewhere in space");
+      navMap.addEdge({name:"Somewhere in Space",starSystem:"system undefined",prefix:""},nextShip);
+      this.attr._curNode = navMap.getNode("Somewhere in Space");
     },
     createStarSystem: function(){
       var navMap = this.attr._navMap;
       var ships = [];
       var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform()*10000);
       for (var i = 0; i < ROT.RNG.getUniform()*2 + 2; i++){
-        var ship = {name: Game.Util.randomShipName(), starSystem: systemName, mapType: 'ship_easy'};
+        var ship = {name: Game.Util.randomShipName(), starSystem: systemName, mapType: 'ship_easy', prefix: 'KEYBOARDGUNK: '};
         ships.push(ship);
       }
       var nextSys = ships;
@@ -276,38 +307,17 @@ Game.UIMode.navigation = {
             return false;
         }
         switch (action.key) {
-            case 'NUM_0':
-                this.attr._tarNodeID = 0;
-                Game.refresh();
-                console.log("Current Node — " + this.attr._curNode.name);
-                break;
-            case 'NUM_1':
-                this.attr._tarNodeID = 1;
-                Game.refresh();
-                console.log("Current Node — " + this.attr._curNode.name);
-                break;
-            case 'NUM_2':
-                this.attr._tarNodeID = 2;
-                Game.refresh();
-                console.log("Current Node — " + this.attr._curNode.name);
-                break;
             case 'MOVE_DOWN':
-                this.attr._tarNodeID++;
-                this.attr._tarNodeID %= this.attr._curNode.edge_list.length;
+                this.attr._curOption++;
+                this.attr._curOption %= this.navOptions.length;
                 break;
             case 'MOVE_UP':
-                this.attr._tarNodeID--;
-                this.attr._tarNodeID = (this.attr._tarNodeID < 0) ? this.attr._curNode.edge_list.length-1 : this.attr._tarNodeID;
-                this.attr._tarNodeID %= this.attr._curNode.edge_list.length;
+                this.attr._curOption--;
+                this.attr._curOption = (this.attr._curOption < 0) ? this.navOptions.length-1 : this.attr._curOption;
+                this.attr._curOption %= this.navOptions.length;
                 break;
-            case 'NAVIGATE_DOCK':
-                Game.switchUIMode(Game.UIMode.heist, this.attr._curNode.mapType);
-                console.log("Current Node — " + this.attr._curNode.name);
-                break;
-            case 'NAVIGATE_TRAVEL':
-                this.attr._curNode = this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._tarNodeID].name); //changes current location to target location
-                this.attr._tarNodeID = 0;
-                console.log("Current Node — " + this.attr._curNode.name);
+            case 'CONFIRM':
+                this.navFunctions[this.navOptions[this.attr._curOption]]();
                 break;
             case 'CANCEL':
                 Game.removeUIMode();
