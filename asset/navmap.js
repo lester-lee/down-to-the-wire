@@ -24,7 +24,18 @@ Node.prototype.addEdge = function(end) {
 
 function Graph(node_list) {
   this.node_list = node_list || [];
+  this.star_systems = [];
 };
+
+Graph.prototype.addStarSystem = function(system_name){
+  this.star_systems.push(system_name);
+}
+
+Graph.prototype.getNextStarSystem = function(system_name){
+  var ind = this.star_systems.indexOf(system_name);
+  var res = this.star_systems[ind+1];
+  return (res)?res:false;
+}
 
 Graph.prototype.addEdge = function(start, end) {
   const first = this.node_list.contains(start.name);
@@ -70,6 +81,10 @@ Graph.prototype.printNodes = function() {
     console.log(this.node_list[i].name +":");
     console.log(this.node_list[i].edge_list);
   }
+};
+
+Graph.prototype.addNode = function(node){
+  this.node_list.push(new Node(node));
 };
 
 Graph.prototype.getNode = function(name) {

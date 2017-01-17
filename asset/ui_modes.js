@@ -235,17 +235,12 @@ Game.UIMode.navigation = {
       }
     },
     enter: function() {
-        for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
-            this.navOptions.push('Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name);
-            this.navFunctions['Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name] = function(){
-                Game.UIMode.navigation.travelToTarget();
-            };
-        }
+      this.setupNavOptions();
     },
     exit: function() {},
     render: function(display) {
         display.drawText(0, 1, "NAVIGATION MODE " + this.attr._curNode.name);
-        display.drawText(0, 3, this.attr._curNode.edge_list.length+" hyperspace KEYBOARDGUNK open");
+        display.drawText(0, 3, (this.attr._curNode.edge_list.length+1)+" hyperspace KEYBOARDGUNK open");
         this.renderNavOptions(display);
     },
     renderNavOptions: function(display){
@@ -264,26 +259,33 @@ Game.UIMode.navigation = {
             Game.switchUIMode(Game.UIMode.heist, Game.UIMode.navigation.attr._curNode.mapType);
         }
       };
+      this.attr._curOption = 0;
     },
-    travelToTarget: function(){
-      this.attr._curNode = this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption-1].name); //changes current location to target location
-      this.resetNavOptions();
+    setupNavOptions: function(){
       for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
           this.navOptions.push('Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name);
           this.navFunctions['Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name] = function(){
               Game.UIMode.navigation.travelToTarget();
           };
       }
+      this.navOptions.push('Warp to another star system');
+      this.navFunctions['Warp to another star system'] = function(){
+          Game.UIMode.navigation.createStarSystem();
+      };
+    },
+    travelToTarget: function(targetNode){
+      this.attr._curNode = targetNode || this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption-1].name); //changes current location to target location
+      this.resetNavOptions();
+      this.setupNavOptions();
     },
     setupNavMap: function(){
       this.attr._navMap = new Graph();
       var navMap = this.attr._navMap;
-      var nextShip = this.createStarSystem();
-      navMap.addEdge({name:"Somewhere in Space",starSystem:"system undefined",prefix:""},nextShip);
+      navMap.addNode({name:"Somewhere in Space",starSystem:"system undefined",prefix:""});
       this.attr._curNode = navMap.getNode("Somewhere in Space");
     },
     createStarSystem: function(){
-      var navMap = this.attr._navMap;
+      var navMap = new Graph();
       var ships = [];
       var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform()*10000);
       for (var i = 0; i < ROT.RNG.getUniform()*2 + 2; i++){
@@ -299,7 +301,9 @@ Game.UIMode.navigation = {
           }
         }
       }
-      return nextSys[Math.floor(ROT.RNG.getUniform()*nextSys.length)];
+      this.attr._navMap = navMap;
+      var nextShip = nextSys[Math.floor(ROT.RNG.getUniform()*nextSys.length)];
+      this.travelToTarget(navMap.getNode(nextShip.name));
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData);
