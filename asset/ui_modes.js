@@ -237,7 +237,7 @@ Game.UIMode.shipScreen = {
     renderShipOptions: function(display) {
         for (var i = 0; i < this.shipOptions.length; i++) {
             var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
-            display.drawText(0, i + 3, '%b{' + bg + '}[' + i + '] ' + this.shipOptions[i]);
+            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.shipOptions[i]);
         }
     },
     toJSON: function() {
