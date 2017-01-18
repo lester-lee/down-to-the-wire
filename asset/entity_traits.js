@@ -1,5 +1,13 @@
 Game.EntityTraits = {};
 
+/*
+Flow of combat:
+(1) Player walks into Target & Raises BumpEntity event
+(2) MeleeAttacker listens for BumpEntity, calculates hit% using MeleeDefender info
+(3) If attack hits, raises Attacked event, if curHP <= 0, raise Kill event
+(4) If attack misses, raises attackMiss event
+*/
+
 Game.EntityTraits.PlayerMessager = {
     META: {
         traitName: 'PlayerMessager',
@@ -9,9 +17,14 @@ Game.EntityTraits.PlayerMessager = {
                 Game.Message.send("it'd be mighty impolite to walk into " + evtData.target.getName());
                 Game.renderMessage();
             },
-            'bumpEntity': function(evtData) {
-                Game.Message.send("it'd be mighty impolite to walk into " + evtData.target.getName());
-                Game.renderMessage();
+            'attackMiss': function(evtData) {
+                Game.Message.send("You miss your attack on " + evtData.target.getName());
+            },
+            'madeKill': function(evtData) {
+                Game.Message.send("You destroy " + evtData.dead.getName());
+            },
+            'dealtDamage': function(evtData) {
+                Game.Message.send("You deal " + evtData.damage + " damage to the " + evtData.attacked.getName());
             }
         }
     }
@@ -88,6 +101,30 @@ Game.EntityTraits.StatHitPoints = {
         init: function(template) {
             this.attr._HP_attr.maxHP = template.maxHP || 1;
             this.attr._HP_attr.curHP = template.curHP || this.attr._HP_attr.maxHP;
+        },
+        listeners: {
+            'attacked': function(evtData) {
+                var defense = this.raiseEntityEvent('getDefense') || 0;
+                var dmg = evtData.attack - defense;
+                this.takeDamage(dmg);
+                evtData.attacker.raiseEntityEvent('dealtDamage', {
+                    attacked: this,
+                    damage: dmg
+                });
+                if (this.getCurHP() <= 0) {
+                    this.raiseEntityEvent('killed', {
+                        entKilled: this,
+                        killedBy: evtData.attacker
+                    });
+                    evtData.attacker.raiseEntityEvent('madeKill', {
+                        dead: this,
+                        killer: evtData.attacker
+                    });
+                }
+            },
+            'killed': function(evtData) {
+                this.destroy();
+            }
         }
     },
     getMaxHP: function() {
@@ -108,4 +145,78 @@ Game.EntityTraits.StatHitPoints = {
     recover: function(amt) {
         this.attr._HP_attr.curHP = Math.min(this.attr._HP_attr.curHP + amt, this.attr._HitPoints_attr.maxHP);
     }
-}
+};
+
+Game.EntityTraits.MeleeAttacker = {
+    META: {
+        traitName: 'MeleeAttacker',
+        traitGroup: 'Attacker',
+        stateNamespace: '_MeleeAttacker_attr',
+        stateModel: {
+            attack: 1,
+            attackAccuracy: .95
+        },
+        init: function(template) {
+            this.attr._MeleeAttacker_attr.attack = template.attack || 1;
+        },
+        listeners: {
+            'bumpEntity': function(evtData) {
+                var hit = this.getAttackAccuracy()
+                var dodge = evtData.target.raiseEntityEvent('getDodge') || 0;
+                if (ROT.RNG.getUniform() <= hit - dodge) {
+                    evtData.target.raiseEntityEvent('attacked', {
+                        attacker: evtData.actor,
+                        attack: this.getAttack()
+                    });
+                } else {
+                    this.raiseEntityEvent('attackMiss', {
+                        attacker: evtData.actor,
+                        target: evtData.target
+                    });
+                }
+            }
+        }
+    },
+    getAttack: function() {
+        return this.attr._MeleeAttacker_attr.attack;
+    },
+    getAttackAccuracy: function() {
+        return this.attr._MeleeAttacker_attr.attackAccuracy;
+    }
+};
+
+Game.EntityTraits.MeleeDefender = {
+    META: {
+        traitName: 'MeleeDefender',
+        traitGroup: 'Defender',
+        stateNamespace: '_MeleeDefender_attr',
+        stateModel: {
+            defense: 1,
+            dodge: .05
+        },
+        init: function(template) {
+            this.attr._MeleeDefender_attr.defense = template.defense || 1;
+            this.attr._MeleeDefender_attr.dodge = template.dodge || .05;
+        },
+        listeners: {
+            'bumpEntity': function(evtData) {
+                evtData.target.raiseEntityEvent('attacked', {
+                    attacker: evtData.actor,
+                    attack: this.getAttack()
+                });
+            },
+            'getDodge': function() {
+                return this.getDodge();
+            },
+            'getDefense': function() {
+                return this.getDefense();
+            }
+        }
+    },
+    getDefense: function() {
+        return this.attr._MeleeDefender_attr.defense;
+    },
+    getDodge: function() {
+        return this.attr._MeleeDefender_attr.dodge;
+    }
+};
