@@ -20,7 +20,7 @@ function Node(attr) {
 };
 
 Node.prototype.addEdge = function(end) {
-  this.edge_list.push(end);
+  this.edge_list.push(end.name);
 };
 
 function Graph(node_list) {
