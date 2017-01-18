@@ -326,7 +326,8 @@ Game.UIMode.navigation = {
         var navMap = new Graph();
         var ships = [];
         var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform() * 10000);
-        for (var i = 0; i < ROT.RNG.getUniform() * 2 + 2; i++) {
+        var numShips = Math.floor(ROT.RNG.getUniform()*3 + 1);
+        for (var i = 0; i < numShips; i++) {
             var ship = {
                 name: Game.Util.randomShipName(),
                 starSystem: systemName,
@@ -335,17 +336,16 @@ Game.UIMode.navigation = {
             };
             ships.push(ship);
         }
-        var nextSys = ships;
-        for (var i = 0; i < ships.length; i++) {
-            var ship = ships.pop();
-            for (var j = 0; j < ships.length; j++) {
-                if (ROT.RNG.getUniform() >= 0.2) {
-                    navMap.addEdge(ship, ships[j]);
-                }
-            }
+        var nextSys = ships.slice(0);
+        console.dir(nextSys);
+        // Add all nodes to navMap
+        for (var i = 0; i < ships.length; i++){
+          navMap.addNode(ships[i]);
         }
+        navMap.randomizeEdges();
+
         this.attr._navMap = navMap;
-        var nextShip = nextSys[Math.floor(ROT.RNG.getUniform() * nextSys.length)];
+        var nextShip = nextSys[0];
         this.travelToTarget(navMap.getNode(nextShip.name));
     },
     handleInput: function(inputType, inputData) {

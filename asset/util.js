@@ -26,7 +26,8 @@ Game.Util = {
     },
 
     randomShipName: function() {
-        return Game.Util.Idioms[Math.floor(ROT.RNG.getUniform() * Game.Util.Idioms.length)];
+        var index = Math.floor(ROT.RNG.getUniform() * Game.Util.Idioms.length);
+        return Game.Util.Idioms.splice(index,1)[0];
     },
 
     randomDroneName: function() {

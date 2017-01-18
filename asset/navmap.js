@@ -37,44 +37,27 @@ Graph.prototype.getNextStarSystem = function(system_name){
   return (res)?res:false;
 }
 
-Graph.prototype.addEdge = function(start, end) {
-  const first = this.node_list.contains(start.name);
-  const second = this.node_list.contains(end.name);
 
-  if(first){
-    //get start node
-    var i = this.node_list.length;
-    while (i--) {
-      if (this.node_list[i].name === start.name) {
-        this.node_list[i].addEdge(end);
-        break;
-      }
-    }
-  }
-  if(second){
-    //get end node
-    i = this.node_list.length;
-    while (i--) {
-      if (this.node_list[i].name === end.name) {
-        this.node_list[i].addEdge(start);
-        break;
-      }
-    }
-  }
+Graph.prototype.addEdge = function(start,end){
+  var first = this.getNode(start.name);
+  var second = this.getNode(end.name);
 
-  if( (!first) || (!second) ){
-    if( !first ){
-      const node = new Node(start);
-      node.addEdge(end);
-      this.node_list.push(node);
-    }
-    if( !second ){
-      const node = new Node(end);
-      node.addEdge(start);
-      this.node_list.push(node);
-    }
-  }
+  start.addEdge(end);
+  end.addEdge(start);
 };
+
+Graph.prototype.randomizeEdges = function(){
+  var numNodes = this.node_list.length;
+  for (var i=0; i < numNodes; i++){
+    var curNode = this.node_list[i];
+    for (var j=i+1; j < numNodes; j++){
+      var nextNode = this.node_list[j];
+      if (ROT.RNG.getUniform() >= 0.2){
+        this.addEdge(curNode,nextNode);
+      }
+    }
+  }
+}
 
 Graph.prototype.printNodes = function() {
   for(var i = 0;i < this.node_list.length;i++){
