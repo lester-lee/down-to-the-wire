@@ -254,12 +254,16 @@ Game.UIMode.navigation = {
       var L = this.attr._L;
       var C = 'center';
       if ( L['41'].localeCompare('*')==0 || L['32'].localeCompare('*')==0 ){ C = '*'; }else{ C = ' ';}
+      var bg1 = (this.attr._curNode.navNum == 1)? '#333':Game.UIMode.DEFAULT_BG;
+      var bg2 = (this.attr._curNode.navNum == 2)? '#333':Game.UIMode.DEFAULT_BG;
+      var bg3 = (this.attr._curNode.navNum == 3)? '#333':Game.UIMode.DEFAULT_BG;
+      var bg4 = (this.attr._curNode.navNum == 4)? '#333':Game.UIMode.DEFAULT_BG;
       display.drawText(0,1, this.attr._curNode.starSystem);
-      display.drawText(0,3,"|"+L['1']+"%c{#999}"+L['21']+L['21']+L['21']+"%c{}"+L['2']);
+      display.drawText(0,3,"|%b{"+bg1+"}"+L['1']+"%b{}%c{#999}"+L['21']+L['21']+L['21']+"%c{}%b{"+bg2+"}"+L['2']+"%b{}");
       display.drawText(0,4,"|"+"%c{#999}"+L['31']+L['41']+" "+L['32']+L['42']+"%c{}");
       display.drawText(0,5,"|"+"%c{#999}"+L['31']+" "+C+" "+L['42']+"%c{}");
       display.drawText(0,6,"|"+"%c{#999}"+L['31']+L['32']+" "+L['41']+L['42']+"%c{}");
-      display.drawText(0,7,"|"+L['3']+"%c{#999}"+L['43']+L['43']+L['43']+"%c{}"+L['4']);
+      display.drawText(0,7,"|%b{"+bg3+"}"+L['3']+"%b{}%c{#999}"+L['43']+L['43']+L['43']+"%c{}%b{"+bg4+"}"+L['4']+"%b{}");
     },
     resetNavOptions: function(){
       this.navOptions = ['Begin docking procedure'];
@@ -305,16 +309,19 @@ Game.UIMode.navigation = {
       this.attr._L = {'1':'1','2':' ','3':' ','4':' ','21':' ','31':' ','32':' ','41':' ','42':' ','43':' '};
       var ships = [];
       var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform()*10000);
-      for (var i = 0; i < ROT.RNG.getUniform()*3+1; i++){
+      var numShips = ROT.RNG.getUniform()*3+1;
+      for (var i = 0; i < numShips; i++){
         var ship = {name: Game.Util.randomShipName(), starSystem: systemName, mapType: 'ship_easy', prefix: 'the SRV ', navNum: ''+(i+1)};
         ships.push(ship);
         this.attr._L[ship.navNum] = ship.navNum;
       }
-      var nextSys = ships;
-      for (var i = 0; i < ships.length; i++){
+      var nextSys = ships.slice(0);
+      for (var i = 0; i < nextSys.length; i++){
         var ship = ships.pop();
+        navMap.addNode(ship);
         for (var j = 0; j < ships.length; j++){
           if (ROT.RNG.getUniform() >= 0.2){
+            console.log(ship.navNum);
             navMap.addEdge(ship,ships[j]);
             this.attr._L[ship.navNum + ships[j].navNum] = '*';
           }
@@ -322,7 +329,7 @@ Game.UIMode.navigation = {
       }
 
       this.attr._navMap = navMap;
-      var nextShip = nextSys[Math.floor(ROT.RNG.getUniform()*nextSys.length)];
+      var nextShip = nextSys[0];
       this.travelToTarget(navMap.getNode(nextShip.name));
     },
     handleInput: function(inputType, inputData) {

@@ -16,7 +16,7 @@ function Node(attr) {
   this.mapType = attr.mapType;
   this.starSystem = attr.starSystem;
   this.prefix = attr.prefix;
-  this.navNum = '0';
+  this.navNum = attr.navNum;
 };
 
 Node.prototype.addEdge = function(end) {
