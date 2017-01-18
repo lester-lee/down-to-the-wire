@@ -255,11 +255,11 @@ Game.UIMode.navigation = {
       var C = 'center';
       if ( L['41'].localeCompare('*')==0 || L['32'].localeCompare('*')==0 ){ C = '*'; }else{ C = ' ';}
       display.drawText(0,1, this.attr._curNode.starSystem);
-      display.drawText(0,3,L['1']+"%c{#999}"+L['21']+L['21']+L['21']+"%c{}"+L['2']);
-      display.drawText(0,4,"%c{#999}"+L['31']+L['41']+" "+L['32']+L['42']+"%c{}");
-      display.drawText(0,5,"%c{#999}"+L['31']+" "+C+" "+L['42']+"%c{}");
-      display.drawText(0,6,"%c{#999}"+L['31']+L['32']+" "+L['41']+L['42']+"%c{}");
-      display.drawText(0,7,L['3']+"%c{#999}"+L['43']+L['43']+L['43']+"%c{}"+L['4']);
+      display.drawText(0,3,"|"+L['1']+"%c{#999}"+L['21']+L['21']+L['21']+"%c{}"+L['2']);
+      display.drawText(0,4,"|"+"%c{#999}"+L['31']+L['41']+" "+L['32']+L['42']+"%c{}");
+      display.drawText(0,5,"|"+"%c{#999}"+L['31']+" "+C+" "+L['42']+"%c{}");
+      display.drawText(0,6,"|"+"%c{#999}"+L['31']+L['32']+" "+L['41']+L['42']+"%c{}");
+      display.drawText(0,7,"|"+L['3']+"%c{#999}"+L['43']+L['43']+L['43']+"%c{}"+L['4']);
     },
     resetNavOptions: function(){
       this.navOptions = ['Begin docking procedure'];
@@ -297,7 +297,7 @@ Game.UIMode.navigation = {
     setupNavMap: function(){
       this.attr._navMap = new Graph();
       var navMap = this.attr._navMap;
-      navMap.addNode({name:"Somewhere in Space",starSystem:"system undefined",prefix:"",mapType:'void'});
+      navMap.addNode({name:"Somewhere in Space",starSystem:"Interstelar Space",prefix:"",mapType:'void', navNum: '1'});
       this.attr._curNode = navMap.getNode("Somewhere in Space");
     },
     createStarSystem: function(){
