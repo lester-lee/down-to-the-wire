@@ -5,7 +5,9 @@ Game.EntityGenerator.learn({
     chr: '@',
     fg: '#f00',
     maxHP: 10,
-    attackPower: 5,
+    attack: 5,
+    defense: 2,
+    dodge: .1,
     traits: [Game.EntityTraits.WalkerCorporeal, Game.EntityTraits.Chronicle, Game.EntityTraits.StatHitPoints, Game.EntityTraits.MeleeAttacker, Game.EntityTraits.PlayerMessager, Game.EntityTraits.MeleeDefender]
 });
 
@@ -14,6 +16,6 @@ Game.EntityGenerator.learn({
     chr: 'm',
     fg: '#0bf',
     maxHP: 2,
-    dodge: .95,
+    dodge: .1,
     traits: [Game.EntityTraits.WalkerCorporeal, Game.EntityTraits.Chronicle, Game.EntityTraits.StatHitPoints, Game.EntityTraits.MeleeDefender]
 });

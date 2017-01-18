@@ -96,10 +96,12 @@ Game.EntityTraits.StatHitPoints = {
         },
         listeners: {
             'attacked': function(evtData) {
-                this.takeDamage(evtData.attack);
+                var defense = this.raiseEntityEvent('getDefense') || 0;
+                var dmg = evtData.attack - defense;
+                this.takeDamage(dmg);
                 evtData.attacker.raiseEntityEvent('dealtDamage', {
                     attacked: this,
-                    damage: evtData.attack
+                    damage: dmg
                 });
                 if (this.getCurHP() <= 0) {
                     this.raiseEntityEvent('killed', {

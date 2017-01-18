@@ -5,15 +5,54 @@ var fg = Game.UIMode.DEFAULT_FG;
 var bg = Game.UIMode.DEFAULT_BG;
 
 Game.UIMode.titleScreen = {
+    attr: {
+        _curOption: 0
+    },
     enter: function() {},
     exit: function() {},
+    titleOptions: ['New', 'Load'],
+    titleFunctions: {
+        'New': function() {
+            Game.Message.clear();
+            Game.UIMode.persistence.newGame();
+        },
+        'Load': function() {
+            if (!Game.UIMode.persistence.loadGame()) {
+                Game.Message.clear();
+                Game.Message.send("ERROR: you do not have data to load.");
+            }
+        }
+    },
     render: function(display) {
         display.drawText(1, 4, "this is a title screen");
-        display.drawText(1, 5, "Press any key to continue.");
+        this.renderTitleOptions(display);
+    },
+    renderTitleOptions: function(display) {
+        for (var i = 0; i < this.titleOptions.length; i++) {
+            var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 15, '%b{' + bg + '}[' + i + '] ' + this.titleOptions[i]);
+        }
     },
     handleInput: function(inputType, inputData) {
-        if (inputData.charCode !== 0) {
-            Game.switchUIMode(Game.UIMode.persistence);
+        var action = Game.KeyBinding.getInput(inputType, inputData);
+        if (!action) {
+            return false;
+        }
+        switch (action.key) {
+            case 'MOVE_DOWN':
+                this.attr._curOption++;
+                this.attr._curOption %= this.titleOptions.length;
+                break;
+            case 'MOVE_UP':
+                this.attr._curOption--;
+                this.attr._curOption = (this.attr._curOption < 0) ? this.titleOptions.length - 1 : this.attr._curOption;
+                this.attr._curOption %= this.titleOptions.length;
+                break;
+            case 'CONFIRM':
+                this.titleFunctions[this.titleOptions[this.attr._curOption]]();
+                break;
+            default:
+                break;
         }
     }
 };
@@ -68,6 +107,9 @@ Game.UIMode.persistence = {
     },
     loadGame: function() {
         var json_state_data = window.localStorage.getItem(Game.PERSISTENCE_NAMESPACE);
+        if (!json_state_data) {
+            return false;
+        }
         var state_data = JSON.parse(json_state_data);
 
         Game.setRandomSeed(state_data[this.RANDOM_SEED_KEY]);
@@ -164,12 +206,12 @@ Game.UIMode.shipScreen = {
     },
     shipOptions: ["navigate", "outfit drones", "outfit ship", "heist"],
     shipFunctions: {
-      navigate: function(){
-          Game.addUIMode(Game.UIMode.navigation);
+        navigate: function() {
+            Game.addUIMode(Game.UIMode.navigation);
         },
-      heist: function(){
-          Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
-      }
+        heist: function() {
+            Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
+        }
     },
     enter: function() {},
     exit: function() {},
@@ -195,7 +237,7 @@ Game.UIMode.shipScreen = {
                 break;
             case 'MOVE_UP':
                 this.attr._curOption--;
-                this.attr._curOption = (this.attr._curOption < 0) ? this.shipOptions.length-1 : this.attr._curOption;
+                this.attr._curOption = (this.attr._curOption < 0) ? this.shipOptions.length - 1 : this.attr._curOption;
                 this.attr._curOption %= this.shipOptions.length;
                 break;
             case 'CONFIRM':
@@ -210,8 +252,8 @@ Game.UIMode.shipScreen = {
     },
     renderShipOptions: function(display) {
         for (var i = 0; i < this.shipOptions.length; i++) {
-            var bg = (this.attr._curOption == i)? '#333':Game.UIMode.DEFAULT_BG;
-            display.drawText(0, i + 3, '%b{'+bg+'}[' + i + '] ' + this.shipOptions[i]);
+            var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 3, '%b{' + bg + '}[' + i + '] ' + this.shipOptions[i]);
         }
     },
     toJSON: function() {
@@ -230,87 +272,97 @@ Game.UIMode.navigation = {
     },
     navOptions: ['Begin docking procedure'],
     navFunctions: {
-      'Begin docking procedure': function(){
-          Game.UIMode.navigation.dock();
-      }
+        'Begin docking procedure': function() {
+            Game.UIMode.navigation.dock();
+        }
     },
     enter: function() {
-      this.setupNavOptions();
+        this.setupNavOptions();
     },
     exit: function() {},
     render: function(display) {
         display.drawText(0, 1, "NAVIGATION MODE " + this.attr._curNode.name);
-        display.drawText(0, 3, (this.attr._curNode.edge_list.length+1)+" hyperspace KEYBOARDGUNK open");
+        display.drawText(0, 3, (this.attr._curNode.edge_list.length + 1) + " hyperspace KEYBOARDGUNK open");
         this.renderNavOptions(display);
     },
-    renderNavOptions: function(display){
-      for (var i = 0; i < this.navOptions.length; i++){
-        var bg = (this.attr._curOption == i)? '#333':Game.UIMode.DEFAULT_BG;
-        display.drawText(0, i+5, '%b{'+bg+'}['+i+'] ' + this.navOptions[i]);
-      }
-    },
-    renderAvatarInfo: function(display){
-      display.drawText(0,1, this.attr._curNode.starSystem);
-    },
-    resetNavOptions: function(){
-      this.navOptions = ['Begin docking procedure'];
-      this.navFunctions = {
-        'Begin docking procedure': function(){
-            Game.UIMode.navigation.dock();
+    renderNavOptions: function(display) {
+        for (var i = 0; i < this.navOptions.length; i++) {
+            var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 5, '%b{' + bg + '}[' + i + '] ' + this.navOptions[i]);
         }
-      };
-      this.attr._curOption = 0;
     },
-    dock: function(){
-      if (Game.UIMode.navigation.attr._curNode.mapType.localeCompare('void') != 0){
-        Game.switchUIMode(Game.UIMode.heist, Game.UIMode.navigation.attr._curNode.mapType);
-      }else{
-        Game.Message.send('There is nothing to dock with here.');
-      }
+    renderAvatarInfo: function(display) {
+        display.drawText(0, 1, this.attr._curNode.starSystem);
     },
-    setupNavOptions: function(){
-      this.resetNavOptions();
-      for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
-          this.navOptions.push('Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name);
-          this.navFunctions['Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name] = function(){
-              Game.UIMode.navigation.travelToTarget();
-          };
-      }
-      this.navOptions.push('One-way warp to another star system');
-      this.navFunctions['One-way warp to another star system'] = function(){
-          Game.UIMode.navigation.createStarSystem();
-      };
+    resetNavOptions: function() {
+        this.navOptions = ['Begin docking procedure'];
+        this.navFunctions = {
+            'Begin docking procedure': function() {
+                Game.UIMode.navigation.dock();
+            }
+        };
+        this.attr._curOption = 0;
     },
-    travelToTarget: function(targetNode){
-      this.attr._curNode = targetNode || this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption-1].name); //changes current location to target location
-      this.setupNavOptions();
-    },
-    setupNavMap: function(){
-      this.attr._navMap = new Graph();
-      var navMap = this.attr._navMap;
-      navMap.addNode({name:"Somewhere in Space",starSystem:"system undefined",prefix:"",mapType:'void'});
-      this.attr._curNode = navMap.getNode("Somewhere in Space");
-    },
-    createStarSystem: function(){
-      var navMap = new Graph();
-      var ships = [];
-      var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform()*10000);
-      for (var i = 0; i < ROT.RNG.getUniform()*2 + 2; i++){
-        var ship = {name: Game.Util.randomShipName(), starSystem: systemName, mapType: 'ship_easy', prefix: 'KEYBOARDGUNK: '};
-        ships.push(ship);
-      }
-      var nextSys = ships;
-      for (var i = 0; i < ships.length; i++){
-        var ship = ships.pop();
-        for (var j = 0; j < ships.length; j++){
-          if (ROT.RNG.getUniform() >= 0.2){
-            navMap.addEdge(ship,ships[j]);
-          }
+    dock: function() {
+        if (Game.UIMode.navigation.attr._curNode.mapType.localeCompare('void') != 0) {
+            Game.switchUIMode(Game.UIMode.heist, Game.UIMode.navigation.attr._curNode.mapType);
+        } else {
+            Game.Message.send('There is nothing to dock with here.');
         }
-      }
-      this.attr._navMap = navMap;
-      var nextShip = nextSys[Math.floor(ROT.RNG.getUniform()*nextSys.length)];
-      this.travelToTarget(navMap.getNode(nextShip.name));
+    },
+    setupNavOptions: function() {
+        this.resetNavOptions();
+        for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
+            this.navOptions.push('Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name);
+            this.navFunctions['Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name] = function() {
+                Game.UIMode.navigation.travelToTarget();
+            };
+        }
+        this.navOptions.push('One-way warp to another star system');
+        this.navFunctions['One-way warp to another star system'] = function() {
+            Game.UIMode.navigation.createStarSystem();
+        };
+    },
+    travelToTarget: function(targetNode) {
+        this.attr._curNode = targetNode || this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption - 1].name); //changes current location to target location
+        this.setupNavOptions();
+    },
+    setupNavMap: function() {
+        this.attr._navMap = new Graph();
+        var navMap = this.attr._navMap;
+        navMap.addNode({
+            name: "Somewhere in Space",
+            starSystem: "system undefined",
+            prefix: "",
+            mapType: 'void'
+        });
+        this.attr._curNode = navMap.getNode("Somewhere in Space");
+    },
+    createStarSystem: function() {
+        var navMap = new Graph();
+        var ships = [];
+        var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform() * 10000);
+        for (var i = 0; i < ROT.RNG.getUniform() * 2 + 2; i++) {
+            var ship = {
+                name: Game.Util.randomShipName(),
+                starSystem: systemName,
+                mapType: 'ship_easy',
+                prefix: 'KEYBOARDGUNK: '
+            };
+            ships.push(ship);
+        }
+        var nextSys = ships;
+        for (var i = 0; i < ships.length; i++) {
+            var ship = ships.pop();
+            for (var j = 0; j < ships.length; j++) {
+                if (ROT.RNG.getUniform() >= 0.2) {
+                    navMap.addEdge(ship, ships[j]);
+                }
+            }
+        }
+        this.attr._navMap = navMap;
+        var nextShip = nextSys[Math.floor(ROT.RNG.getUniform() * nextSys.length)];
+        this.travelToTarget(navMap.getNode(nextShip.name));
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData);
@@ -324,7 +376,7 @@ Game.UIMode.navigation = {
                 break;
             case 'MOVE_UP':
                 this.attr._curOption--;
-                this.attr._curOption = (this.attr._curOption < 0) ? this.navOptions.length-1 : this.attr._curOption;
+                this.attr._curOption = (this.attr._curOption < 0) ? this.navOptions.length - 1 : this.attr._curOption;
                 this.attr._curOption %= this.navOptions.length;
                 break;
             case 'CONFIRM':
