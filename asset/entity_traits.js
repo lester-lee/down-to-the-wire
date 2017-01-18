@@ -220,3 +220,34 @@ Game.EntityTraits.MeleeDefender = {
         return this.attr._MeleeDefender_attr.dodge;
     }
 };
+
+Game.EntityTraits.Sight = {
+  META: {
+    traitName: 'Sight',
+    traitGroup: 'Sense',
+    stateNamespace: '_Sight_attr',
+    stateModel: {
+      sightRadius: 3
+    },
+    init: function(template){
+      this.attr._Sight_attr.sightRadius = template.sightRadius || 3;
+    }
+  },
+  getSightRadius: function(){
+    return this.attr._Sight_attr.sightRadius;
+  },
+  setSightRadius: function(n){
+    this.attr._Sight_attr.sightRadius = n;
+  },
+
+  canSeeEntity: function(ent){
+    if (!ent || this.getMap().getID() !== ent.getMap().getID()){
+      return false;
+    }
+    return this.canSeeCoord(ent.getPos());
+  },
+
+  canSeeCoord: function(pos){
+    
+  }
+};

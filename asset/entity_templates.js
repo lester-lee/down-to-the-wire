@@ -8,7 +8,7 @@ Game.EntityGenerator.learn({
     attack: 5,
     defense: 2,
     dodge: .1,
-    traits: ["WalkerCorporeal", "Chronicle", "StatHitPoints", "MeleeAttacker", "PlayerMessager", "MeleeDefender"]
+    traits: ["Sight","WalkerCorporeal", "Chronicle", "StatHitPoints", "MeleeAttacker", "PlayerMessager", "MeleeDefender"]
 });
 
 Game.EntityGenerator.learn({
