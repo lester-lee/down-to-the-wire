@@ -17,7 +17,7 @@ Game.UIMode.titleScreen = {
             Game.UIMode.persistence.newGame();
         },
         'Load': function() {
-            if (!Game.UIMode.persistence.loadGame()) {
+            if (Game.UIMode.persistence.loadGame() == false) {
                 Game.Message.clear();
                 Game.Message.send("ERROR: you do not have data to load.");
             }
@@ -88,9 +88,7 @@ Game.UIMode.persistence = {
     newGame: function() {
         Game.clearDatastore();
         Game.setRandomSeed(5 + Math.floor(ROT.RNG.getUniform() * 100000));
-        // Game.switchUIMode(Game.UIMode.gameIntro);
         Game.UIMode.navigation.setupNavMap();
-        Game.UIMode.shipScreen.attr.playerName = Game.Util.randomShipName();
         Game.switchUIMode(Game.UIMode.gameIntro);
     },
     saveGame: function() {
@@ -114,25 +112,6 @@ Game.UIMode.persistence = {
 
         Game.setRandomSeed(state_data[this.RANDOM_SEED_KEY]);
 
-        /*
-              // load maps
-              for (var mapID in state_data.MAP) {
-                  if (state_data.MAP.hasOwnProperty(mapID)) {
-                      var mapAttr = JSON.parse(state_data.MAP[mapID]);
-                      Game.DATASTORE.MAP[mapID] = new Game.Map(mapAttr._mapKey);
-                      Game.DATASTORE.MAP[mapID].fromJSON(state_data.MAP[mapID]);
-                  }
-              }
-
-              // load entities
-              for (var entID in state_data.ENTITY) {
-                  if (state_data.ENTITY.hasOwnProperty(entID)) {
-                      var entAttr = JSON.parse(state_data.ENTITY[entID]);
-                      Game.DATASTORE.ENTITY[entID] = Game.EntityGenerator.create(entAttr._generator_key);
-                      Game.DATASTORE.ENTITY[entID].fromJSON(state_data.ENTITY[entID]);
-                  }
-              }
-        */
         // load gamePlay
         Game.UIMode.shipScreen.attr = state_data.SHIP_SCREEN;
         Game.Message.attr = state_data.MESSAGES;
@@ -173,14 +152,16 @@ Game.UIMode.persistence = {
 
 Game.UIMode.gameIntro = {
     enter: function() {
-        // var inputDisplay = document.getElementById('user-input');
-        // inputDisplay.parentElement.style.display = "block";
-        // setTimeout(function(){inputDisplay.focus()},100);
+        var inputDisplay = document.getElementById('user-input');
+        inputDisplay.parentElement.style.display = "block";
+        setTimeout(function() {
+            inputDisplay.focus()
+        }, 100);
     },
     exit: function() {},
     render: function(display) {
         display.drawText(1, 4, "here is some story introduction");
-        display.drawText(1, 5, "press [enter] to continue");
+        display.drawText(1, 5, "what will you call yourself?");
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData);
@@ -189,8 +170,11 @@ Game.UIMode.gameIntro = {
         }
         switch (action.key) {
             case 'CONFIRM':
-                // var inputText = document.getElementById('user-input').value;
-                // console.log(inputText);
+                var inputHTML = document.getElementById('user-input');
+                var inputText = inputHTML.value;
+                inputHTML.value = "";
+                inputHTML.parentElement.style.display = "none";
+                Game.UIMode.shipScreen.attr.playerName = inputText;
                 Game.switchUIMode(Game.UIMode.shipScreen);
                 break;
             default:
@@ -318,8 +302,8 @@ Game.UIMode.navigation = {
                 Game.UIMode.navigation.travelToTarget();
             };
         }
-        this.navOptions.push('One-way warp to another star system');
-        this.navFunctions['One-way warp to another star system'] = function() {
+        this.navOptions.push('Warp to another star system');
+        this.navFunctions['Warp to another star system'] = function() {
             Game.UIMode.navigation.createStarSystem();
         };
     },

@@ -1,5 +1,13 @@
 Game.EntityTraits = {};
 
+/*
+Flow of combat:
+(1) Player walks into Target & Raises BumpEntity event
+(2) MeleeAttacker listens for BumpEntity, calculates hit% using MeleeDefender info
+(3) If attack hits, raises Attacked event, if curHP <= 0, raise Kill event
+(4) If attack misses, raises attackMiss event
+*/
+
 Game.EntityTraits.PlayerMessager = {
     META: {
         traitName: 'PlayerMessager',
