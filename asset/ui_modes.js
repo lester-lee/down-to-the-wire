@@ -8,13 +8,8 @@ Game.UIMode.titleScreen = {
     enter: function() {},
     exit: function() {},
     render: function(display) {
-        // display.drawText(1, 4, "this is a title screen");
-        // display.drawText(1, 5, "Press any key to continue.");
-        display.drawText(0,0,"1%c{#999}***%c{}2");
-        display.drawText(0,1,"%c{#999}** **%c{}");
-        display.drawText(0,2,"%c{#999}* * *%c{}");
-        display.drawText(0,3,"%c{#999}** **%c{}");
-        display.drawText(0,4,"3%c{#999}***%c{}4");
+        display.drawText(1, 4, "this is a title screen");
+        display.drawText(1, 5, "Press any key to continue.");
     },
     handleInput: function(inputType, inputData) {
         if (inputData.charCode !== 0) {
@@ -231,7 +226,8 @@ Game.UIMode.navigation = {
     attr: {
         _navMap: null,
         _curNode: null,
-        _curOption: 0
+        _curOption: 0,
+        _L: {'1':'1','2':' ','3':' ','4':' ','21':' ','31':' ','32':' ','41':' ','42':' ','43':' '},
     },
     navOptions: ['Begin docking procedure'],
     navFunctions: {
@@ -255,7 +251,15 @@ Game.UIMode.navigation = {
       }
     },
     renderAvatarInfo: function(display){
+      var L = this.attr._L;
+      var C = 'center';
+      if ( L['41'].localeCompare('*')==0 || L['32'].localeCompare('*')==0 ){ C = '*'; }else{ C = ' ';}
       display.drawText(0,1, this.attr._curNode.starSystem);
+      display.drawText(0,3,L['1']+"%c{#999}"+L['21']+L['21']+L['21']+"%c{}"+L['2']);
+      display.drawText(0,4,"%c{#999}"+L['31']+L['41']+" "+L['32']+L['42']+"%c{}");
+      display.drawText(0,5,"%c{#999}"+L['31']+" "+C+" "+L['42']+"%c{}");
+      display.drawText(0,6,"%c{#999}"+L['31']+L['32']+" "+L['41']+L['42']+"%c{}");
+      display.drawText(0,7,L['3']+"%c{#999}"+L['43']+L['43']+L['43']+"%c{}"+L['4']);
     },
     resetNavOptions: function(){
       this.navOptions = ['Begin docking procedure'];
@@ -298,11 +302,13 @@ Game.UIMode.navigation = {
     },
     createStarSystem: function(){
       var navMap = new Graph();
+      this.attr._L = {'1':'1','2':' ','3':' ','4':' ','21':' ','31':' ','32':' ','41':' ','42':' ','43':' '};
       var ships = [];
       var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform()*10000);
-      for (var i = 0; i < ROT.RNG.getUniform()*2 + 2; i++){
-        var ship = {name: Game.Util.randomShipName(), starSystem: systemName, mapType: 'ship_easy', prefix: 'KEYBOARDGUNK: '};
+      for (var i = 0; i < ROT.RNG.getUniform()*3+1; i++){
+        var ship = {name: Game.Util.randomShipName(), starSystem: systemName, mapType: 'ship_easy', prefix: 'the SRV ', navNum: ''+(i+1)};
         ships.push(ship);
+        this.attr._L[ship.navNum] = ship.navNum;
       }
       var nextSys = ships;
       for (var i = 0; i < ships.length; i++){
@@ -310,9 +316,11 @@ Game.UIMode.navigation = {
         for (var j = 0; j < ships.length; j++){
           if (ROT.RNG.getUniform() >= 0.2){
             navMap.addEdge(ship,ships[j]);
+            this.attr._L[ship.navNum + ships[j].navNum] = '*';
           }
         }
       }
+
       this.attr._navMap = navMap;
       var nextShip = nextSys[Math.floor(ROT.RNG.getUniform()*nextSys.length)];
       this.travelToTarget(navMap.getNode(nextShip.name));
