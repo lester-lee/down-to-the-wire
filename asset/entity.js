@@ -16,7 +16,11 @@ Game.Entity = function(template) {
     Game.DATASTORE.ENTITY[this.attr._ID] = this;
 
     // mixins/traits
-    this._traits = template.traits || {};
+    this._traitNames = template.traits || {};
+    this._traits = [];
+    for (var i = 0; i < this._traitNames.length; i++) {
+      this._traits.push(Game.EntityTraits[this._traitNames[i]]);
+    }
     this._traitTracker = {};
     for (var i = 0; i < this._traits.length; i++) {
         var trait = this._traits[i];

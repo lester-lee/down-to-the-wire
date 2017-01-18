@@ -2,13 +2,13 @@ Game.EntityGenerator = new Game.Generator('entities', Game.Entity);
 
 Game.EntityGenerator.learn({
     name: 'avatar',
-    chr: '@',
-    fg: '#f00',
+    chr: 'D',
+    fg: '#8E7242',
     maxHP: 10,
     attack: 5,
     defense: 2,
     dodge: .1,
-    traits: [Game.EntityTraits.WalkerCorporeal, Game.EntityTraits.Chronicle, Game.EntityTraits.StatHitPoints, Game.EntityTraits.MeleeAttacker, Game.EntityTraits.PlayerMessager, Game.EntityTraits.MeleeDefender]
+    traits: ["WalkerCorporeal", "Chronicle", "StatHitPoints", "MeleeAttacker", "PlayerMessager", "MeleeDefender"]
 });
 
 Game.EntityGenerator.learn({
@@ -17,5 +17,5 @@ Game.EntityGenerator.learn({
     fg: '#0bf',
     maxHP: 2,
     dodge: .1,
-    traits: [Game.EntityTraits.WalkerCorporeal, Game.EntityTraits.Chronicle, Game.EntityTraits.StatHitPoints, Game.EntityTraits.MeleeDefender]
+    traits: ["WalkerCorporeal", "Chronicle", "StatHitPoints", "MeleeDefender"]
 });

@@ -50,7 +50,7 @@ Game.UIMode.heist = {
         // this.setCameraToAvatar();
 
         // camera scrolls when player reaches threshold
-        this.setWindowCamera(.35, .65);
+        this.setWindowCamera(.30, .70);
     },
     moveCamera: function(dx, dy) {
         this.setCamera(this.attr._cameraX + dx, this.attr._cameraY + dy)
@@ -58,7 +58,7 @@ Game.UIMode.heist = {
     setCamera: function(sx, sy) {
         var display = Game.getDisplay('main');
         var dispW2 = Math.round(display._options.width / 2);
-        var dispH2 = Math.round(display._options.height / 2);
+        var dispH2 = Math.round(display._options.height / 2)-1;
         this.attr._cameraX = Math.min(Math.max(dispW2, sx), this.getMap().getWidth() - dispW2);
         this.attr._cameraY = Math.min(Math.max(dispH2, sy), this.getMap().getHeight() - dispH2);
     },
