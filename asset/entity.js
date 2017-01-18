@@ -59,7 +59,7 @@ Game.Entity.prototype.raiseEntityEvent = function(evtLabel, evtData) {
     for (var i = 0; i < this._traits.length; i++) {
         var trait = this._traits[i];
         if (trait.META.listeners && trait.META.listeners[evtLabel]) {
-            trait.META.listeners[evtLabel].call(this, evtData);
+            return trait.META.listeners[evtLabel].call(this, evtData);
         }
     }
 };
