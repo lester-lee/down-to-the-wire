@@ -252,7 +252,8 @@ Game.UIMode.navigation = {
     attr: {
         _navMap: null,
         _curNode: null,
-        _curOption: 0
+        _curOption: 0,
+        _L: {'1':'1','2':' ','3':' ','4':' ','21':' ','31':' ','32':' ','41':' ','42':' ','43':' '},
     },
     navOptions: ['Begin docking procedure'],
     navFunctions: {
@@ -272,11 +273,24 @@ Game.UIMode.navigation = {
     renderNavOptions: function(display) {
         for (var i = 0; i < this.navOptions.length; i++) {
             var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
-            display.drawText(0, i + 5, '%b{' + bg + '}[' + i + '] ' + this.navOptions[i]);
+            display.drawText(0, i + 5, '%b{' + bg + '}> ' + this.navOptions[i]);
         }
     },
-    renderAvatarInfo: function(display) {
-        display.drawText(0, 1, this.attr._curNode.starSystem);
+    renderAvatarInfo: function(display){
+      var L = this.attr._L;
+      var C = 'center';
+      if ( L['41'].localeCompare('*')==0 || L['32'].localeCompare('*')==0 ){ C = '*'; }else{ C = ' ';}
+      var bg1 = (this.attr._curNode.navNum == 1)? '#333':Game.UIMode.DEFAULT_BG;
+      var bg2 = (this.attr._curNode.navNum == 2)? '#333':Game.UIMode.DEFAULT_BG;
+      var bg3 = (this.attr._curNode.navNum == 3)? '#333':Game.UIMode.DEFAULT_BG;
+      var bg4 = (this.attr._curNode.navNum == 4)? '#333':Game.UIMode.DEFAULT_BG;
+      display.drawText(0,1, this.attr._curNode.starSystem);
+      display.drawText(0,3,"|%b{"+bg1+"}"+L['1']+"%b{}%c{#999}"+L['21']+L['21']+L['21']+"%c{}%b{"+bg2+"}"+L['2']+"%b{}");
+      display.drawText(0,4,"|"+"%c{#999}"+L['31']+L['41']+" "+L['32']+L['42']+"%c{}");
+      display.drawText(0,5,"|"+"%c{#999}"+L['31']+" "+C+" "+L['42']+"%c{}");
+      display.drawText(0,6,"|"+"%c{#999}"+L['31']+L['32']+" "+L['41']+L['42']+"%c{}");
+      display.drawText(0,7,"|%b{"+bg3+"}"+L['3']+"%b{}%c{#999}"+L['43']+L['43']+L['43']+"%c{}%b{"+bg4+"}"+L['4']+"%b{}");
+
     },
     resetNavOptions: function() {
         this.navOptions = ['Begin docking procedure'];
@@ -297,8 +311,8 @@ Game.UIMode.navigation = {
     setupNavOptions: function() {
         this.resetNavOptions();
         for (var i = 0; i < this.attr._curNode.edge_list.length; i++) {
-            this.navOptions.push('Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name);
-            this.navFunctions['Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name] = function() {
+            this.navOptions.push('Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name + "("+this.attr._curNode.edge_list[i].navNum+")");
+            this.navFunctions['Travel to ' + this.attr._curNode.edge_list[i].prefix + this.attr._curNode.edge_list[i].name + "("+this.attr._curNode.edge_list[i].navNum+")"] = function() {
                 Game.UIMode.navigation.travelToTarget();
             };
         }
@@ -323,30 +337,25 @@ Game.UIMode.navigation = {
         this.attr._curNode = navMap.getNode("Somewhere in Space");
     },
     createStarSystem: function() {
-        var navMap = new Graph();
-        var ships = [];
-        var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform() * 10000);
-        var numShips = Math.floor(ROT.RNG.getUniform()*3 + 1);
-        for (var i = 0; i < numShips; i++) {
-            var ship = {
-                name: Game.Util.randomShipName(),
-                starSystem: systemName,
-                mapType: 'ship_easy',
-                prefix: 'KEYBOARDGUNK: '
-            };
-            ships.push(ship);
-        }
-        var nextSys = ships.slice(0);
-        console.dir(nextSys);
-        // Add all nodes to navMap
-        for (var i = 0; i < ships.length; i++){
-          navMap.addNode(ships[i]);
-        }
-        navMap.randomizeEdges();
+      var navMap = new Graph();
+      this.attr._L = {'1':'1','2':' ','3':' ','4':' ','21':' ','31':' ','32':' ','41':' ','42':' ','43':' '};
+      var ships = [];
+      var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform()*10000);
+      var numShips = ROT.RNG.getUniform()*2+2;
+      for (var i = 0; i < numShips; i++){
+        var ship = {name: Game.Util.randomShipName(), starSystem: systemName, mapType: 'ship_easy', prefix: 'the SRV ', navNum: ''+(i+1)};
+        ships.push(ship);
+        this.attr._L[ship.navNum] = ship.navNum;
+      }
+      var nextSys = ships.slice(0);
 
-        this.attr._navMap = navMap;
-        var nextShip = nextSys[0];
-        this.travelToTarget(navMap.getNode(nextShip.name));
+      for (var i = 0; i < ships.length; i++){
+        navMap.addNode(ships[i]);
+      }
+      navMap.randomizeEdges();
+      this.attr._navMap = navMap;
+      var nextShip = nextSys[0];
+      this.travelToTarget(navMap.getNode(nextShip.name));
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData);

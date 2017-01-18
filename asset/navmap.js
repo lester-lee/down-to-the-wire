@@ -16,6 +16,7 @@ function Node(attr) {
   this.mapType = attr.mapType;
   this.starSystem = attr.starSystem;
   this.prefix = attr.prefix;
+  this.navNum = attr.navNum;
 };
 
 Node.prototype.addEdge = function(end) {
@@ -52,8 +53,9 @@ Graph.prototype.randomizeEdges = function(){
     var curNode = this.node_list[i];
     for (var j=i+1; j < numNodes; j++){
       var nextNode = this.node_list[j];
-      if (ROT.RNG.getUniform() >= 0.2){
+      if (ROT.RNG.getUniform() >= 0.5){
         this.addEdge(curNode,nextNode);
+        Game.UIMode.navigation.attr._L[nextNode.navNum + curNode.navNum] = '*';
       }
     }
   }
