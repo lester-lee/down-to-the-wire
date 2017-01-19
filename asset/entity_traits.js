@@ -113,7 +113,9 @@ Game.EntityTraits.WalkerCorporeal = {
             map.updateEntityLocation(this);
             this.raiseSymbolActiveEvent('actionDone');
             return true;
-        } else {
+        } else if(nextTile.getName() === 'doorClosed'){
+          this.raiseSymbolActiveEvent('doorOpenAttempt',{targetPos: newPos});
+        }else{
             this.raiseSymbolActiveEvent('walkForbidden', {
                 target: nextTile
             });
@@ -398,6 +400,25 @@ Game.EntityTraits.MapMemory = {
         var mapKey = mapID || this.getMap().getID();
         return this.attr._MapMemory_attr.mapsHash[mapKey] || {};
     }
+};
+
+
+Game.EntityTraits.DoorOpener = {
+META: {
+    traitName: 'DoorOpener',
+    traitGroup: 'DoorOpener',
+    stateNamespace: '_DoorOpener_attr',
+    listeners: {
+        'doorOpenAttempt': function(evtData) {
+            this.openDoor(this.getMap(),evtData.targetPos);
+        }
+    },
+
+},
+openDoor: function(map, pos){
+    map.setTile(pos, Game.Tile.doorOpenTile);
+    Game.refresh();
+}
 };
 
 /* ====================== Enemy AI ======================= */

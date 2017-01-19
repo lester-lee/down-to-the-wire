@@ -28,6 +28,7 @@ Game.Tile.prototype.isTransparent = function() {
     return this.attr._transparent;
 };
 
+
 /*
  * Game Tiles
  */
@@ -44,7 +45,20 @@ Game.Tile.floorTile = new Game.Tile({
 });
 Game.Tile.wallTile = new Game.Tile({
     name: 'wall',
-    chr: '░',
+    chr: '█',
     fg: '#bbb',
     opaque: true
+});
+Game.Tile.doorClosedTile = new Game.Tile({
+    name: 'doorClosed',
+    chr: '▣',
+    fg: '#bbb',
+    opaque: true,
+});
+Game.Tile.doorOpenTile = new Game.Tile({
+    name: 'doorOpen',
+    chr: '⬚',
+    fg: '#bbb',
+    opaque: false,
+    walkable: true,
 });
