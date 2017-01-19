@@ -10,7 +10,7 @@ Game.Map = function(mapKey) {
         _entitiesByLocation: {},
         _locationsByEntity: {},
         _prevMapID: '',
-        _nextMapID: ''
+        _nextMapID: '',
     };
 
     this._fov = null;
@@ -55,6 +55,12 @@ Game.Map.prototype.getTile = function(pos) {
         return Game.Tile.nullTile;
     }
     return this._tiles[x][y] || Game.Tile.nullTile;
+};
+
+Game.Map.prototype.setTile = function(pos, newTile) {
+    x = pos.x;
+    y = pos.y;
+    this._tiles[x][y] = newTile;
 };
 
 Game.Map.prototype.addEntity = function(ent, pos) {
@@ -138,6 +144,7 @@ Game.Map.prototype.rememberCoords = function(toRemember) {
         }
     }
 };
+
 
 Game.Map.prototype.renderOn = function(display, camX, camY, renderOptions) {
     //visibleCells, showEntities, showTiles, maskRendered, memoryOnly

@@ -13,12 +13,20 @@ Game.HeistPresets = {
               }
           });
 
+          var rooms = generator.getRooms();
+          for (var i=0; i<rooms.length; i++) {
+              var room = rooms[i];
+              room.getDoors(function(mapX,mapY) {
+                mapTiles[mapX][mapY] = Game.Tile.doorClosedTile;
+              });
+          }
+
           return mapTiles;
       },
       addMobs: function(map){
         for (var ecount = 0; ecount < 8; ecount++) {
             map.addEntity(Game.EntityGenerator.create('manta ray'), map.getRandomTileWalkable());
         }
-      }
+      },
     }
 };

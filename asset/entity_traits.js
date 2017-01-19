@@ -63,7 +63,9 @@ Game.EntityTraits.WalkerCorporeal = {
             map.updateEntityLocation(this);
             this.raiseEntityEvent('tookTurn');
             return true;
-        } else {
+        } else if(nextTile.getName() === 'doorClosed'){
+          this.raiseEntityEvent('doorOpenAttempt',{targetPos: newPos});
+        }else{
             this.raiseEntityEvent('walkForbidden', {
                 target: nextTile
             });
@@ -348,4 +350,23 @@ Game.EntityTraits.MapMemory = {
         var mapKey = mapID || this.getMap().getID();
         return this.attr._MapMemory_attr.mapsHash[mapKey] || {};
     }
+};
+
+Game.EntityTraits.DoorOpener = {
+    META: {
+        traitName: 'DoorOpener',
+        traitGroup: 'DoorOpener',
+        stateNamespace: '_DoorOpener_attr',
+        listeners: {
+            'doorOpenAttempt': function(evtData) {
+                this.openDoor(this.getMap(),evtData.targetPos);
+            }
+        },
+
+    },
+    openDoor: function(map, pos){
+        map.setTile(pos, Game.Tile.doorOpenTile);
+        Game.refresh();
+    }
+
 };

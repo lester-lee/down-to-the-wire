@@ -305,16 +305,17 @@ Game.UIMode.navigation = {
         } else {
             C = ' ';
         }
-        var bg1 = (this.attr._curNode.navNum == 1) ? '#333' : Game.UIMode.DEFAULT_BG;
-        var bg2 = (this.attr._curNode.navNum == 2) ? '#333' : Game.UIMode.DEFAULT_BG;
-        var bg3 = (this.attr._curNode.navNum == 3) ? '#333' : Game.UIMode.DEFAULT_BG;
-        var bg4 = (this.attr._curNode.navNum == 4) ? '#333' : Game.UIMode.DEFAULT_BG;
+        var dbg = Game.UIMode.DEFAULT_BG;
+        var bg1 = (this.attr._curNode.navNum == 1) ? '#333' : dbg;
+        var bg2 = (this.attr._curNode.navNum == 2) ? '#333' : dbg;
+        var bg3 = (this.attr._curNode.navNum == 3) ? '#333' : dbg;
+        var bg4 = (this.attr._curNode.navNum == 4) ? '#333' : dbg;
         display.drawText(0, 1, this.attr._curNode.starSystem);
-        display.drawText(0, 3, "|%b{" + bg1 + "}" + L['1'] + "%b{}%c{#999}" + L['21'] + L['21'] + L['21'] + "%c{}%b{" + bg2 + "}" + L['2'] + "%b{}");
-        display.drawText(0, 4, "|" + "%c{#999}" + L['31'] + L['41'] + " " + L['32'] + L['42'] + "%c{}");
-        display.drawText(0, 5, "|" + "%c{#999}" + L['31'] + " " + C + " " + L['42'] + "%c{}");
-        display.drawText(0, 6, "|" + "%c{#999}" + L['31'] + L['32'] + " " + L['41'] + L['42'] + "%c{}");
-        display.drawText(0, 7, "|%b{" + bg3 + "}" + L['3'] + "%b{}%c{#999}" + L['43'] + L['43'] + L['43'] + "%c{}%b{" + bg4 + "}" + L['4'] + "%b{}");
+        display.drawText(3, 3, "%c{"+dbg+"}|%c{}%b{" + bg1 + "}" + L['1'] + "%b{}%c{#999}" + L['21'] + L['21'] + L['21'] + "%c{}%b{" + bg2 + "}" + L['2'] + "%b{}");
+        display.drawText(3, 4, "%c{"+dbg+"}|%c{}" + "%c{#999}" + L['31'] + L['41'] + " " + L['32'] + L['42'] + "%c{}");
+        display.drawText(3, 5, "%c{"+dbg+"}|%c{}" + "%c{#999}" + L['31'] + " " + C + " " + L['42'] + "%c{}");
+        display.drawText(3, 6, "%c{"+dbg+"}|%c{}" + "%c{#999}" + L['31'] + L['32'] + " " + L['41'] + L['42'] + "%c{}");
+        display.drawText(3, 7, "%c{"+dbg+"}|%c{}%b{" + bg3 + "}" + L['3'] + "%b{}%c{#999}" + L['43'] + L['43'] + L['43'] + "%c{}%b{" + bg4 + "}" + L['4'] + "%b{}");
 
     },
     resetNavOptions: function() {
