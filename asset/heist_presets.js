@@ -17,7 +17,7 @@ Game.HeistPresets = {
       },
       addMobs: function(map){
         for (var ecount = 0; ecount < 8; ecount++) {
-            map.addEntity(Game.EntityGenerator.create('manta ray'), map.getRandomTileWalkable());
+            map.addEntity(Game.EntityGenerator.create('janitor'), map.getRandomTileWalkable());
         }
       }
     }

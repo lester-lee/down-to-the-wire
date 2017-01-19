@@ -188,10 +188,15 @@ Game.UIMode.gameIntro = {
             case 'CONFIRM':
                 var inputHTML = document.getElementById('user-input');
                 var inputText = inputHTML.value;
+                if (inputText.length > 0){
                 inputHTML.value = "";
                 inputHTML.parentElement.style.display = "none";
                 Game.UIMode.shipScreen.attr.playerName = inputText;
+                Game.Message.clear();
                 Game.switchUIMode(Game.UIMode.shipScreen);
+              }else {
+                Game.Message.send("You did not enter a name.");
+              }
                 break;
             default:
                 break;

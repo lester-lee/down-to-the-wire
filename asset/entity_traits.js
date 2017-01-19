@@ -30,6 +30,52 @@ Game.EntityTraits.PlayerMessager = {
     }
 };
 
+Game.EntityTraits.PlayerActor = {
+  META: {
+    traitName: 'PlayerActor',
+    traitGroup: 'Actor',
+    stateNamespace: '_PlayerActor_attr',
+    stateModel: {
+      baseActionDur: 1000,
+      actingState: false,
+      curActionDur: 1000
+    },
+    listeners: {
+      'actionDone': function(evtData){
+        this.getScheduler().setDuration(this.getCurActionDur());
+        Game.UIMode.heist.getEngine().unlock();
+        Game.renderMessage();
+      }
+    }
+  },
+  getBaseActionDur(){
+    return this.attr._PlayerActor_attr.baseActionDur;
+  },
+  setBaseActionDur(n){
+    this.attr._PlayerActor_attr.baseActionDur = n;
+  },
+  getCurActionDur(){
+    return this.attr._PlayerActor_attr.curActionDur;
+  },
+  setCurActionDur(n){
+    this.attr._PlayerActor_attr.curActionDur = n;
+  },
+  isActing: function(state){
+    if (state != undefined){
+      this.attr._PlayerActor_attr.actingState = state;
+    }
+    return this.attr._PlayerActor_attr.actingState;
+  },
+  act: function(){
+    console.log('player actin');
+    if (this.isActing()){ return; } // gate to deal with JS timing issues
+    this.isActing(true);
+    Game.refresh();
+    Game.UIMode.heist.getEngine().lock();
+    this.isActing(false);
+  }
+};
+
 Game.EntityTraits.WalkerCorporeal = {
     META: {
         traitName: 'WalkerCorporeal',

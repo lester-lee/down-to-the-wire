@@ -14,6 +14,7 @@ Game.Map = function(mapKey) {
     };
 
     this._fov = null;
+    this._scheduler = new ROT.Scheduler.Action();
     this.setUpFOV();
     Game.DATASTORE.MAP[this.attr._id] = this;
     Game.HeistPresets[mapKey].addMobs(this);
@@ -47,6 +48,10 @@ Game.Map.prototype.getNextMap = function() {
     return Game.DATASTORE.MAP[this.attr._nextMapID];
 };
 
+Game.Map.prototype.getScheduler = function(){
+  return this._scheduler;
+};
+
 Game.Map.prototype.getTile = function(pos) {
     x = pos.x;
     y = pos.y;
@@ -62,7 +67,10 @@ Game.Map.prototype.addEntity = function(ent, pos) {
     this.attr._locationsByEntity[ent.getID()] = pos;
     ent.setMap(this);
     ent.setPos(pos);
-}
+    if (ent.hasOwnProperty('act')){
+      this._scheduler.add(ent, true);
+    }
+};
 
 Game.Map.prototype.updateEntityLocation = function(ent) {
     var origLoc = this.attr._locationsByEntity[ent.getID()];
@@ -72,7 +80,7 @@ Game.Map.prototype.updateEntityLocation = function(ent) {
     var pos = ent.getPos();
     this.attr._entitiesByLocation[pos.x + ',' + pos.y] = ent.getID();
     this.attr._locationsByEntity[ent.getID()] = pos;
-}
+};
 
 Game.Map.prototype.getEntity = function(pos) {
     var entID = this.attr._entitiesByLocation[pos.x + ',' + pos.y];
@@ -80,13 +88,13 @@ Game.Map.prototype.getEntity = function(pos) {
         return Game.DATASTORE.ENTITY[entID];
     }
     return false;
-}
+};
 
 Game.Map.prototype.extractEntity = function(ent) {
     this.attr._entitiesByLocation[ent.getX() + "," + ent.getY()] = undefined;
     this.attr._locationsByEntity[ent.getID()] = undefined;
     return ent;
-}
+};
 
 Game.Map.prototype.getRandomTile = function(filter) {
     if (filter == undefined) {
@@ -129,7 +137,7 @@ Game.Map.prototype.setUpFOV = function() {
 
 Game.Map.prototype.getFOV = function() {
     return this._fov;
-}
+};
 
 Game.Map.prototype.rememberCoords = function(toRemember) {
     for (var coord in toRemember) {

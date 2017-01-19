@@ -5,14 +5,17 @@ Game.UIMode.heist = {
         _cameraX: 50,
         _cameraY: 50,
         _avDispX: 50,
-        _avDispY: 50
+        _avDispY: 50,
+        _engine: null
     },
     enter: function(heistType) {
         this.setupNewGame(heistType);
+        this.getEngine().unlock();
         Game.refresh();
     },
     exit: function() {
         // console.log("gamePlay exit");
+        this.getEngine().lock();
         Game.refresh();
     },
     getMap: function() {
@@ -26,6 +29,12 @@ Game.UIMode.heist = {
     },
     setAvatar: function(a) {
         this.attr._avatarID = a.getID();
+    },
+    getEngine: function(){
+        return this.attr._engine;
+    },
+    setEngine: function(sched){
+        this.attr._engine = new ROT.Engine(sched);
     },
     render: function(display) {
         var seenCells = this.getAvatar().getVisibleCells();
@@ -95,6 +104,7 @@ Game.UIMode.heist = {
     },
     setupNewGame: function(heistType) {
         this.setMap(new Game.Map(heistType));
+        this.setEngine(this.getMap().getScheduler());
         this.setAvatar(Game.EntityGenerator.create('avatar'));
         this.getMap().addEntity(this.getAvatar(), this.getMap().getRandomTileWalkable());
         this.setCameraToAvatar();
