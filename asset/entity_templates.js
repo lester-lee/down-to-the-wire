@@ -10,7 +10,7 @@ Game.EntityGenerator.learn({
     dodge: .1,
     sightRadius: 4,
     sightAngle: 90,
-    traits: ["PlayerActor","MapMemory", "Sight", "WalkerCorporeal", "Chronicle", "StatHitPoints", "MeleeAttacker", "PlayerMessager", "MeleeDefender", "DoorOpener"]
+    traits: [ "PlayerMessager", "PlayerActor","MapMemory", "Sight", "WalkerCorporeal", "Chronicle", "StatHitPoints", "MeleeAttacker", "MeleeDefender", "DoorOpener"]
 });
 
 Game.EntityGenerator.learn({
@@ -27,7 +27,7 @@ Game.EntityGenerator.learn({
     chr: 'j',
     fg: '#0bf',
     maxHP: 10,
-    attack: 0,
+    attack: 5,
     attackAccuracy: .6,
     defense: 1,
     dodge: .1,

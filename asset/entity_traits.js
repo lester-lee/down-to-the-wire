@@ -32,8 +32,9 @@ Game.EntityTraits.PlayerMessager = {
                 Game.Message.send(evtData.damager.getName() + " hit you for " + evtData.damage + " damage");
             },
             'killed': function(evtData){
-              console.log('killed');
               Game.Message.send("You were destroyed by " + evtData.killer.getName());
+              Game.renderMessage();
+              Game.switchUIMode(Game.UIMode.titleScreen);
             }
         }
     }
@@ -54,10 +55,10 @@ Game.EntityTraits.PlayerActor = {
         this.getScheduler().setDuration(this.getCurActionDur());
         Game.UIMode.heist.getEngine().unlock();
         Game.renderMessage();
-      },
-      'killed': function(evtData){
-        Game.switchUIMode(Game.UIMode.titleScreen);
       }
+      // 'killed': function(evtData){
+      //   Game.switchUIMode(Game.UIMode.titleScreen);
+      // }
     }
   },
   getBaseActionDur: function(){
