@@ -28,11 +28,16 @@ Game.UIMode.heist = {
         this.attr._avatarID = a.getID();
     },
     render: function(display) {
-        this.getMap().renderOn(display, this.attr._cameraX, this.attr._cameraY);
+        var seenCells = this.getAvatar().getVisibleCells();
+        this.getMap().renderOn(display, this.attr._cameraX, this.attr._cameraY, {
+            visibleCells: seenCells,
+            maskedCells: this.getAvatar().getRememberedCoordsForMap()
+        });
+        this.getAvatar().rememberCoords(seenCells);
     },
     renderAvatarInfo: function(display) {
-        display.drawText(1, 2, "avatar x:" + this.getAvatar().getPos().x, fg, bg); // DEV
-        display.drawText(1, 3, "avatar y:" + this.getAvatar().getPos().y, fg, bg); // DEV
+        display.drawText(1, 2, "avatar x:" + this.getAvatar().getX(), fg, bg); // DEV
+        display.drawText(1, 3, "avatar y:" + this.getAvatar().getY(), fg, bg); // DEV
         display.drawText(1, 4, "camera x:" + this.attr._cameraX, fg, bg); // DEVdisplay.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEV
         display.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEVdisplay.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEV
         display.drawText(1, 1, "HP: " + this.getAvatar().getCurHP() + "/" + this.getAvatar().getMaxHP());
@@ -41,8 +46,8 @@ Game.UIMode.heist = {
     moveAvatar: function(dx, dy) {
         Game.Message.ageMessages();
         if (this.getAvatar().tryWalk(this.getMap(), dx, dy)) {
-            Game.refresh();
             this.checkMoveCamera();
+            Game.refresh();
         }
     },
     checkMoveCamera: function() {
@@ -58,19 +63,19 @@ Game.UIMode.heist = {
     setCamera: function(sx, sy) {
         var display = Game.getDisplay('main');
         var dispW2 = Math.round(display._options.width / 2);
-        var dispH2 = Math.round(display._options.height / 2)-1;
+        var dispH2 = Math.round(display._options.height / 2) - 1;
         this.attr._cameraX = Math.min(Math.max(dispW2, sx), this.getMap().getWidth() - dispW2);
         this.attr._cameraY = Math.min(Math.max(dispH2, sy), this.getMap().getHeight() - dispH2);
     },
     setCameraToAvatar: function() {
-        this.setCamera(this.getAvatar().getPos().x, this.getAvatar().getPos().y);
+        this.setCamera(this.getAvatar().getX(), this.getAvatar().getY());
     },
     setWindowCamera: function(min, max) {
         var display = Game.getDisplay('main');
         var dispW = display._options.width;
         var dispH = display._options.height;
-        this.attr._avDispX = this.getAvatar().getPos().x - this.attr._cameraX + Math.round(display._options.width / 2);
-        this.attr._avDispY = this.getAvatar().getPos().y - this.attr._cameraY + Math.round(display._options.height / 2);
+        this.attr._avDispX = this.getAvatar().getX() - this.attr._cameraX + Math.round(display._options.width / 2);
+        this.attr._avDispY = this.getAvatar().getY() - this.attr._cameraY + Math.round(display._options.height / 2);
         if (this.attr._avDispX < Math.round(min * dispW)) {
             this.moveCamera(-1, 0);
         }

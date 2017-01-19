@@ -19,6 +19,10 @@ Game.Symbol.prototype.getBg = function() {
     return this.attr._bg;
 };
 
-Game.Symbol.prototype.draw = function(display, x, y) {
-    display.draw(x, y, this.attr._char, this.attr._fg, this.attr._bg);
+Game.Symbol.prototype.draw = function(display, x, y, isMasked) {
+    if (isMasked) {
+        display.draw(x, y, this.attr._char, '#444', '#000');
+    } else {
+        display.draw(x, y, this.attr._char, this.attr._fg, this.attr._bg);
+    }
 };

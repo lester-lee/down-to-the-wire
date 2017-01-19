@@ -36,9 +36,12 @@ Game.EntityTraits.WalkerCorporeal = {
         traitGroup: 'Walker'
     },
     tryWalk: function(map, dx, dy) {
-        var newX = Math.min(Math.max(0, this.getPos().x), map.getWidth()) + dx;
-        var newY = Math.min(Math.max(0, this.getPos().y), map.getWidth()) + dy;
-        var newPos = new Game.Coordinate(newX, newY);
+        var newX = Math.min(Math.max(0, this.getX()), map.getWidth()) + dx;
+        var newY = Math.min(Math.max(0, this.getY()), map.getWidth()) + dy;
+        var newPos = {
+            x: newX,
+            y: newY
+        };
         var ent = map.getEntity(newPos);
         if (ent) {
             this.raiseEntityEvent('bumpEntity', {
@@ -222,32 +225,85 @@ Game.EntityTraits.MeleeDefender = {
 };
 
 Game.EntityTraits.Sight = {
-  META: {
-    traitName: 'Sight',
-    traitGroup: 'Sense',
-    stateNamespace: '_Sight_attr',
-    stateModel: {
-      sightRadius: 3
+    META: {
+        traitName: 'Sight',
+        traitGroup: 'Sense',
+        stateNamespace: '_Sight_attr',
+        stateModel: {
+            sightRadius: 3
+        },
+        init: function(template) {
+            this.attr._Sight_attr.sightRadius = template.sightRadius || 3;
+        }
     },
-    init: function(template){
-      this.attr._Sight_attr.sightRadius = template.sightRadius || 3;
-    }
-  },
-  getSightRadius: function(){
-    return this.attr._Sight_attr.sightRadius;
-  },
-  setSightRadius: function(n){
-    this.attr._Sight_attr.sightRadius = n;
-  },
+    getSightRadius: function() {
+        return this.attr._Sight_attr.sightRadius;
+    },
+    setSightRadius: function(n) {
+        this.attr._Sight_attr.sightRadius = n;
+    },
 
-  canSeeEntity: function(ent){
-    if (!ent || this.getMap().getID() !== ent.getMap().getID()){
-      return false;
+    canSeeEntity: function(ent) {
+        if (!ent || this.getMap().getID() !== ent.getMap().getID()) {
+            return false;
+        }
+        return this.canSeeCoord(ent.getPos());
+    },
+    canSeeCoord: function(pos) {
+        var otherX = pos.x;
+        var otherY = pos.y;
+        if (Math.max(Math.abs(otherX - this.getX()), Math.abs(otherY - this.getY())) > this.attr._Sight_attr.sightRadius) {
+            return false;
+        }
+        var inFOV = this.getVisibleCells();
+        return inFOV[otherX + ',' + otherY] || false;
+    },
+    getVisibleCells: function() {
+        var visibleCells = {
+            'byDistance': {}
+        };
+        for (var i = 0; i <= this.getSightRadius(); i++) {
+            visibleCells.byDistance[i] = {};
+        }
+        this.getMap().getFOV().compute(
+            this.getX(), this.getY(), this.getSightRadius(),
+            function(x, y, radius, visibility) {
+                visibleCells[x + ',' + y] = true;
+                visibleCells.byDistance[radius][x + ',' + y] = true;
+            }
+        );
+        return visibleCells;
+    },
+    canSeeCoord_delta: function(dx, dy) {
+        return this.canSeeCoord(this.getX() + dx, this.getY() + dy);
     }
-    return this.canSeeCoord(ent.getPos());
-  },
+};
 
-  canSeeCoord: function(pos){
-    
-  }
+Game.EntityTraits.MapMemory = {
+    META: {
+        traitName: 'MapMemory',
+        traitGroup: 'MapMemory',
+        stateNamespace: '_MapMemory_attr',
+        stateModel: {
+            mapsHash: {}
+        },
+        init: function(template) {
+            this.attr._MapMemory_attr.mapsHash = template.mapsHash || {};
+        }
+    },
+    rememberCoords: function(coordSet, mapID) {
+        var mapKey = mapID || this.getMap().getID();
+        if (!this.attr._MapMemory_attr.mapsHash[mapKey]) {
+            this.attr._MapMemory_attr.mapsHash[mapKey] = {};
+        }
+        for (var coord in coordSet) {
+            if (coordSet.hasOwnProperty(coord) && (coord != 'byDistance')) {
+                this.attr._MapMemory_attr.mapsHash[mapKey][coord] = true;
+            }
+        }
+    },
+    getRememberedCoordsForMap: function(mapID) {
+        var mapKey = mapID || this.getMap().getID();
+        return this.attr._MapMemory_attr.mapsHash[mapKey] || {};
+    }
 };

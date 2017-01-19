@@ -30,7 +30,7 @@ Game.UIMode.titleScreen = {
     renderTitleOptions: function(display) {
         for (var i = 0; i < this.titleOptions.length; i++) {
             var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
-            display.drawText(0, i + 15, '%b{' + bg + '}[' + i + '] ' + this.titleOptions[i]);
+            display.drawText(0, i + 15, '%b{' + bg + '}> ' + this.titleOptions[i]);
         }
     },
     handleInput: function(inputType, inputData) {
@@ -59,27 +59,52 @@ Game.UIMode.titleScreen = {
 
 Game.UIMode.persistence = {
     RANDOM_SEED_KEY: 'gameRandomSeed',
+    attr: {
+        _curOption: 0
+    },
+    persistOptions: ["Save", "Load", "Title Screen"],
+    persistFunctions: {
+        "Save": function() {
+            Game.UIMode.persistence.saveGame();
+        },
+        "Load": function() {
+            Game.UIMode.persistence.loadGame();
+        },
+        "Title Screen": function() {
+            Game.switchUIMode(Game.UIMode.titleScreen);
+        }
+    },
     enter: function() {},
     exit: function() {},
     render: function(display) {
-        display.drawText(1, 4, "[S] to save your game");
-        display.drawText(1, 5, "[L] to load your game");
-        display.drawText(1, 6, "[N] to start a new game");
+        this.renderPersistenceOptions(display);
+    },
+    renderPersistenceOptions: function(display) {
+        for (var i = 0; i < this.persistOptions.length; i++) {
+            var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.persistOptions[i]);
+        }
     },
     handleInput: function(inputType, inputData) {
-        var action = Game.KeyBinding.getInput(inputType, inputData).key;
-        switch (action) {
-            case 'PERSISTENCE_SAVE':
-                this.saveGame();
+        var action = Game.KeyBinding.getInput(inputType, inputData);
+        if (!action) {
+            return false;
+        }
+        switch (action.key) {
+            case 'MOVE_DOWN':
+                this.attr._curOption++;
+                this.attr._curOption %= this.persistOptions.length;
                 break;
-            case 'PERSISTENCE_LOAD':
-                this.loadGame();
+            case 'MOVE_UP':
+                this.attr._curOption--;
+                this.attr._curOption = (this.attr._curOption < 0) ? this.persistOptions.length - 1 : this.attr._curOption;
+                this.attr._curOption %= this.persistOptions.length;
                 break;
-            case 'PERSISTENCE_NEW':
-                this.newGame();
+            case 'CONFIRM':
+                this.persistFunctions[this.persistOptions[this.attr._curOption]]();
                 break;
             case 'CANCEL':
-                Game.switchUIMode(Game.UIMode.shipScreen);
+                Game.removeUIMode();
                 break;
             default:
                 break;
@@ -112,7 +137,7 @@ Game.UIMode.persistence = {
 
         Game.setRandomSeed(state_data[this.RANDOM_SEED_KEY]);
 
-        // load gamePlay
+        // load shipScreen & messages
         Game.UIMode.shipScreen.attr = state_data.SHIP_SCREEN;
         Game.Message.attr = state_data.MESSAGES;
 
@@ -188,13 +213,16 @@ Game.UIMode.shipScreen = {
         playerName: null,
         _curOption: 0
     },
-    shipOptions: ["navigate", "outfit drones", "outfit ship", "heist"],
+    shipOptions: ["Navigate", "Outfit drones", "Outfit ship", "heist", "Save/Load"],
     shipFunctions: {
-        navigate: function() {
+        Navigate: function() {
             Game.addUIMode(Game.UIMode.navigation);
         },
         heist: function() {
             Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
+        },
+        "Save/Load": function() {
+            Game.addUIMode(Game.UIMode.persistence);
         }
     },
     enter: function() {},
@@ -209,12 +237,6 @@ Game.UIMode.shipScreen = {
             return false;
         }
         switch (action.key) {
-            case 'NUM_0':
-                this.shipFunctions['navigate']();
-                break;
-            case 'NUM_3':
-                this.shipFunctions['heist']();
-                break;
             case 'MOVE_DOWN':
                 this.attr._curOption++;
                 this.attr._curOption %= this.shipOptions.length;
@@ -253,7 +275,18 @@ Game.UIMode.navigation = {
         _navMap: null,
         _curNode: null,
         _curOption: 0,
-        _L: {'1':'1','2':' ','3':' ','4':' ','21':' ','31':' ','32':' ','41':' ','42':' ','43':' '},
+        _L: {
+            '1': '1',
+            '2': ' ',
+            '3': ' ',
+            '4': ' ',
+            '21': ' ',
+            '31': ' ',
+            '32': ' ',
+            '41': ' ',
+            '42': ' ',
+            '43': ' '
+        },
     },
     navOptions: ['Begin docking procedure'],
     navFunctions: {
@@ -276,20 +309,24 @@ Game.UIMode.navigation = {
             display.drawText(0, i + 5, '%b{' + bg + '}> ' + this.navOptions[i]);
         }
     },
-    renderAvatarInfo: function(display){
-      var L = this.attr._L;
-      var C = 'center';
-      if ( L['41'].localeCompare('*')==0 || L['32'].localeCompare('*')==0 ){ C = '*'; }else{ C = ' ';}
-      var bg1 = (this.attr._curNode.navNum == 1)? '#333':Game.UIMode.DEFAULT_BG;
-      var bg2 = (this.attr._curNode.navNum == 2)? '#333':Game.UIMode.DEFAULT_BG;
-      var bg3 = (this.attr._curNode.navNum == 3)? '#333':Game.UIMode.DEFAULT_BG;
-      var bg4 = (this.attr._curNode.navNum == 4)? '#333':Game.UIMode.DEFAULT_BG;
-      display.drawText(0,1, this.attr._curNode.starSystem);
-      display.drawText(0,3,"|%b{"+bg1+"}"+L['1']+"%b{}%c{#999}"+L['21']+L['21']+L['21']+"%c{}%b{"+bg2+"}"+L['2']+"%b{}");
-      display.drawText(0,4,"|"+"%c{#999}"+L['31']+L['41']+" "+L['32']+L['42']+"%c{}");
-      display.drawText(0,5,"|"+"%c{#999}"+L['31']+" "+C+" "+L['42']+"%c{}");
-      display.drawText(0,6,"|"+"%c{#999}"+L['31']+L['32']+" "+L['41']+L['42']+"%c{}");
-      display.drawText(0,7,"|%b{"+bg3+"}"+L['3']+"%b{}%c{#999}"+L['43']+L['43']+L['43']+"%c{}%b{"+bg4+"}"+L['4']+"%b{}");
+    renderAvatarInfo: function(display) {
+        var L = this.attr._L;
+        var C = 'center';
+        if (L['41'].localeCompare('*') == 0 || L['32'].localeCompare('*') == 0) {
+            C = '*';
+        } else {
+            C = ' ';
+        }
+        var bg1 = (this.attr._curNode.navNum == 1) ? '#333' : Game.UIMode.DEFAULT_BG;
+        var bg2 = (this.attr._curNode.navNum == 2) ? '#333' : Game.UIMode.DEFAULT_BG;
+        var bg3 = (this.attr._curNode.navNum == 3) ? '#333' : Game.UIMode.DEFAULT_BG;
+        var bg4 = (this.attr._curNode.navNum == 4) ? '#333' : Game.UIMode.DEFAULT_BG;
+        display.drawText(0, 1, this.attr._curNode.starSystem);
+        display.drawText(0, 3, "|%b{" + bg1 + "}" + L['1'] + "%b{}%c{#999}" + L['21'] + L['21'] + L['21'] + "%c{}%b{" + bg2 + "}" + L['2'] + "%b{}");
+        display.drawText(0, 4, "|" + "%c{#999}" + L['31'] + L['41'] + " " + L['32'] + L['42'] + "%c{}");
+        display.drawText(0, 5, "|" + "%c{#999}" + L['31'] + " " + C + " " + L['42'] + "%c{}");
+        display.drawText(0, 6, "|" + "%c{#999}" + L['31'] + L['32'] + " " + L['41'] + L['42'] + "%c{}");
+        display.drawText(0, 7, "|%b{" + bg3 + "}" + L['3'] + "%b{}%c{#999}" + L['43'] + L['43'] + L['43'] + "%c{}%b{" + bg4 + "}" + L['4'] + "%b{}");
 
     },
     resetNavOptions: function() {
@@ -312,9 +349,9 @@ Game.UIMode.navigation = {
         this.resetNavOptions();
         var edges = this.attr._curNode.edge_list;
         for (var i = 0; i < edges.length; i++) {
-          var node = this.attr._navMap.getNode(edges[i]);
-            this.navOptions.push('Travel to ' + node.prefix + node.name + "("+node.navNum+")");
-            this.navFunctions['Travel to ' + node.prefix + node.name + "("+node.navNum+")"] = function() {
+            var node = this.attr._navMap.getNode(edges[i]);
+            this.navOptions.push('Travel to ' + node.prefix + node.name + "(" + node.navNum + ")");
+            this.navFunctions['Travel to ' + node.prefix + node.name + "(" + node.navNum + ")"] = function() {
                 Game.UIMode.navigation.travelToTarget();
             };
         }
@@ -337,28 +374,56 @@ Game.UIMode.navigation = {
             mapType: 'void'
         });
         this.attr._curNode = navMap.getNode("Somewhere in Space");
-        this.attr._L = {'1':'1','2':' ','3':' ','4':' ','21':' ','31':' ','32':' ','41':' ','42':' ','43':' '};
+        this.attr._L = {
+            '1': '1',
+            '2': ' ',
+            '3': ' ',
+            '4': ' ',
+            '21': ' ',
+            '31': ' ',
+            '32': ' ',
+            '41': ' ',
+            '42': ' ',
+            '43': ' '
+        };
     },
     createStarSystem: function() {
-      var navMap = new Graph();
-      this.attr._L = {'1':'1','2':' ','3':' ','4':' ','21':' ','31':' ','32':' ','41':' ','42':' ','43':' '};
-      var ships = [];
-      var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform()*10000);
-      var numShips = ROT.RNG.getUniform()*2+2;
-      for (var i = 0; i < numShips; i++){
-        var ship = {name: Game.Util.randomShipName(), starSystem: systemName, mapType: 'ship_easy', prefix: 'the SRV ', navNum: ''+(i+1)};
-        ships.push(ship);
-        this.attr._L[ship.navNum] = ship.navNum;
-      }
-      var nextSys = ships.slice(0);
+        var navMap = new Graph();
+        this.attr._L = {
+            '1': '1',
+            '2': ' ',
+            '3': ' ',
+            '4': ' ',
+            '21': ' ',
+            '31': ' ',
+            '32': ' ',
+            '41': ' ',
+            '42': ' ',
+            '43': ' '
+        };
+        var ships = [];
+        var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform() * 10000);
+        var numShips = Game.Util.randomInt(2,4);
+        for (var i = 0; i < numShips; i++) {
+            var ship = {
+                name: Game.Util.randomShipName(),
+                starSystem: systemName,
+                mapType: 'ship_easy',
+                prefix: 'the SRV ',
+                navNum: '' + (i + 1)
+            };
+            ships.push(ship);
+            this.attr._L[ship.navNum] = ship.navNum;
+        }
+        var nextSys = ships.slice(0);
 
-      for (var i = 0; i < ships.length; i++){
-        navMap.addNode(ships[i]);
-      }
-      navMap.randomizeEdges();
-      this.attr._navMap = navMap;
-      var nextShip = nextSys[0];
-      this.travelToTarget(navMap.getNode(nextShip.name));
+        for (var i = 0; i < ships.length; i++) {
+            navMap.addNode(ships[i]);
+        }
+        navMap.randomizeEdges();
+        this.attr._navMap = navMap;
+        var nextShip = nextSys[0];
+        this.travelToTarget(navMap.getNode(nextShip.name));
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData);

@@ -3,12 +3,12 @@ Game.EntityGenerator = new Game.Generator('entities', Game.Entity);
 Game.EntityGenerator.learn({
     name: 'avatar',
     chr: 'D',
-    fg: '#8E7242',
+    fg: '#fff',
     maxHP: 10,
     attack: 5,
     defense: 2,
     dodge: .1,
-    traits: ["Sight","WalkerCorporeal", "Chronicle", "StatHitPoints", "MeleeAttacker", "PlayerMessager", "MeleeDefender"]
+    traits: ["MapMemory","Sight","WalkerCorporeal", "Chronicle", "StatHitPoints", "MeleeAttacker", "PlayerMessager", "MeleeDefender"]
 });
 
 Game.EntityGenerator.learn({

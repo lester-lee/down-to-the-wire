@@ -7,8 +7,8 @@ Game.Entity = function(template) {
         this.attr = {};
     }
     this.attr._name = template.name || '';
-    this.attr._position = new Game.Coordinate(0, 0);
-    this.attr._dispPos = new Game.Coordinate(0, 0);
+    this.attr._position = {x:0,y:0};
+    this.attr._dispPos = {x:0,y:0};
     this.attr._mapID = null;
     this.attr._generator_key = template._generator_key || '';
 
@@ -95,6 +95,12 @@ Game.Entity.prototype.setPos = function(pos) {
 };
 Game.Entity.prototype.getPos = function() {
     return this.attr._position;
+};
+Game.Entity.prototype.getX = function() {
+    return this.attr._position.x;
+};
+Game.Entity.prototype.getY = function() {
+    return this.attr._position.y;
 };
 Game.Entity.prototype.setDispPos = function(pos) {
     this.attr._dispPos = pos;

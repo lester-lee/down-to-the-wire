@@ -19,15 +19,23 @@ Game.Util = {
         return a;
     },
 
+
     randomInt: function(min, max) {
         var range = max - min;
         var offset = Math.floor(ROT.RNG.getUniform() * (range + 1));
         return offset + min;
     },
 
+    getDisplayDim: function(display) {
+        return {
+            w: display._options.width,
+            h: display._options.height
+        };
+    },
+
     randomShipName: function() {
         var index = Math.floor(ROT.RNG.getUniform() * Game.Util.Idioms.length);
-        return Game.Util.Idioms.splice(index,1)[0];
+        return Game.Util.Idioms.splice(index, 1)[0];
     },
 
     randomDroneName: function() {
@@ -41,8 +49,3 @@ Game.Util.Adjectives = ['aback', 'abaft', 'abandoned', 'abashed', 'aberrant', 'a
     'alcoholic', 'alert', 'alike', 'alive', 'alleged', 'alluring', 'aloof', 'amazing', 'ambiguous', 'ambitious', 'amuck', 'amused', 'amusing', 'ancient', 'angry', 'animated', 'annoyed', 'annoying', 'anxious', 'apathetic', 'aquatic', 'aromatic', 'arrogant', 'ashamed', 'aspiring', 'assorted', 'astonishing', 'attractive', 'auspicious', 'automatic', 'available', 'average', 'awake', 'aware', 'awesome', 'awful', 'axiomatic'
 ];
 Game.Util.Nouns = ['noun1', 'noun2'];
-
-Game.Coordinate = function(x, y) {
-    this.x = x;
-    this.y = y;
-}
