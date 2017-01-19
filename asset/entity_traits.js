@@ -100,21 +100,21 @@ Game.EntityTraits.WalkerCorporeal = {
         Game.refresh();
         var ent = map.getEntity(newPos);
         if (ent) {
-            this.raiseEntityEvent('bumpEntity', {
+            this.raiseSymbolActiveEvent('bumpEntity', {
                 actor: this,
                 target: ent
             });
-            this.raiseEntityEvent('actionDone');
+            this.raiseSymbolActiveEvent('actionDone');
             return true;
         }
         var nextTile = map.getTile(newPos);
         if (nextTile.isWalkable()) {
             this.setPos(newPos);
             map.updateEntityLocation(this);
-            this.raiseEntityEvent('actionDone');
+            this.raiseSymbolActiveEvent('actionDone');
             return true;
         } else {
-            this.raiseEntityEvent('walkForbidden', {
+            this.raiseSymbolActiveEvent('walkForbidden', {
                 target: nextTile
             });
             return false;
@@ -168,19 +168,19 @@ Game.EntityTraits.StatHitPoints = {
         },
         listeners: {
             'attacked': function(evtData) {
-                var defense = this.raiseEntityEvent('getDefense') || 0;
+                var defense = this.raiseSymbolActiveEvent('getDefense') || 0;
                 var dmg = evtData.attack - defense;
                 this.takeDamage(dmg);
-                evtData.attacker.raiseEntityEvent('dealtDamage', {
+                evtData.attacker.raiseSymbolActiveEvent('dealtDamage', {
                     attacked: this,
                     damage: dmg
                 });
                 if (this.getCurHP() <= 0) {
-                    this.raiseEntityEvent('killed', {
+                    this.raiseSymbolActiveEvent('killed', {
                         entKilled: this,
                         killedBy: evtData.attacker
                     });
-                    evtData.attacker.raiseEntityEvent('madeKill', {
+                    evtData.attacker.raiseSymbolActiveEvent('madeKill', {
                         dead: this,
                         killer: evtData.attacker
                     });
@@ -226,14 +226,14 @@ Game.EntityTraits.MeleeAttacker = {
         listeners: {
             'bumpEntity': function(evtData) {
                 var hit = this.getAttackAccuracy()
-                var dodge = evtData.target.raiseEntityEvent('getDodge') || 0;
+                var dodge = evtData.target.raiseSymbolActiveEvent('getDodge') || 0;
                 if (ROT.RNG.getUniform() <= hit - dodge) {
-                    evtData.target.raiseEntityEvent('attacked', {
+                    evtData.target.raiseSymbolActiveEvent('attacked', {
                         attacker: evtData.actor,
                         attack: this.getAttack()
                     });
                 } else {
-                    this.raiseEntityEvent('attackMiss', {
+                    this.raiseSymbolActiveEvent('attackMiss', {
                         attacker: evtData.actor,
                         target: evtData.target
                     });
@@ -264,7 +264,7 @@ Game.EntityTraits.MeleeDefender = {
         },
         listeners: {
             'bumpEntity': function(evtData) {
-                evtData.target.raiseEntityEvent('attacked', {
+                evtData.target.raiseSymbolActiveEvent('attacked', {
                     attacker: evtData.actor,
                     attack: this.getAttack()
                 });
@@ -429,11 +429,9 @@ Game.EntityTraits.WanderChaserActor = {
       this.attr._WanderChaserActor_attr.curActionDur = n;
     },
     act: function(){
-      console.log('start chase act');
       var engine = Game.UIMode.heist.getEngine();
       engine.lock();
       this.getScheduler().setDuration(this.getCurActionDur());
       engine.unlock();
-      console.log('end chase act');
     }
 };
