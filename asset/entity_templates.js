@@ -5,7 +5,7 @@ Game.EntityGenerator.learn({
     chr: 'D',
     fg: '#fff',
     maxHP: 10,
-    attack: 2,
+    attack: 5,
     defense: 2,
     dodge: .1,
     sightRadius: 4,
@@ -26,9 +26,12 @@ Game.EntityGenerator.learn({
     name: 'janitor drone',
     chr: 'j',
     fg: '#0bf',
-    maxHP: 3,
-    attack: 1,
+    maxHP: 10,
+    attack: 0,
+    attackAccuracy: .6,
     defense: 1,
-    dodge: .05,
-    traits: ["WanderChaserActor","WalkerCorporeal","StatHitPoints","MeleeAttacker","MeleeDefender"]
+    dodge: .1,
+    sightRadius: 4,
+    sightAngle: 360,
+    traits: ["Sight","WanderChaserActor","WalkerCorporeal","StatHitPoints","MeleeAttacker","MeleeDefender"]
 });

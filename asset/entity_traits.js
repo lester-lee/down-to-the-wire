@@ -15,7 +15,9 @@ Game.EntityTraits.PlayerMessager = {
         listeners: {
             'walkForbidden': function(evtData) {
                 Game.Message.send("it'd be mighty impolite to walk into " + evtData.target.getName());
-                Game.renderMessage();
+            },
+            'attackAvoided': function(evtData){
+              Game.Message.send(evtData.attacker.getName() + " tried to hit you but failed");
             },
             'attackMiss': function(evtData) {
                 Game.Message.send("You miss your attack on " + evtData.target.getName());
@@ -25,6 +27,13 @@ Game.EntityTraits.PlayerMessager = {
             },
             'dealtDamage': function(evtData) {
                 Game.Message.send("You deal " + evtData.damage + " damage to the " + evtData.attacked.getName());
+            },
+            'damagedBy': function(evtData){
+                Game.Message.send(evtData.damager.getName() + " hit you for " + evtData.damage + " damage");
+            },
+            'killed': function(evtData){
+              console.log('killed');
+              Game.Message.send("You were destroyed by " + evtData.killer.getName());
             }
         }
     }
@@ -45,6 +54,9 @@ Game.EntityTraits.PlayerActor = {
         this.getScheduler().setDuration(this.getCurActionDur());
         Game.UIMode.heist.getEngine().unlock();
         Game.renderMessage();
+      },
+      'killed': function(evtData){
+        Game.switchUIMode(Game.UIMode.titleScreen);
       }
     }
   },
@@ -173,14 +185,18 @@ Game.EntityTraits.StatHitPoints = {
                 var defense = this.raiseSymbolActiveEvent('getDefense') || 0;
                 var dmg = evtData.attack - defense;
                 this.takeDamage(dmg);
+                this.raiseSymbolActiveEvent('damagedBy',{
+                    damager: evtData.attacker,
+                    damage: dmg
+                });
                 evtData.attacker.raiseSymbolActiveEvent('dealtDamage', {
                     attacked: this,
                     damage: dmg
                 });
                 if (this.getCurHP() <= 0) {
                     this.raiseSymbolActiveEvent('killed', {
-                        entKilled: this,
-                        killedBy: evtData.attacker
+                        dead: this,
+                        killer: evtData.attacker
                     });
                     evtData.attacker.raiseSymbolActiveEvent('madeKill', {
                         dead: this,
@@ -236,6 +252,10 @@ Game.EntityTraits.MeleeAttacker = {
                     });
                 } else {
                     this.raiseSymbolActiveEvent('attackMiss', {
+                        attacker: evtData.actor,
+                        target: evtData.target
+                    });
+                    evtData.target.raiseSymbolActiveEvent('attackAvoided',{
                         attacker: evtData.actor,
                         target: evtData.target
                     });
@@ -449,10 +469,45 @@ Game.EntityTraits.WanderChaserActor = {
     setCurActionDur: function(n){
       this.attr._WanderChaserActor_attr.curActionDur = n;
     },
+    getMoveDeltas: function(){
+      var avatar = Game.UIMode.heist.getAvatar();
+      var senseResp = this.canSeeEntity(avatar);
+
+      if (senseResp){
+        // build path to avatar
+        var source = this;
+        var map = this.getMap();
+        var path = new ROT.Path.AStar(avatar.getX(),avatar.getY(), function(x,y){
+          // can't move onto tile with entity
+          var ent = map.getEntity({x:x,y:y});
+          if (ent && ent !== avatar && ent !== source){
+            return false;
+          }
+          return map.getTile({x:x,y:y}).isWalkable();
+        }, {topology: 8});
+        // compute the path
+        var count = 0;
+        var moveDeltas = {x:0,y:0};
+        path.compute(this.getX(), this.getY(), function(x, y){
+          if (count == 1){
+            moveDeltas.x = x - source.getX();
+            moveDeltas.y = y - source.getY();
+          }
+          count ++;
+        });
+        return moveDeltas;
+      }
+      // otherwise move randomly
+      return Game.Util.getAdjacentPos({x:0,y:0}).random();
+    },
     act: function(){
       var engine = Game.UIMode.heist.getEngine();
       engine.lock();
+      var moveDeltas = this.getMoveDeltas();
+      var input = {map: this.getMap(), dx: moveDeltas.x, dy: moveDeltas.y, dir: 0};
+      this.raiseSymbolActiveEvent('tryWalk',input);
       this.getScheduler().setDuration(this.getCurActionDur());
+      this.raiseSymbolActiveEvent('actionDone');
       engine.unlock();
     }
 };
