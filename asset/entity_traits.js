@@ -48,16 +48,16 @@ Game.EntityTraits.PlayerActor = {
       }
     }
   },
-  getBaseActionDur(){
+  getBaseActionDur: function(){
     return this.attr._PlayerActor_attr.baseActionDur;
   },
-  setBaseActionDur(n){
+  setBaseActionDur: function(n){
     this.attr._PlayerActor_attr.baseActionDur = n;
   },
-  getCurActionDur(){
+  getCurActionDur: function(){
     return this.attr._PlayerActor_attr.curActionDur;
   },
-  setCurActionDur(n){
+  setCurActionDur: function(n){
     this.attr._PlayerActor_attr.curActionDur = n;
   },
   isActing: function(state){
@@ -67,7 +67,6 @@ Game.EntityTraits.PlayerActor = {
     return this.attr._PlayerActor_attr.actingState;
   },
   act: function(){
-    console.log('player actin');
     if (this.isActing()){ return; } // gate to deal with JS timing issues
     this.isActing(true);
     Game.refresh();
@@ -83,6 +82,11 @@ Game.EntityTraits.WalkerCorporeal = {
         stateNamespace: '_Walker_attr',
         stateModel: {
             direction: 0
+        },
+        listeners: {
+          'tryWalk': function(evtData){
+            this.tryWalk(evtData.map, evtData.dx, evtData.dy, evtData.dir);
+          }
         }
     },
     tryWalk: function(map, dx, dy, dir) {
@@ -100,14 +104,14 @@ Game.EntityTraits.WalkerCorporeal = {
                 actor: this,
                 target: ent
             });
-            this.raiseEntityEvent('tookTurn');
+            this.raiseEntityEvent('actionDone');
             return true;
         }
         var nextTile = map.getTile(newPos);
         if (nextTile.isWalkable()) {
             this.setPos(newPos);
             map.updateEntityLocation(this);
-            this.raiseEntityEvent('tookTurn');
+            this.raiseEntityEvent('actionDone');
             return true;
         } else {
             this.raiseEntityEvent('walkForbidden', {
@@ -116,10 +120,10 @@ Game.EntityTraits.WalkerCorporeal = {
             return false;
         }
     },
-    getDirection() {
+    getDirection: function() {
         return this.attr._Walker_attr.direction;
     },
-    setDirection(dir) {
+    setDirection: function(dir) {
         this.attr._Walker_attr.direction = dir;
     }
 };
@@ -133,7 +137,7 @@ Game.EntityTraits.Chronicle = {
             turnCounter: 0
         },
         listeners: {
-            'tookTurn': function(evtData) {
+            'actionDone': function(evtData) {
                 this.trackTurns();
             }
         }
@@ -393,5 +397,43 @@ Game.EntityTraits.MapMemory = {
     getRememberedCoordsForMap: function(mapID) {
         var mapKey = mapID || this.getMap().getID();
         return this.attr._MapMemory_attr.mapsHash[mapKey] || {};
+    }
+};
+
+/* ====================== Enemy AI ======================= */
+
+Game.EntityTraits.WanderChaserActor = {
+    META: {
+      traitName: 'WanderChaserActor',
+      traitGroup: 'Actor',
+      stateNamespace: '_WanderChaserActor_attr',
+      stateModel: {
+        baseActionDur: 1000,
+        curActionDur: 1000
+      },
+      init: function(template){
+        this.attr._WanderChaserActor_attr.baseActionDur = template.baseActionDur || 1000;
+        this.attr._WanderChaserActor_attr.curActionDur = this.attr._WanderChaserActor_attr.baseActionDur;
+      }
+    },
+    getBaseActionDur: function(){
+      return this.attr._WanderChaserActor_attr.baseActionDur;
+    },
+    setBaseActionDur: function(n){
+      this.attr._WanderChaserActor_attr.baseActionDur = n;
+    },
+    getCurActionDur: function(){
+      return this.attr._WanderChaserActor_attr.curActionDur;
+    },
+    setCurActionDur: function(n){
+      this.attr._WanderChaserActor_attr.curActionDur = n;
+    },
+    act: function(){
+      console.log('start chase act');
+      var engine = Game.UIMode.heist.getEngine();
+      engine.lock();
+      this.getScheduler().setDuration(this.getCurActionDur());
+      engine.unlock();
+      console.log('end chase act');
     }
 };

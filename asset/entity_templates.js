@@ -10,7 +10,7 @@ Game.EntityGenerator.learn({
     dodge: .1,
     sightRadius: 100,
     sightAngle: 90,
-    traits: ["MapMemory", "Sight", "WalkerCorporeal", "Chronicle", "StatHitPoints", "MeleeAttacker", "PlayerMessager", "MeleeDefender", "PlayerActor"]
+    traits: ["PlayerActor","MapMemory", "Sight", "WalkerCorporeal", "Chronicle", "StatHitPoints", "MeleeAttacker", "PlayerMessager", "MeleeDefender"]
 });
 
 Game.EntityGenerator.learn({
@@ -30,5 +30,5 @@ Game.EntityGenerator.learn({
     attack: 1,
     defense: 1,
     dodge: .05,
-    traits: ["WalkerCorporeal","StatHitPoints","MeleeAttacker","MeleeDefender"]
+    traits: ["WanderChaserActor","WalkerCorporeal","StatHitPoints","MeleeAttacker","MeleeDefender"]
 });

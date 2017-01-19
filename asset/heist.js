@@ -54,7 +54,8 @@ Game.UIMode.heist = {
     },
     moveAvatar: function(dx, dy, dir) {
         Game.Message.ageMessages();
-        if (this.getAvatar().tryWalk(this.getMap(), dx, dy, dir)) {
+        var input = {map: this.getMap(), dx: dx, dy: dy, dir: dir};
+        if (this.getAvatar().raiseEntityEvent('tryWalk',input)) {
             this.checkMoveCamera();
             Game.refresh();
         }
@@ -163,7 +164,7 @@ Game.UIMode.heist = {
                 this.moveAvatar(-1, 0, 6);
                 break;
             case 'MOVE_STILL':
-                this.getAvatar().raiseEntityEvent('tookTurn');
+                this.getAvatar().raiseEntityEvent('actionDone');
                 break;
             case 'MOVE_RIGHT':
                 this.moveAvatar(1, 0, 2);
@@ -190,7 +191,7 @@ Game.UIMode.heist = {
                 this.turnAvatar(6);
                 break;
             case 'TURN_STILL':
-                this.getAvatar().raiseEntityEvent('tookTurn');
+                this.getAvatar().raiseEntityEvent('actionDone');
                 break;
             case 'TURN_RIGHT':
                 this.turnAvatar(2);

@@ -26,7 +26,7 @@ Game.Entity = function(template) {
         var trait = this._traits[i];
         this._traitTracker[trait.META.traitName] = true;
         this._traitTracker[trait.META.traitGroup] = true;
-        for (var traitProp in traitProp != 'META' && trait) {
+        for (var traitProp in trait) {
             if (traitProp != 'META' && trait.hasOwnProperty(traitProp)) {
                 this[traitProp] = trait[traitProp];
             }
