@@ -33,9 +33,13 @@ Game.EntityTraits.PlayerMessager = {
 Game.EntityTraits.WalkerCorporeal = {
     META: {
         traitName: 'WalkerCorporeal',
-        traitGroup: 'Walker'
+        traitGroup: 'Walker',
+        stateNamespace: '_Walker_attr',
+        stateModel: {
+            direction: 0
+        }
     },
-    tryWalk: function(map, dx, dy) {
+    tryWalk: function(map, dx, dy, dir) {
         var newX = Math.min(Math.max(0, this.getX()), map.getWidth()) + dx;
         var newY = Math.min(Math.max(0, this.getY()), map.getWidth()) + dy;
         var newPos = {
@@ -52,6 +56,7 @@ Game.EntityTraits.WalkerCorporeal = {
             return true;
         }
         var nextTile = map.getTile(newPos);
+        this.setDirection(dir);
         if (nextTile.isWalkable()) {
             this.setPos(newPos);
             map.updateEntityLocation(this);
@@ -64,6 +69,12 @@ Game.EntityTraits.WalkerCorporeal = {
             });
             return false;
         }
+    },
+    getDirection() {
+        return this.attr._Walker_attr.direction;
+    },
+    setDirection(dir) {
+        this.attr._Walker_attr.direction = dir;
     }
 };
 
@@ -230,10 +241,12 @@ Game.EntityTraits.Sight = {
         traitGroup: 'Sense',
         stateNamespace: '_Sight_attr',
         stateModel: {
-            sightRadius: 3
+            sightRadius: 3,
+            sightAngle: 90
         },
         init: function(template) {
             this.attr._Sight_attr.sightRadius = template.sightRadius || 3;
+            this.attr._Sight_attr.sightAngle = template.sightAngle || 90;
         }
     },
     getSightRadius: function() {
@@ -241,6 +254,12 @@ Game.EntityTraits.Sight = {
     },
     setSightRadius: function(n) {
         this.attr._Sight_attr.sightRadius = n;
+    },
+    getSightAngle: function() {
+        return this.attr._Sight_attr.sightAngle;
+    },
+    setSightAngle: function(n) {
+        this.attr._Sight_attr.sightAngle = n;
     },
 
     canSeeEntity: function(ent) {
@@ -265,18 +284,41 @@ Game.EntityTraits.Sight = {
         for (var i = 0; i <= this.getSightRadius(); i++) {
             visibleCells.byDistance[i] = {};
         }
-        this.getMap().getFOV().compute(
-            this.getX(), this.getY(), this.getSightRadius(),
-            function(x, y, radius, visibility) {
-                visibleCells[x + ',' + y] = true;
-                visibleCells.byDistance[radius][x + ',' + y] = true;
-            }
-        );
+        switch (this.getSightAngle()) {
+            case 90:
+                this.getMap().getFOV().compute90(
+                    this.getX(), this.getY(), this.getSightRadius(), this.getDirection(),
+                    function(x, y, radius, visibility) {
+                        visibleCells[x + ',' + y] = true;
+                        visibleCells.byDistance[radius][x + ',' + y] = true;
+                    }
+                );
+                break;
+            case 180:
+                this.getMap().getFOV().compute180(
+                    this.getX(), this.getY(), this.getSightRadius(), this.getDirection(),
+                    function(x, y, radius, visibility) {
+                        visibleCells[x + ',' + y] = true;
+                        visibleCells.byDistance[radius][x + ',' + y] = true;
+                    }
+                );
+                break;
+            default:
+                this.getMap().getFOV().compute(
+                    this.getX(), this.getY(), this.getSightRadius(),
+                    function(x, y, radius, visibility) {
+                        visibleCells[x + ',' + y] = true;
+                        visibleCells.byDistance[radius][x + ',' + y] = true;
+                    }
+                );
+                break;
+        }
+
         return visibleCells;
     },
     canSeeCoord_delta: function(dx, dy) {
         return this.canSeeCoord(this.getX() + dx, this.getY() + dy);
-    }
+    },
 };
 
 Game.EntityTraits.MapMemory = {

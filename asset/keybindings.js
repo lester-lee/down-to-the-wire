@@ -188,6 +188,133 @@ Game.KeyBinding = {
             }
         },
 
+        TURN_UL: {
+            waxd: {
+                inputMatch: ROT.VK_Q,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            },
+            numpad: {
+                inputMatch: ROT.VK_NUMPAD7,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            }
+        },
+        TURN_UP: {
+            waxd: {
+                inputMatch: [ROT.VK_W, ROT.VK_UP],
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            },
+            numpad: {
+                inputMatch: [ROT.VK_NUMPAD8,ROT.VK_UP],
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            }
+        },
+        TURN_UR: {
+            waxd: {
+                inputMatch: ROT.VK_E,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            },
+            numpad: {
+                inputMatch: ROT.VK_NUMPAD9,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            }
+        },
+        TURN_LEFT: {
+            waxd: {
+                inputMatch: [ROT.VK_A,ROT.VK_LEFT],
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            },
+            numpad: {
+                inputMatch: [ROT.VK_NUMPAD4,ROT.VK_LEFT],
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            }
+        },
+        TURN_STILL: {
+            waxd: {
+                inputMatch: ROT.VK_S,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            },
+            numpad: {
+                inputMatch: ROT.VK_NUMPAD5,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            }
+        },
+        TURN_RIGHT: {
+            waxd: {
+                inputMatch: [ROT.VK_D,ROT.VK_RIGHT],
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            },
+            numpad: {
+                inputMatch: [ROT.VK_NUMPAD6,ROT.VK_RIGHT],
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            }
+        },
+        TURN_DL: {
+            waxd: {
+                inputMatch: ROT.VK_Z,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            },
+            numpad: {
+                inputMatch: ROT.VK_NUMPAD1,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            }
+        },
+        TURN_DOWN: {
+            waxd: {
+                inputMatch: [ROT.VK_X,ROT.VK_DOWN],
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            },
+            numpad: {
+                inputMatch: [ROT.VK_NUMPAD2,ROT.VK_DOWN],
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            }
+        },
+        TURN_DR: {
+            waxd: {
+                inputMatch: ROT.VK_C,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            },
+            numpad: {
+                inputMatch: ROT.VK_NUMPAD3,
+                inputType: 'keydown',
+                inputShift: true,
+                inputCtrl: false
+            }
+        },
+
         MOVE_UL: {
             waxd: {
                 inputMatch: ROT.VK_Q,
@@ -314,6 +441,7 @@ Game.KeyBinding = {
                 inputCtrl: false
             }
         },
+
         NEXT_LEVEL: {
           all: {
             inputMatch: ROT.VK_GREATER_THAN,

@@ -43,12 +43,15 @@ Game.UIMode.heist = {
         display.drawText(1, 1, "HP: " + this.getAvatar().getCurHP() + "/" + this.getAvatar().getMaxHP());
         display.drawText(1, 6, "Turns taken: " + this.getAvatar().getTurns());
     },
-    moveAvatar: function(dx, dy) {
+    moveAvatar: function(dx, dy, dir) {
         Game.Message.ageMessages();
-        if (this.getAvatar().tryWalk(this.getMap(), dx, dy)) {
+        if (this.getAvatar().tryWalk(this.getMap(), dx, dy, dir)) {
             this.checkMoveCamera();
             Game.refresh();
         }
+    },
+    turnAvatar: function(dir) {
+        this.getAvatar().setDirection(dir);
     },
     checkMoveCamera: function() {
         // camera follows player
@@ -137,31 +140,58 @@ Game.UIMode.heist = {
         switch (action) {
             // Movement commands
             case 'MOVE_UL':
-                this.moveAvatar(-1, -1);
+                this.moveAvatar(-1, -1, 7);
                 break;
             case 'MOVE_UP':
-                this.moveAvatar(0, -1);
+                this.moveAvatar(0, -1, 0);
                 break;
             case 'MOVE_UR':
-                this.moveAvatar(1, -1);
+                this.moveAvatar(1, -1, 1);
                 break;
             case 'MOVE_LEFT':
-                this.moveAvatar(-1, 0);
+                this.moveAvatar(-1, 0, 6);
                 break;
             case 'MOVE_STILL':
                 this.getAvatar().raiseEntityEvent('tookTurn');
                 break;
             case 'MOVE_RIGHT':
-                this.moveAvatar(1, 0);
+                this.moveAvatar(1, 0, 2);
                 break;
             case 'MOVE_DL':
-                this.moveAvatar(-1, 1);
+                this.moveAvatar(-1, 1, 5);
                 break;
             case 'MOVE_DOWN':
-                this.moveAvatar(0, 1);
+                this.moveAvatar(0, 1, 4);
                 break;
             case 'MOVE_DR':
-                this.moveAvatar(1, 1);
+                this.moveAvatar(1, 1, 3);
+                break;
+            case 'TURN_UL':
+                this.turnAvatar(7);
+                break;
+            case 'TURN_UP':
+                this.turnAvatar(0);
+                break;
+            case 'TURN_UR':
+                this.turnAvatar(1);
+                break;
+            case 'TURN_LEFT':
+                this.turnAvatar(6);
+                break;
+            case 'TURN_STILL':
+                this.getAvatar().raiseEntityEvent('tookTurn');
+                break;
+            case 'TURN_RIGHT':
+                this.turnAvatar(2);
+                break;
+            case 'TURN_DL':
+                this.turnAvatar(5);
+                break;
+            case 'TURN_DOWN':
+                this.turnAvatar(4);
+                break;
+            case 'TURN_DR':
+                this.turnAvatar(3);
                 break;
             case 'PERSISTENCE':
                 Game.switchUIMode(Game.UIMode.persistence);
