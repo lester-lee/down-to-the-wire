@@ -45,5 +45,6 @@ Game.Tile.floorTile = new Game.Tile({
 Game.Tile.wallTile = new Game.Tile({
     name: 'wall',
     chr: '#',
-    fg: '#bbb'
+    fg: '#bbb',
+    opaque: true
 });

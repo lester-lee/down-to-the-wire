@@ -34,11 +34,8 @@ Game.UIMode.titleScreen = {
         }
     },
     handleInput: function(inputType, inputData) {
-        var action = Game.KeyBinding.getInput(inputType, inputData);
-        if (!action) {
-            return false;
-        }
-        switch (action.key) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
             case 'MOVE_DOWN':
                 this.attr._curOption++;
                 this.attr._curOption %= this.titleOptions.length;
@@ -86,11 +83,8 @@ Game.UIMode.persistence = {
         }
     },
     handleInput: function(inputType, inputData) {
-        var action = Game.KeyBinding.getInput(inputType, inputData);
-        if (!action) {
-            return false;
-        }
-        switch (action.key) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
             case 'MOVE_DOWN':
                 this.attr._curOption++;
                 this.attr._curOption %= this.persistOptions.length;
@@ -189,11 +183,8 @@ Game.UIMode.gameIntro = {
         display.drawText(1, 5, "what will you call yourself?");
     },
     handleInput: function(inputType, inputData) {
-        var action = Game.KeyBinding.getInput(inputType, inputData);
-        if (!action) {
-            return false;
-        }
-        switch (action.key) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
             case 'CONFIRM':
                 var inputHTML = document.getElementById('user-input');
                 var inputText = inputHTML.value;
@@ -232,11 +223,8 @@ Game.UIMode.shipScreen = {
         this.renderShipOptions(display);
     },
     handleInput: function(inputType, inputData) {
-        var action = Game.KeyBinding.getInput(inputType, inputData);
-        if (!action) {
-            return false;
-        }
-        switch (action.key) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
             case 'MOVE_DOWN':
                 this.attr._curOption++;
                 this.attr._curOption %= this.shipOptions.length;
@@ -426,11 +414,8 @@ Game.UIMode.navigation = {
         this.travelToTarget(navMap.getNode(nextShip.name));
     },
     handleInput: function(inputType, inputData) {
-        var action = Game.KeyBinding.getInput(inputType, inputData);
-        if (!action) {
-            return false;
-        }
-        switch (action.key) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
             case 'MOVE_DOWN':
                 this.attr._curOption++;
                 this.attr._curOption %= this.navOptions.length;

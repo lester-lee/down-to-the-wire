@@ -52,6 +52,7 @@ Game.UIMode.heist = {
     },
     turnAvatar: function(dir) {
         this.getAvatar().setDirection(dir);
+        Game.refresh();
     },
     checkMoveCamera: function() {
         // camera follows player

@@ -46,6 +46,8 @@ Game.EntityTraits.WalkerCorporeal = {
             x: newX,
             y: newY
         };
+        this.setDirection(dir);
+        Game.refresh();
         var ent = map.getEntity(newPos);
         if (ent) {
             this.raiseEntityEvent('bumpEntity', {
@@ -56,12 +58,10 @@ Game.EntityTraits.WalkerCorporeal = {
             return true;
         }
         var nextTile = map.getTile(newPos);
-        this.setDirection(dir);
         if (nextTile.isWalkable()) {
             this.setPos(newPos);
             map.updateEntityLocation(this);
             this.raiseEntityEvent('tookTurn');
-            Game.refresh();
             return true;
         } else {
             this.raiseEntityEvent('walkForbidden', {

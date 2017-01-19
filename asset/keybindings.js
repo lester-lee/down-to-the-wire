@@ -47,17 +47,17 @@ Game.KeyBinding = {
                     var metakey = 'shift';
                 }
             }
-            if (info.inputMatch.constructor === Array){
-            for(var i=0; i < info.inputMatch.length; i++){
-              this._curBindingLookup[info.inputType][metakey][info.inputMatch[i]] = {
-                  key: act
-              };
+            if (info.inputMatch.constructor === Array) {
+                for (var i = 0; i < info.inputMatch.length; i++) {
+                    this._curBindingLookup[info.inputType][metakey][info.inputMatch[i]] = {
+                        key: act
+                    };
+                }
+            } else {
+                this._curBindingLookup[info.inputType][metakey][info.inputMatch] = {
+                    key: act
+                };
             }
-          }else {
-            this._curBindingLookup[info.inputType][metakey][info.inputMatch] = {
-                key: act
-            };
-          }
         }
     },
     getInput: function(inputType, inputData) {
@@ -210,7 +210,7 @@ Game.KeyBinding = {
                 inputCtrl: false
             },
             numpad: {
-                inputMatch: [ROT.VK_NUMPAD8,ROT.VK_UP],
+                inputMatch: [ROT.VK_NUMPAD8, ROT.VK_UP],
                 inputType: 'keydown',
                 inputShift: true,
                 inputCtrl: false
@@ -232,13 +232,13 @@ Game.KeyBinding = {
         },
         TURN_LEFT: {
             waxd: {
-                inputMatch: [ROT.VK_A,ROT.VK_LEFT],
+                inputMatch: [ROT.VK_A, ROT.VK_LEFT],
                 inputType: 'keydown',
                 inputShift: true,
                 inputCtrl: false
             },
             numpad: {
-                inputMatch: [ROT.VK_NUMPAD4,ROT.VK_LEFT],
+                inputMatch: [ROT.VK_NUMPAD4, ROT.VK_LEFT],
                 inputType: 'keydown',
                 inputShift: true,
                 inputCtrl: false
@@ -260,13 +260,13 @@ Game.KeyBinding = {
         },
         TURN_RIGHT: {
             waxd: {
-                inputMatch: [ROT.VK_D,ROT.VK_RIGHT],
+                inputMatch: [ROT.VK_D, ROT.VK_RIGHT],
                 inputType: 'keydown',
                 inputShift: true,
                 inputCtrl: false
             },
             numpad: {
-                inputMatch: [ROT.VK_NUMPAD6,ROT.VK_RIGHT],
+                inputMatch: [ROT.VK_NUMPAD6, ROT.VK_RIGHT],
                 inputType: 'keydown',
                 inputShift: true,
                 inputCtrl: false
@@ -288,13 +288,13 @@ Game.KeyBinding = {
         },
         TURN_DOWN: {
             waxd: {
-                inputMatch: [ROT.VK_X,ROT.VK_DOWN],
+                inputMatch: [ROT.VK_X, ROT.VK_DOWN],
                 inputType: 'keydown',
                 inputShift: true,
                 inputCtrl: false
             },
             numpad: {
-                inputMatch: [ROT.VK_NUMPAD2,ROT.VK_DOWN],
+                inputMatch: [ROT.VK_NUMPAD2, ROT.VK_DOWN],
                 inputType: 'keydown',
                 inputShift: true,
                 inputCtrl: false
@@ -337,7 +337,7 @@ Game.KeyBinding = {
                 inputCtrl: false
             },
             numpad: {
-                inputMatch: [ROT.VK_NUMPAD8,ROT.VK_UP],
+                inputMatch: [ROT.VK_NUMPAD8, ROT.VK_UP],
                 inputType: 'keydown',
                 inputShift: false,
                 inputCtrl: false
@@ -359,13 +359,13 @@ Game.KeyBinding = {
         },
         MOVE_LEFT: {
             waxd: {
-                inputMatch: [ROT.VK_A,ROT.VK_LEFT],
+                inputMatch: [ROT.VK_A, ROT.VK_LEFT],
                 inputType: 'keydown',
                 inputShift: false,
                 inputCtrl: false
             },
             numpad: {
-                inputMatch: [ROT.VK_NUMPAD4,ROT.VK_LEFT],
+                inputMatch: [ROT.VK_NUMPAD4, ROT.VK_LEFT],
                 inputType: 'keydown',
                 inputShift: false,
                 inputCtrl: false
@@ -387,13 +387,13 @@ Game.KeyBinding = {
         },
         MOVE_RIGHT: {
             waxd: {
-                inputMatch: [ROT.VK_D,ROT.VK_RIGHT],
+                inputMatch: [ROT.VK_D, ROT.VK_RIGHT],
                 inputType: 'keydown',
                 inputShift: false,
                 inputCtrl: false
             },
             numpad: {
-                inputMatch: [ROT.VK_NUMPAD6,ROT.VK_RIGHT],
+                inputMatch: [ROT.VK_NUMPAD6, ROT.VK_RIGHT],
                 inputType: 'keydown',
                 inputShift: false,
                 inputCtrl: false
@@ -415,13 +415,13 @@ Game.KeyBinding = {
         },
         MOVE_DOWN: {
             waxd: {
-                inputMatch: [ROT.VK_X,ROT.VK_DOWN],
+                inputMatch: [ROT.VK_X, ROT.VK_DOWN],
                 inputType: 'keydown',
                 inputShift: false,
                 inputCtrl: false
             },
             numpad: {
-                inputMatch: [ROT.VK_NUMPAD2,ROT.VK_DOWN],
+                inputMatch: [ROT.VK_NUMPAD2, ROT.VK_DOWN],
                 inputType: 'keydown',
                 inputShift: false,
                 inputCtrl: false
@@ -443,35 +443,17 @@ Game.KeyBinding = {
         },
 
         NEXT_LEVEL: {
-          all: {
-            inputMatch: ROT.VK_GREATER_THAN,
-            inputType: 'keypress',
-            inputShift: true,
-            inputCtrl: false
-          }
-        },
-        PREVIOUS_LEVEL: {
-          all: {
-            inputMatch: ROT.VK_LESS_THAN,
-            inputType: 'keypress',
-            inputShift: true,
-            inputCtrl: false
-          }
-        },
-
-        NAVIGATE_DOCK: {
             all: {
-                inputMatch: ROT.VK_D,
-                inputType: 'keydown',
+                inputMatch: ROT.VK_GREATER_THAN,
+                inputType: 'keypress',
                 inputShift: true,
                 inputCtrl: false
             }
         },
-
-        NAVIGATE_TRAVEL: {
+        PREVIOUS_LEVEL: {
             all: {
-                inputMatch: ROT.VK_T,
-                inputType: 'keydown',
+                inputMatch: ROT.VK_LESS_THAN,
+                inputType: 'keypress',
                 inputShift: true,
                 inputCtrl: false
             }
