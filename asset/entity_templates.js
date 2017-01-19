@@ -27,7 +27,7 @@ Game.EntityGenerator.learn({
     chr: 'j',
     fg: '#0bf',
     maxHP: 10,
-    attack: 5,
+    attack: 3,
     attackAccuracy: .6,
     defense: 1,
     dodge: .1,

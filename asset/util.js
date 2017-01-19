@@ -19,7 +19,6 @@ Game.Util = {
         return a;
     },
 
-
     randomInt: function(min, max) {
         var range = max - min;
         var offset = Math.floor(ROT.RNG.getUniform() * (range + 1));
@@ -53,6 +52,12 @@ Game.Util = {
     randomDroneName: function() {
         return Game.Util.Adjectives[Math.floor(ROT.RNG.getUniform() * Game.Util.Adjectives.length)] +
             " " + Game.Util.Nouns[Math.floor(ROT.RNG.getUniform() * Game.Util.Nouns.length)];
+    },
+
+    calcDamage: function(attack, defense){
+        var mod = ROT.RNG.getUniform()*.2 + 0.8;
+        var dmg = (attack/defense);
+        return Math.floor(dmg*mod);
     }
 };
 

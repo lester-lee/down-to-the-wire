@@ -17,7 +17,7 @@ Game.EntityTraits.PlayerMessager = {
                 Game.Message.send("it'd be mighty impolite to walk into " + evtData.target.getName());
             },
             'attackAvoided': function(evtData){
-              Game.Message.send(evtData.attacker.getName() + " tried to hit you but failed");
+                Game.Message.send(evtData.attacker.getName() + " tried to hit you but failed");
             },
             'attackMiss': function(evtData) {
                 Game.Message.send("You miss your attack on " + evtData.target.getName());
@@ -184,7 +184,8 @@ Game.EntityTraits.StatHitPoints = {
         listeners: {
             'attacked': function(evtData) {
                 var defense = this.raiseSymbolActiveEvent('getDefense') || 0;
-                var dmg = evtData.attack - defense;
+                var attack = evtData.attack;
+                var dmg = Game.Util.calcDamage(attack,defense);
                 this.takeDamage(dmg);
                 this.raiseSymbolActiveEvent('damagedBy',{
                     damager: evtData.attacker,
@@ -246,7 +247,7 @@ Game.EntityTraits.MeleeAttacker = {
             'bumpEntity': function(evtData) {
                 var hit = this.getAttackAccuracy()
                 var dodge = evtData.target.raiseSymbolActiveEvent('getDodge') || 0;
-                if (ROT.RNG.getUniform() <= hit - dodge) {
+                if (ROT.RNG.getUniform() <= Math.max(0,hit - dodge)) {
                     evtData.target.raiseSymbolActiveEvent('attacked', {
                         attacker: evtData.actor,
                         attack: this.getAttack()
