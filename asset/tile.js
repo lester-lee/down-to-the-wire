@@ -45,19 +45,22 @@ Game.Tile.floorTile = new Game.Tile({
 });
 Game.Tile.wallTile = new Game.Tile({
     name: 'wall',
-    chr: '█',
+    //chr: '█',
+    chr: '░',
     fg: '#bbb',
     opaque: true
 });
 Game.Tile.doorClosedTile = new Game.Tile({
     name: 'doorClosed',
     chr: '▣',
+    //chr: '█',
     fg: '#bbb',
     opaque: true,
 });
 Game.Tile.doorOpenTile = new Game.Tile({
     name: 'doorOpen',
-    chr: '⬚',
+    //chr: '⬚',
+    chr: '⨆',
     fg: '#bbb',
     opaque: false,
     walkable: true,
