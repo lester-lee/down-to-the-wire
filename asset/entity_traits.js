@@ -16,7 +16,7 @@ Game.EntityTraits.PlayerMessager = {
             'walkForbidden': function(evtData) {
                 Game.Message.send("it'd be mighty impolite to walk into " + evtData.target.getName());
             },
-            'attackAvoided': function(evtData){
+            'attackAvoided': function(evtData) {
                 Game.Message.send(evtData.attacker.getName() + " tried to hit you but failed");
             },
             'attackMiss': function(evtData) {
@@ -28,64 +28,66 @@ Game.EntityTraits.PlayerMessager = {
             'dealtDamage': function(evtData) {
                 Game.Message.send("You deal " + evtData.damage + " damage to the " + evtData.attacked.getName());
             },
-            'damagedBy': function(evtData){
+            'damagedBy': function(evtData) {
                 Game.Message.send(evtData.damager.getName() + " hit you for " + evtData.damage + " damage");
             },
-            'killed': function(evtData){
-              Game.Message.send("You were destroyed by " + evtData.killer.getName());
-              Game.renderMessage();
-              Game.switchUIMode(Game.UIMode.titleScreen);
+            'killed': function(evtData) {
+                Game.Message.send("You were destroyed by " + evtData.killer.getName());
+                Game.renderMessage();
+                Game.switchUIMode(Game.UIMode.titleScreen);
             }
         }
     }
 };
 
 Game.EntityTraits.PlayerActor = {
-  META: {
-    traitName: 'PlayerActor',
-    traitGroup: 'Actor',
-    stateNamespace: '_PlayerActor_attr',
-    stateModel: {
-      baseActionDur: 1000,
-      actingState: false,
-      curActionDur: 1000
+    META: {
+        traitName: 'PlayerActor',
+        traitGroup: 'Actor',
+        stateNamespace: '_PlayerActor_attr',
+        stateModel: {
+            baseActionDur: 1000,
+            actingState: false,
+            curActionDur: 1000
+        },
+        listeners: {
+            'actionDone': function(evtData) {
+                this.getScheduler().setDuration(this.getCurActionDur());
+                Game.UIMode.heist.getEngine().unlock();
+                Game.renderMessage();
+            }
+            // 'killed': function(evtData){
+            //   Game.switchUIMode(Game.UIMode.titleScreen);
+            // }
+        }
     },
-    listeners: {
-      'actionDone': function(evtData){
-        this.getScheduler().setDuration(this.getCurActionDur());
-        Game.UIMode.heist.getEngine().unlock();
-        Game.renderMessage();
-      }
-      // 'killed': function(evtData){
-      //   Game.switchUIMode(Game.UIMode.titleScreen);
-      // }
+    getBaseActionDur: function() {
+        return this.attr._PlayerActor_attr.baseActionDur;
+    },
+    setBaseActionDur: function(n) {
+        this.attr._PlayerActor_attr.baseActionDur = n;
+    },
+    getCurActionDur: function() {
+        return this.attr._PlayerActor_attr.curActionDur;
+    },
+    setCurActionDur: function(n) {
+        this.attr._PlayerActor_attr.curActionDur = n;
+    },
+    isActing: function(state) {
+        if (state != undefined) {
+            this.attr._PlayerActor_attr.actingState = state;
+        }
+        return this.attr._PlayerActor_attr.actingState;
+    },
+    act: function() {
+        if (this.isActing()) {
+            return;
+        } // gate to deal with JS timing issues
+        this.isActing(true);
+        Game.refresh();
+        Game.UIMode.heist.getEngine().lock();
+        this.isActing(false);
     }
-  },
-  getBaseActionDur: function(){
-    return this.attr._PlayerActor_attr.baseActionDur;
-  },
-  setBaseActionDur: function(n){
-    this.attr._PlayerActor_attr.baseActionDur = n;
-  },
-  getCurActionDur: function(){
-    return this.attr._PlayerActor_attr.curActionDur;
-  },
-  setCurActionDur: function(n){
-    this.attr._PlayerActor_attr.curActionDur = n;
-  },
-  isActing: function(state){
-    if (state != undefined){
-      this.attr._PlayerActor_attr.actingState = state;
-    }
-    return this.attr._PlayerActor_attr.actingState;
-  },
-  act: function(){
-    if (this.isActing()){ return; } // gate to deal with JS timing issues
-    this.isActing(true);
-    Game.refresh();
-    Game.UIMode.heist.getEngine().lock();
-    this.isActing(false);
-  }
 };
 
 Game.EntityTraits.WalkerCorporeal = {
@@ -97,9 +99,9 @@ Game.EntityTraits.WalkerCorporeal = {
             direction: 0
         },
         listeners: {
-          'tryWalk': function(evtData){
-            this.tryWalk(evtData.map, evtData.dx, evtData.dy, evtData.dir);
-          }
+            'tryWalk': function(evtData) {
+                this.tryWalk(evtData.map, evtData.dx, evtData.dy, evtData.dir);
+            }
         }
     },
     tryWalk: function(map, dx, dy, dir) {
@@ -126,9 +128,11 @@ Game.EntityTraits.WalkerCorporeal = {
             map.updateEntityLocation(this);
             this.raiseSymbolActiveEvent('actionDone');
             return true;
-        } else if(nextTile.getName() === 'doorClosed'){
-          this.raiseSymbolActiveEvent('doorOpenAttempt',{targetPos: newPos});
-        }else{
+        } else if (nextTile.getName() === 'doorClosed') {
+            this.raiseSymbolActiveEvent('doorOpenAttempt', {
+                targetPos: newPos
+            });
+        } else {
             this.raiseSymbolActiveEvent('walkForbidden', {
                 target: nextTile
             });
@@ -183,11 +187,11 @@ Game.EntityTraits.StatHitPoints = {
         },
         listeners: {
             'attacked': function(evtData) {
-                var defense = this.raiseSymbolActiveEvent('getDefense') || 0;
+                var defense = this.raiseSymbolActiveEvent('getDefense').defense || 0;
                 var attack = evtData.attack;
-                var dmg = Game.Util.calcDamage(attack,defense);
+                var dmg = Game.Util.calcDamage(attack, defense);
                 this.takeDamage(dmg);
-                this.raiseSymbolActiveEvent('damagedBy',{
+                this.raiseSymbolActiveEvent('damagedBy', {
                     damager: evtData.attacker,
                     damage: dmg
                 });
@@ -245,9 +249,9 @@ Game.EntityTraits.MeleeAttacker = {
         },
         listeners: {
             'bumpEntity': function(evtData) {
-                var hit = this.getAttackAccuracy()
-                var dodge = evtData.target.raiseSymbolActiveEvent('getDodge') || 0;
-                if (ROT.RNG.getUniform() <= Math.max(0,hit - dodge)) {
+                var hit = this.getAttackAccuracy();
+                var dodge = evtData.target.raiseSymbolActiveEvent('getDodge').dodge || 0;
+                if (ROT.RNG.getUniform() <= Math.max(0, hit - dodge)) {
                     evtData.target.raiseSymbolActiveEvent('attacked', {
                         attacker: evtData.actor,
                         attack: this.getAttack()
@@ -257,7 +261,7 @@ Game.EntityTraits.MeleeAttacker = {
                         attacker: evtData.actor,
                         target: evtData.target
                     });
-                    evtData.target.raiseSymbolActiveEvent('attackAvoided',{
+                    evtData.target.raiseSymbolActiveEvent('attackAvoided', {
                         attacker: evtData.actor,
                         target: evtData.target
                     });
@@ -287,17 +291,15 @@ Game.EntityTraits.MeleeDefender = {
             this.attr._MeleeDefender_attr.dodge = template.dodge || .05;
         },
         listeners: {
-            'bumpEntity': function(evtData) {
-                evtData.target.raiseSymbolActiveEvent('attacked', {
-                    attacker: evtData.actor,
-                    attack: this.getAttack()
-                });
-            },
             'getDodge': function() {
-                return this.getDodge();
+                return {
+                    dodge: this.getDodge()
+                };
             },
             'getDefense': function() {
-                return this.getDefense();
+                return {
+                    defense: this.getDefense()
+                };
             }
         }
     },
@@ -426,90 +428,109 @@ Game.EntityTraits.MapMemory = {
 
 
 Game.EntityTraits.DoorOpener = {
-META: {
-    traitName: 'DoorOpener',
-    traitGroup: 'DoorOpener',
-    stateNamespace: '_DoorOpener_attr',
-    listeners: {
-        'doorOpenAttempt': function(evtData) {
-            this.openDoor(this.getMap(),evtData.targetPos);
-        }
-    },
+    META: {
+        traitName: 'DoorOpener',
+        traitGroup: 'DoorOpener',
+        stateNamespace: '_DoorOpener_attr',
+        listeners: {
+            'doorOpenAttempt': function(evtData) {
+                this.openDoor(this.getMap(), evtData.targetPos);
+            }
+        },
 
-},
-openDoor: function(map, pos){
-    map.setTile(pos, Game.Tile.doorOpenTile);
-    Game.refresh();
-}
+    },
+    openDoor: function(map, pos) {
+        map.setTile(pos, Game.Tile.doorOpenTile);
+        Game.refresh();
+    }
 };
 
 /* ====================== Enemy AI ======================= */
 
 Game.EntityTraits.WanderChaserActor = {
     META: {
-      traitName: 'WanderChaserActor',
-      traitGroup: 'Actor',
-      stateNamespace: '_WanderChaserActor_attr',
-      stateModel: {
-        baseActionDur: 1000,
-        curActionDur: 1000
-      },
-      init: function(template){
-        this.attr._WanderChaserActor_attr.baseActionDur = template.baseActionDur || 1000;
-        this.attr._WanderChaserActor_attr.curActionDur = this.attr._WanderChaserActor_attr.baseActionDur;
-      }
+        traitName: 'WanderChaserActor',
+        traitGroup: 'Actor',
+        stateNamespace: '_WanderChaserActor_attr',
+        stateModel: {
+            baseActionDur: 1000,
+            curActionDur: 1000
+        },
+        init: function(template) {
+            this.attr._WanderChaserActor_attr.baseActionDur = template.baseActionDur || 1000;
+            this.attr._WanderChaserActor_attr.curActionDur = this.attr._WanderChaserActor_attr.baseActionDur;
+        }
     },
-    getBaseActionDur: function(){
-      return this.attr._WanderChaserActor_attr.baseActionDur;
+    getBaseActionDur: function() {
+        return this.attr._WanderChaserActor_attr.baseActionDur;
     },
-    setBaseActionDur: function(n){
-      this.attr._WanderChaserActor_attr.baseActionDur = n;
+    setBaseActionDur: function(n) {
+        this.attr._WanderChaserActor_attr.baseActionDur = n;
     },
-    getCurActionDur: function(){
-      return this.attr._WanderChaserActor_attr.curActionDur;
+    getCurActionDur: function() {
+        return this.attr._WanderChaserActor_attr.curActionDur;
     },
-    setCurActionDur: function(n){
-      this.attr._WanderChaserActor_attr.curActionDur = n;
+    setCurActionDur: function(n) {
+        this.attr._WanderChaserActor_attr.curActionDur = n;
     },
-    getMoveDeltas: function(){
-      var avatar = Game.UIMode.heist.getAvatar();
-      var senseResp = this.canSeeEntity(avatar);
+    getMoveDeltas: function() {
+        var avatar = Game.UIMode.heist.getAvatar();
+        var senseResp = this.canSeeEntity(avatar);
 
-      if (senseResp){
-        // build path to avatar
-        var source = this;
-        var map = this.getMap();
-        var path = new ROT.Path.AStar(avatar.getX(),avatar.getY(), function(x,y){
-          // can't move onto tile with entity
-          var ent = map.getEntity({x:x,y:y});
-          if (ent && ent !== avatar && ent !== source){
-            return false;
-          }
-          return map.getTile({x:x,y:y}).isWalkable();
-        }, {topology: 8});
-        // compute the path
-        var count = 0;
-        var moveDeltas = {x:0,y:0};
-        path.compute(this.getX(), this.getY(), function(x, y){
-          if (count == 1){
-            moveDeltas.x = x - source.getX();
-            moveDeltas.y = y - source.getY();
-          }
-          count ++;
-        });
-        return moveDeltas;
-      }
-      // otherwise move randomly
-      return Game.Util.getAdjacentPos({x:0,y:0}).random();
+        if (senseResp) {
+            // build path to avatar
+            var source = this;
+            var map = this.getMap();
+            var path = new ROT.Path.AStar(avatar.getX(), avatar.getY(), function(x, y) {
+                // can't move onto tile with entity
+                var ent = map.getEntity({
+                    x: x,
+                    y: y
+                });
+                if (ent && ent !== avatar && ent !== source) {
+                    return false;
+                }
+                return map.getTile({
+                    x: x,
+                    y: y
+                }).isWalkable();
+            }, {
+                topology: 8
+            });
+            // compute the path
+            var count = 0;
+            var moveDeltas = {
+                x: 0,
+                y: 0
+            };
+            path.compute(this.getX(), this.getY(), function(x, y) {
+                if (count == 1) {
+                    moveDeltas.x = x - source.getX();
+                    moveDeltas.y = y - source.getY();
+                }
+                count++;
+            });
+            return moveDeltas;
+        }
+        // otherwise move randomly
+        return Game.Util.getAdjacentPos({
+            x: 0,
+            y: 0
+        }).random();
     },
-    act: function(){
-      var engine = Game.UIMode.heist.getEngine();
-      engine.lock();
-      var moveDeltas = this.getMoveDeltas();
-      var input = {map: this.getMap(), dx: moveDeltas.x, dy: moveDeltas.y, dir: 0};
-      this.raiseSymbolActiveEvent('tryWalk',input);
-      this.getScheduler().setDuration(this.getCurActionDur());
-      this.raiseSymbolActiveEvent('actionDone');
-      engine.unlock();
+    act: function() {
+        var engine = Game.UIMode.heist.getEngine();
+        engine.lock();
+        var moveDeltas = this.getMoveDeltas();
+        var input = {
+            map: this.getMap(),
+            dx: moveDeltas.x,
+            dy: moveDeltas.y,
+            dir: 0
+        };
+        this.raiseSymbolActiveEvent('tryWalk', input);
+        this.getScheduler().setDuration(this.getCurActionDur());
+        this.raiseSymbolActiveEvent('actionDone');
+        engine.unlock();
     }
 };

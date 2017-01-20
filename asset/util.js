@@ -55,7 +55,7 @@ Game.Util = {
     },
 
     calcDamage: function(attack, defense){
-        var mod = ROT.RNG.getUniform()*.2 + 0.8;
+        var mod = ROT.RNG.getUniform()*.5 + 0.5;
         var dmg = (attack/defense);
         return Math.floor(dmg*mod);
     }
