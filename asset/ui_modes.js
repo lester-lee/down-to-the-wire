@@ -213,7 +213,9 @@ Game.UIMode.shipScreen = {
             Game.addUIMode(Game.UIMode.persistence);
         }
     },
-    enter: function() {},
+    enter: function() {
+        this.attr._curOption = 0;
+    },
     exit: function() {},
     render: function(display) {
         display.drawText(0, 1, this.attr.playerName + " STATUS");
@@ -439,7 +441,6 @@ Game.UIMode.navigation = {
 Game.UIMode.helpScreen = {
     curPage: 1,
     numPages: 3,
-
     enter: function() {
         this.curPage = 1;
     },
@@ -452,7 +453,7 @@ Game.UIMode.helpScreen = {
             display.drawText(dimensions.w - 14, dimensions.h - 1, "[d] Next page");
         }
         if (this.curPage > 1) {
-            display.drawText(0, dimensions.h - 1, "[a] Next page");
+            display.drawText(0, dimensions.h - 1, "[a] Previous page");
         }
 
     },
@@ -495,22 +496,42 @@ Game.UIMode.helpScreen = {
 };
 
 Game.UIMode.inventory = {
-    enter: function() {},
+    attr: {
+        _curOption: 0
+    },
+    avatar: null,
+    itemIDs: null,
+    enter: function() {
+        this.avatar = Game.UIMode.heist.getAvatar();
+        this.itemIDs = this.avatar.getInventoryItemIDs();
+    },
     exit: function() {},
     render: function(display) {
-        display.drawText(0, 1, "Inventory");
+        display.drawText(2, 1, "Inventory");
         this.renderInventory(display);
     },
     renderInventory: function(display) {
-        var avatar = Game.UIMode.heist.getAvatar();
-        var itemIDs = avatar.getInventoryItemIDs();
-        for (var i = 0; i < itemIDs.length; i++) {
-            display.drawText(0, i + 3, Game.DATASTORE.ITEM[itemIDs[i]].getName());
+        if (this.itemIDs.length > 0) {
+            for (var i = 0; i < this.itemIDs.length; i++) {
+                var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+                var item = Game.DATASTORE.ITEM[this.itemIDs[i]];
+                display.drawText(0, i + 3, '%b{' + bg + '}> ' + item.getName() + ' - ' + item.getDescription());
+            }
+        } else {
+            display.drawText(0, 3, "You do not have any items.");
         }
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
         switch (action) {
+            case 'MOVE_DOWN':
+                this.attr._curOption++;
+                this.attr._curOption %= this.itemIDs.length;
+                break;
+            case 'MOVE_UP':
+                this.attr._curOption--;
+                this.attr._curOption = (this.attr._curOption < 0) ? this.itemIDs.length - 1 : this.attr._curOption;
+                break;
             case 'CANCEL':
                 Game.removeUIMode();
                 break;
@@ -551,7 +572,9 @@ Game.UIMode.heistMenu = {
         }
     },
     enter: function() {},
-    exit: function() {},
+    exit: function() {
+        this.attr._curOption = 0;
+    },
     render: function(display) {
         Game.UIMode.heist.render(display);
     },
