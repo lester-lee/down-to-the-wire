@@ -206,7 +206,8 @@ Game.UIMode.heist = {
                 this.turnAvatar(3);
                 break;
             case 'PERSISTENCE':
-                Game.switchUIMode(Game.UIMode.persistence);
+                // Game.switchUIMode(Game.UIMode.persistence);
+                Game.addUIMode(Game.UIMode.heistMenu);
                 break;
             case 'NEXT_LEVEL':
                 this.nextLevel();

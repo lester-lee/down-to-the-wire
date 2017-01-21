@@ -448,3 +448,37 @@ Game.UIMode.navigation = {
         return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
     }
 };
+
+Game.UIMode.heistMenu = {
+  attr: {_curOption: 0},
+  menuOptions: ["Inventory","Help","Options","Save/Load" ],
+  enter: function(){},
+  exit: function(){},
+  render: function(display){
+    Game.UIMode.heist.render(display);
+  },
+  renderAvatarInfo: function(display){
+    this.renderMenuOptions();
+  },
+  handleInput: function(inputType, inputData){
+    var action = Game.KeyBinding.getInput(inputType, inputData).key;
+    switch (action) {
+        case 'MOVE_DOWN':
+            this.attr._curOption++;
+            this.attr._curOption %= this.navOptions.length;
+            break;
+        case 'MOVE_UP':
+            this.attr._curOption--;
+            this.attr._curOption = (this.attr._curOption < 0) ? this.navOptions.length - 1 : this.attr._curOption;
+            break;
+        case 'CONFIRM':
+            this.navFunctions[this.navOptions[this.attr._curOption]]();
+            break;
+        case 'CANCEL':
+            Game.removeUIMode();
+            break;
+        default:
+            break;
+    }
+  }
+};
