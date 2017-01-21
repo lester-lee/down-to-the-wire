@@ -25,6 +25,12 @@ Game.Util = {
         return offset + min;
     },
 
+    arrayObjectToID: function(obj){
+        return obj.map(function(elem){
+          return elem.getID();
+        });
+    },
+
     getDisplayDim: function(display) {
         return {
             w: display._options.width,

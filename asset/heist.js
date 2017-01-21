@@ -154,34 +154,36 @@ Game.UIMode.heist = {
      }, */
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        var avatar = this.getAvatar();
+        var tookTurn = false;
         switch (action) {
             // Movement commands
             case 'MOVE_UL':
-                this.moveAvatar(-1, -1, 7);
+                tookTurn = this.moveAvatar(-1, -1, 7);
                 break;
             case 'MOVE_UP':
-                this.moveAvatar(0, -1, 0);
+                tookTurn = this.moveAvatar(0, -1, 0);
                 break;
             case 'MOVE_UR':
-                this.moveAvatar(1, -1, 1);
+                tookTurn = this.moveAvatar(1, -1, 1);
                 break;
             case 'MOVE_LEFT':
-                this.moveAvatar(-1, 0, 6);
+                tookTurn = this.moveAvatar(-1, 0, 6);
                 break;
             case 'MOVE_STILL':
-                this.getAvatar().raiseSymbolActiveEvent('actionDone');
+                avatar.raiseSymbolActiveEvent('actionDone');
                 break;
             case 'MOVE_RIGHT':
-                this.moveAvatar(1, 0, 2);
+                tookTurn = this.moveAvatar(1, 0, 2);
                 break;
             case 'MOVE_DL':
-                this.moveAvatar(-1, 1, 5);
+                tookTurn = this.moveAvatar(-1, 1, 5);
                 break;
             case 'MOVE_DOWN':
-                this.moveAvatar(0, 1, 4);
+                tookTurn = this.moveAvatar(0, 1, 4);
                 break;
             case 'MOVE_DR':
-                this.moveAvatar(1, 1, 3);
+                tookTurn = this.moveAvatar(1, 1, 3);
                 break;
             case 'TURN_UL':
                 this.turnAvatar(7);
@@ -196,7 +198,7 @@ Game.UIMode.heist = {
                 this.turnAvatar(6);
                 break;
             case 'TURN_STILL':
-                this.getAvatar().raiseSymbolActiveEvent('actionDone');
+                tookTurn = true;
                 break;
             case 'TURN_RIGHT':
                 this.turnAvatar(2);
@@ -211,7 +213,6 @@ Game.UIMode.heist = {
                 this.turnAvatar(3);
                 break;
             case 'PERSISTENCE':
-                // Game.switchUIMode(Game.UIMode.persistence);
                 Game.addUIMode(Game.UIMode.heistMenu);
                 break;
             case 'NEXT_LEVEL':
@@ -220,8 +221,19 @@ Game.UIMode.heist = {
             case 'PREVIOUS_LEVEL':
                 this.prevLevel();
                 break;
-            default:
+            case 'CONFIRM':
+                var itemList = Game.Util.arrayObjectToID(avatar.getMap().getItems(avatar.getPos()));
+                if (itemList.length <= 1) {
+                    var itemRes = avatar.pickupItems(itemList);
+                    tookTurn = itemRes.numItemsPickedUp > 0;
+                }
                 break;
         }
+        if (tookTurn){
+          avatar.raiseSymbolActiveEvent('actionDone');
+          Game.Message.ageMessages();
+          return true;
+        }
+        return false;
     }
 };

@@ -16,6 +16,7 @@ Game.EntityTraits.PlayerMessager = {
             'walkForbidden': function(evtData) {
                 Game.Message.send("it'd be mighty impolite to walk into " + evtData.target.getName());
             },
+            // Combat messages
             'attackAvoided': function(evtData) {
                 Game.Message.send(evtData.attacker.getName() + " tried to hit you but failed");
             },
@@ -34,6 +35,38 @@ Game.EntityTraits.PlayerMessager = {
             'killed': function(evtData) {
                 Game.Message.send("You were destroyed by " + evtData.killer.getName());
                 Game.renderMessage();
+            },
+            // Inventory messages
+            'noItemsToPickup': function(evtData) {
+                Game.Message.send('there is nothing to pickup');
+            },
+            'inventoryFull': function(evtData) {
+                Game.Message.send('your inventory is full');
+            },
+            'inventoryEmpty': function(evtData) {
+                Game.Message.send('you are not carrying anything');
+            },
+            'noItemsPickedUp': function(evtData) {
+                Game.Message.send('you could not pick up any items');
+            },
+            'someItemsPickedUp': function(evtData) {
+                Game.Message.send('you picked up ' + evtData.numItemsPickedUp + ' of the items, leaving ' + evtData.numItemsNotPickedUp + ' of them');
+            },
+            'allItemsPickedUp': function(evtData) {
+                if (evtData.numItemsPickedUp > 2) {
+                    Game.Message.send('you picked up all ' + evtData.numItemsPickedUp + ' items');
+                } else if (evtData.numItemsPickedUp == 2) {
+                    Game.Message.send('you picked up both items');
+                } else {
+                    Game.Message.send('you picked up the ' + evtData.lastItemPickedUpName);
+                }
+            },
+            'itemsDropped': function(evtData) {
+                if (evtData.numItemsDropped > 1) {
+                    Game.Message.send('you dropped ' + evtData.numItemsDropped + ' items');
+                } else {
+                    Game.Message.send('you dropped the ' + evtData.lastItemDroppedName);
+                }
             }
         }
     }

@@ -47,8 +47,6 @@ Game.UIMode.titleScreen = {
             case 'CONFIRM':
                 this.titleFunctions[this.titleOptions[this.attr._curOption]]();
                 break;
-            default:
-                break;
         }
     }
 };
@@ -97,8 +95,6 @@ Game.UIMode.persistence = {
                 break;
             case 'CANCEL':
                 Game.removeUIMode();
-                break;
-            default:
                 break;
         }
     },
@@ -196,8 +192,6 @@ Game.UIMode.gameIntro = {
                     Game.Message.send("You did not enter a name.");
                 }
                 break;
-            default:
-                break;
         }
     }
 };
@@ -241,8 +235,6 @@ Game.UIMode.shipScreen = {
                 break;
             case 'PERSISTENCE':
                 Game.switchUIMode(Game.UIMode.persistence);
-                break;
-            default:
                 break;
         }
     },
@@ -433,8 +425,6 @@ Game.UIMode.navigation = {
             case 'CANCEL':
                 Game.removeUIMode();
                 break;
-            default:
-                break;
         }
     },
     toJSON: function() {
@@ -479,8 +469,6 @@ Game.UIMode.helpScreen = {
             case 'MOVE_LEFT':
             case 'MOVE_UP':
                 if(this.curPage > 1){this.curPage--;}
-                break;
-            default:
                 break;
         }
     },
@@ -568,8 +556,6 @@ Game.UIMode.heistMenu = {
                 break;
             case 'CANCEL':
                 Game.removeUIMode();
-                break;
-            default:
                 break;
         }
     }

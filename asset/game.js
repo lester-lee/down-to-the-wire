@@ -148,6 +148,7 @@ var Game = {
             ENTITY: {},
             SHIP_SCREEN: {},
             MAP: {},
+            ITEM: {},
             NAV_MAP: {},
             gameRandomSeed: 0
         }

@@ -110,9 +110,9 @@ Game.Map.prototype.getEntity = function(pos) {
 Game.Map.prototype.getItems = function(pos) {
     var useX = pos.x;
     var useY = pos.y;
-    var itemIds = this.attr._itemsByLocation[useX + ',' + useY];
-    if (itemIds) {
-        return itemIds.map(function(iid) {
+    var itemIDs = this.attr._itemsByLocation[useX + ',' + useY];
+    if (itemIDs) {
+        return itemIDs.map(function(iid) {
             return Game.DATASTORE.ITEM[iid];
         });
     }
@@ -128,22 +128,22 @@ Game.Map.prototype.extractEntity = function(ent) {
 Game.Map.prototype.extractItemAt = function(itm_or_idx, pos) {
     var useX = pos.x;
     var useY = pos.y;
-    var itemIds = this.attr._itemsByLocation[useX + ',' + useY];
-    if (!itemIds) {
+    var itemIDs = this.attr._itemsByLocation[useX + ',' + useY];
+    if (!itemIDs) {
         return false;
     }
 
     var item = false,
-        extractedId = '';
+        extractedID = '';
     if (Number.isInteger(itm_or_idx)) {
-        extractedId = itemIds.splice(itm_or_idx, 1);
-        item = Game.DATASTORE.ITEM[extractedId];
+        extractedID = itemIDs.splice(itm_or_idx, 1);
+        item = Game.DATASTORE.ITEM[extractedID];
     } else {
-        var idToFind = itm_or_idx.getId();
-        for (var i = 0; i < itemIds.length; i++) {
-            if (idToFind === itemIds[i]) {
-                extractedId = itemIds.splice(i, 1);
-                item = Game.DATASTORE.ITEM[extractedId];
+        var idToFind = itm_or_idx.getID();
+        for (var i = 0; i < itemIDs.length; i++) {
+            if (idToFind === itemIDs[i]) {
+                extractedID = itemIDs.splice(i, 1);
+                item = Game.DATASTORE.ITEM[extractedID];
                 break;
             }
         }

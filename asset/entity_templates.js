@@ -10,8 +10,10 @@ Game.EntityGenerator.learn({
     dodge: .1,
     sightRadius: 4,
     sightAngle: 90,
-    traits: ["PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
-        "PlayerActor", "StatHitPoints", "MeleeAttacker", "MeleeDefender", "DoorOpener"
+    traits: [
+        "PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
+        "PlayerActor", "StatHitPoints", "MeleeAttacker", "MeleeDefender", "DoorOpener",
+        "InventoryHolder"
     ]
 });
 

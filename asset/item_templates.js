@@ -2,7 +2,7 @@ Game.ItemGenerator = new Game.Generator('items', Game.Item);
 
 Game.ItemGenerator.learn({
     name: '_inventoryContainer',
-    mixins: ["Container"]
+    traits: ["Container"]
 });
 
 Game.ItemGenerator.learn({
