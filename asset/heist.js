@@ -215,6 +215,10 @@ Game.UIMode.heist = {
             case 'PERSISTENCE':
                 Game.addUIMode(Game.UIMode.heistMenu);
                 break;
+            case 'INVENTORY':
+                console.log('yo');
+                Game.addUIMode(Game.UIMode.inventory);
+                break;
             case 'NEXT_LEVEL':
                 this.nextLevel();
                 break;
@@ -229,10 +233,10 @@ Game.UIMode.heist = {
                 }
                 break;
         }
-        if (tookTurn){
-          avatar.raiseSymbolActiveEvent('actionDone');
-          Game.Message.ageMessages();
-          return true;
+        if (tookTurn) {
+            avatar.raiseSymbolActiveEvent('actionDone');
+            Game.Message.ageMessages();
+            return true;
         }
         return false;
     }

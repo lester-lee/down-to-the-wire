@@ -13,8 +13,15 @@ Game.ItemTraits.Repair = {
             this.attr.itemOptions = this.attr.itemOptions || [];
             this.attr.itemOptions.push('Use');
             this.attr.itemFunctions = this.attr.itemFunctions || {};
-            this.attr.itemFunctions['Use'] = function(){
-                Game.UIMode.heist.getAvatar().recover(Game.UIMode.itemMenu.curItem.getRepairValue());
+            this.attr.itemFunctions['Use'] = function(itemID) {
+                var avatar = Game.UIMode.heist.getAvatar();
+                var recoverAmt = Game.UIMode.itemMenu.curItem.getRepairValue();
+                avatar.recover(recoverAmt);
+                avatar.extractInventoryItems(itemID);
+                // return to heist screen
+                Game.goBaseUIMode();
+                avatar.raiseSymbolActiveEvent('recoverHP',{hp:recoverAmt});
+                avatar.raiseSymbolActiveEvent('actionDone');
             };
         },
         listeners: {
@@ -90,10 +97,25 @@ Game.ItemTraits.Container = {
     getItemIDs: function() {
         return this.attr._Container_attr.itemIDs;
     },
+    extractItems: function(IDs){
+        if (IDs.constructor !== Array){
+          IDs = [IDs];
+        }
+        console.dir(IDs);
+        while (IDs.length > 0){
+          var curID = IDs.shift();
+          var IDidx = this.attr._Container_attr.itemIDs.indexOf(curID);
+          if (IDidx > -1){
+            this.attr._Container_attr.itemIDs.splice(IDidx, 1);
+          }
+        }
+    }
+    /*
     extractItems: function(IDs_or_IDxs) {
         var IDsOnly = JSON.parse(JSON.stringify(IDs_or_IDxs)); // clone so we're not accidentally mucking with the param array with is passed by reference
         // first convert indexes to IDs - uniformity makes the rest of this easier
         // doing this in two passes so itemIDs doesn't change mID-loop
+        console.dir(IDsOnly);
         for (var i = 0; i < IDsOnly.length; i++) {
             if (!isNaN(IDsOnly[i])) {
                 IDsOnly[i] = this.attr._Container_attr.itemIDs[IDsOnly[i]];
@@ -110,4 +132,5 @@ Game.ItemTraits.Container = {
         }
         return ret;
     }
+    */
 };

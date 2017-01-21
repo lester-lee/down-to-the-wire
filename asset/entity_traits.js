@@ -32,10 +32,14 @@ Game.EntityTraits.PlayerMessager = {
             'damagedBy': function(evtData) {
                 Game.Message.send(evtData.damager.getName() + " hit you for " + evtData.damage + " damage");
             },
+            'recoverHP' : function(evtData){
+                Game.Message.send("You recovered " + evtData.hp + "HP");
+            },
             'killed': function(evtData) {
                 Game.Message.send("You were destroyed by " + evtData.killer.getName());
                 Game.renderMessage();
             },
+
             // Inventory messages
             'noItemsToPickup': function(evtData) {
                 Game.Message.send('there is nothing to pickup');

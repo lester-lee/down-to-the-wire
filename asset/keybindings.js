@@ -82,30 +82,6 @@ Game.KeyBinding = {
                 inputCtrl: false
             }
         },
-        PERSISTENCE_SAVE: {
-            all: {
-                inputMatch: ROT.VK_S,
-                inputType: 'keydown',
-                inputShift: true,
-                inputCtrl: false
-            }
-        },
-        PERSISTENCE_LOAD: {
-            all: {
-                inputMatch: ROT.VK_L,
-                inputType: 'keydown',
-                inputShift: true,
-                inputCtrl: false
-            }
-        },
-        PERSISTENCE_NEW: {
-            all: {
-                inputMatch: ROT.VK_N,
-                inputType: 'keydown',
-                inputShift: true,
-                inputCtrl: false
-            }
-        },
 
         NUM_0: {
             all: {
@@ -457,6 +433,15 @@ Game.KeyBinding = {
                 inputShift: true,
                 inputCtrl: false
             }
+        },
+
+        INVENTORY: {
+          all: {
+              inputMatch: ROT.VK_I,
+              inputType: 'keydown',
+              inputShift: false,
+              inputCtrl: false
+          }
         },
 
         CHANGE_BINDINGS: {

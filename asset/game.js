@@ -142,6 +142,11 @@ var Game = {
         this._curUIMode = this._UIStack[0];
         Game.refresh();
     },
+    goBaseUIMode: function(){
+        while (this._UIStack.length > 1){
+          Game.removeUIMode();
+        }
+    },
 
     clearDatastore: function() {
         this.DATASTORE = {

@@ -533,7 +533,9 @@ Game.UIMode.inventory = {
                 this.attr._curOption = (this.attr._curOption < 0) ? this.itemIDs.length - 1 : this.attr._curOption;
                 break;
             case 'CONFIRM':
-                Game.addUIMode(Game.UIMode.itemMenu, this.itemIDs[this.attr._curOption]);
+                if (this.itemIDs.length > 0) {
+                    Game.addUIMode(Game.UIMode.itemMenu, this.itemIDs[this.attr._curOption]);
+                }
                 break;
             case 'CANCEL':
                 Game.removeUIMode();
@@ -543,44 +545,44 @@ Game.UIMode.inventory = {
 };
 
 Game.UIMode.itemMenu = {
-  curItem: null,
-  curOption: 0,
-  itemOptions: null,
-  itemFunctions: null,
-  enter: function(itemID){
-    this.curItem = Game.DATASTORE.ITEM[itemID];
-    this.itemOptions = this.curItem.getOptions();
-    this.itemFunctions = this.curItem.getFunctions();
-  },
-  exit: function(){},
-  render: function(display){
-    Game.UIMode.inventory.render(display);
-  },
-  renderAvatarInfo: function(display){
-    for (var i = 0; i < this.itemOptions.length; i++) {
-        var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
-        display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.itemOptions[i]);
+    curItem: null,
+    curOption: 0,
+    itemOptions: null,
+    itemFunctions: null,
+    enter: function(itemID) {
+        this.curItem = Game.DATASTORE.ITEM[itemID];
+        this.itemOptions = this.curItem.getOptions();
+        this.itemFunctions = this.curItem.getFunctions();
+    },
+    exit: function() {},
+    render: function(display) {
+        Game.UIMode.inventory.render(display);
+    },
+    renderAvatarInfo: function(display) {
+        for (var i = 0; i < this.itemOptions.length; i++) {
+            var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.itemOptions[i]);
+        }
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'MOVE_DOWN':
+                this.curOption++;
+                this.curOption %= this.itemOptions.length;
+                break;
+            case 'MOVE_UP':
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.itemOptions.length - 1 : this.curOption;
+                break;
+            case 'CONFIRM':
+                this.itemFunctions[this.itemOptions[this.curOption]](this.curItem.getID());
+                break;
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+        }
     }
-  },
-  handleInput: function(inputType, inputData){
-    var action = Game.KeyBinding.getInput(inputType, inputData).key;
-    switch (action) {
-        case 'MOVE_DOWN':
-            this.curOption++;
-            this.curOption %= this.itemOptions.length;
-            break;
-        case 'MOVE_UP':
-            this.curOption--;
-            this.curOption = (this.curOption < 0) ? this.itemOptions.length - 1 : this.curOption;
-            break;
-        case 'CONFIRM':
-            this.itemFunctions[this.itemOptions[this.curOption]]();
-            break;
-        case 'CANCEL':
-            Game.removeUIMode();
-            break;
-    }
-  }
 };
 
 Game.UIMode.heistMenu = {
