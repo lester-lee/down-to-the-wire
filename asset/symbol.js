@@ -26,3 +26,5 @@ Game.Symbol.prototype.draw = function(display, x, y, isMasked) {
         display.draw(x, y, this.attr._char, this.attr._fg, this.attr._bg);
     }
 };
+
+Game.Symbol.ITEM_PILE = new Game.Symbol({chr:'&',fg:'#dcc'});

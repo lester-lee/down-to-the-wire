@@ -9,6 +9,7 @@ Game.Map = function(mapKey) {
         _height: this._tiles[0].length,
         _entitiesByLocation: {},
         _locationsByEntity: {},
+        _itemsByLocation: {},
         _prevMapID: '',
         _nextMapID: '',
     };
@@ -18,6 +19,7 @@ Game.Map = function(mapKey) {
     this.setUpFOV();
     Game.DATASTORE.MAP[this.attr._id] = this;
     Game.HeistPresets[mapKey].addMobs(this);
+    Game.HeistPresets[mapKey].addItems(this);
 };
 
 Game.Map.prototype.getID = function() {
@@ -48,8 +50,8 @@ Game.Map.prototype.getNextMap = function() {
     return Game.DATASTORE.MAP[this.attr._nextMapID];
 };
 
-Game.Map.prototype.getScheduler = function(){
-  return this._scheduler;
+Game.Map.prototype.getScheduler = function() {
+    return this._scheduler;
 };
 
 Game.Map.prototype.getTile = function(pos) {
@@ -69,16 +71,21 @@ Game.Map.prototype.setTile = function(pos, newTile) {
 };
 
 Game.Map.prototype.addEntity = function(ent, pos) {
-    while (this.getEntity(pos)){
-      pos = this.getRandomTileWalkable();
-    }    
     this.attr._entitiesByLocation[pos.x + ',' + pos.y] = ent.getID();
     this.attr._locationsByEntity[ent.getID()] = pos;
     ent.setMap(this);
     ent.setPos(pos);
-    if (ent.hasOwnProperty('act')){
-      this._scheduler.add(ent, true);
+    if (ent.hasOwnProperty('act')) {
+        this._scheduler.add(ent, true);
     }
+};
+
+Game.Map.prototype.addItem = function(item, pos) {
+    var loc = pos.x + "," + pos.y;
+    if (!this.attr._itemsByLocation[loc]) {
+        this.attr._itemsByLocation[loc] = [];
+    }
+    this.attr._itemsByLocation[loc].push(item.getID());
 };
 
 Game.Map.prototype.updateEntityLocation = function(ent) {
@@ -99,15 +106,54 @@ Game.Map.prototype.getEntity = function(pos) {
     return false;
 };
 
+
+Game.Map.prototype.getItems = function(pos) {
+    var useX = pos.x;
+    var useY = pos.y;
+    var itemIds = this.attr._itemsByLocation[useX + ',' + useY];
+    if (itemIds) {
+        return itemIds.map(function(iid) {
+            return Game.DATASTORE.ITEM[iid];
+        });
+    }
+    return [];
+};
+
 Game.Map.prototype.extractEntity = function(ent) {
     this.attr._entitiesByLocation[ent.getX() + "," + ent.getY()] = undefined;
     this.attr._locationsByEntity[ent.getID()] = undefined;
     return ent;
 };
 
+Game.Map.prototype.extractItemAt = function(itm_or_idx, pos) {
+    var useX = pos.x;
+    var useY = pos.y;
+    var itemIds = this.attr._itemsByLocation[useX + ',' + useY];
+    if (!itemIds) {
+        return false;
+    }
+
+    var item = false,
+        extractedId = '';
+    if (Number.isInteger(itm_or_idx)) {
+        extractedId = itemIds.splice(itm_or_idx, 1);
+        item = Game.DATASTORE.ITEM[extractedId];
+    } else {
+        var idToFind = itm_or_idx.getId();
+        for (var i = 0; i < itemIds.length; i++) {
+            if (idToFind === itemIds[i]) {
+                extractedId = itemIds.splice(i, 1);
+                item = Game.DATASTORE.ITEM[extractedId];
+                break;
+            }
+        }
+    }
+    return item;
+};
+
 Game.Map.prototype.getRandomTile = function(filter) {
     if (filter == undefined) {
-        filter = function(t) {
+        filter = function(t, tX, tY) {
             return true;
         };
     }
@@ -119,7 +165,7 @@ Game.Map.prototype.getRandomTile = function(filter) {
             x: tX,
             y: tY
         });
-    } while (!filter(t));
+    } while (!filter(t, tX, tY));
 
     return {
         x: tX,
@@ -128,8 +174,9 @@ Game.Map.prototype.getRandomTile = function(filter) {
 }
 
 Game.Map.prototype.getRandomTileWalkable = function() {
-    return this.getRandomTile(function(t) {
-        return t.isWalkable();
+    var map = this;
+    return this.getRandomTile(function(t, tX, tY) {
+        return t.isWalkable() && !map.getEntity(tX, tY);
     });
 };
 
@@ -164,11 +211,13 @@ Game.Map.prototype.renderOn = function(display, camX, camY, renderOptions) {
     var checkCellsVisible = opt.visibleCells !== undefined;
     var visibleCells = opt.visibleCells || {};
     var showVisibleEntities = (opt.showVisibleEntities !== undefined) ? opt.showVisibleEntities : true;
+    var showVisibleItems = (opt.showVisibleItems !== undefined) ? opt.showVisibleItems : true;
     var showVisibleTiles = (opt.showVisibleTiles !== undefined) ? opt.showVisibleTiles : true;
 
     var checkCellsMasked = opt.maskedCells !== undefined;
     var maskedCells = opt.maskedCells || {};
     var showMaskedEntities = (opt.showMaskedEntities !== undefined) ? opt.showMaskedEntities : false;
+    var showMaskedItems = (opt.showMaskedItems !== undefined) ? opt.showMaskedItems : false;
     var showMaskedTiles = (opt.showMaskedTiles !== undefined) ? opt.showMaskedTiles : true;
 
     if (!(showVisibleEntities || showVisibleTiles || showMaskedTiles || showMaskedEntities)) {
@@ -202,6 +251,21 @@ Game.Map.prototype.renderOn = function(display, camX, camY, renderOptions) {
                 tile.draw(display, x, y, true);
             }
 
+            var items = this.getItems(pos);
+            if (items.length == 1) {
+                if (showVisibleItems && visibleCells[coord]) {
+                    items[0].draw(display, x, y);
+                } else if (showMaskedItems && maskedCells[coord]) {
+                    items[0].draw(display, x, y, true);
+                }
+            } else if (items.length > 1) {
+                if (showVisibleItems && visibleCells[coord]) {
+                    Game.Symbol.ITEM_PILE.draw(display, x, y);
+                } else if (showMaskedItems && maskedCells[coord]) {
+                    Game.Symbol.ITEM_PILE.draw(display, x, y, true);
+                }
+            }
+
             var ent = this.getEntity(pos);
             if (ent) {
                 if (showVisibleEntities && visibleCells[coord]) {
@@ -214,35 +278,38 @@ Game.Map.prototype.renderOn = function(display, camX, camY, renderOptions) {
     }
 };
 
-Game.Map.prototype.renderFovOn = function (display,camX,camY,radius) {
-  var dims = Game.util.getDisplayDim(display);
-  var xStart = camX-Math.round(dims.w/2);
-  var yStart = camY-Math.round(dims.h/2);
+Game.Map.prototype.renderFovOn = function(display, camX, camY, radius) {
+    var dims = Game.util.getDisplayDim(display);
+    var xStart = camX - Math.round(dims.w / 2);
+    var yStart = camY - Math.round(dims.h / 2);
 
-  // track fov visibility
-  var inFov = {};
-  this._fov.compute(camX,camY,radius,function(x, y, radius, visibility) {
-        inFov[x+","+y] = true;
-  });
+    // track fov visibility
+    var inFov = {};
+    this._fov.compute(camX, camY, radius, function(x, y, radius, visibility) {
+        inFov[x + "," + y] = true;
+    });
 
-  for (var x = 0; x < dims.w; x++) {
-    for (var y = 0; y < dims.h; y++) {
-      // Fetch the glyph for the tile and render it to the screen - sub in wall tiles for nullTiles / out-of-bounds
-      var mapPos = {x:x+xStart,y:y+yStart};
-      if (inFov[mapPos.x+','+mapPos.y]) {
-        var tile = this.getTile(mapPos);
-        if (tile.getName() == 'nullTile') {
-          tile = Game.Tile.wallTile;
+    for (var x = 0; x < dims.w; x++) {
+        for (var y = 0; y < dims.h; y++) {
+            // Fetch the glyph for the tile and render it to the screen - sub in wall tiles for nullTiles / out-of-bounds
+            var pos = {
+                x: x + xStart,
+                y: y + yStart
+            };
+            if (inFov[pos.x + ',' + pos.y]) {
+                var tile = this.getTile(pos);
+                if (tile.getName() == 'nullTile') {
+                    tile = Game.Tile.wallTile;
+                }
+                tile.draw(display, x, y);
+                var ent = this.getEntity(pos);
+                if (ent) {
+                    ent.draw(display, x, y);
+                }
+            }
         }
-        tile.draw(display,x,y);
-        var ent = this.getEntity(mapPos);
-        if (ent) {
-          ent.draw(display,x,y);
-        }
-      }
     }
-  }
-  return inFov;
+    return inFov;
 };
 
 Game.Map.prototype.toJSON = function() {

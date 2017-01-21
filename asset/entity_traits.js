@@ -34,7 +34,6 @@ Game.EntityTraits.PlayerMessager = {
             'killed': function(evtData) {
                 Game.Message.send("You were destroyed by " + evtData.killer.getName());
                 Game.renderMessage();
-                Game.switchUIMode(Game.UIMode.titleScreen);
             }
         }
     }
@@ -55,10 +54,10 @@ Game.EntityTraits.PlayerActor = {
                 this.getScheduler().setDuration(this.getCurActionDur());
                 Game.UIMode.heist.getEngine().unlock();
                 Game.renderMessage();
+            },
+            'killed': function(evtData) {
+                Game.switchUIMode(Game.UIMode.titleScreen);
             }
-            // 'killed': function(evtData){
-            //   Game.switchUIMode(Game.UIMode.titleScreen);
-            // }
         }
     },
     getBaseActionDur: function() {
@@ -171,6 +170,117 @@ Game.EntityTraits.Chronicle = {
         this.attr._Chronicle_attr.turnCounter = n;
     }
 };
+
+Game.EntityTraits.InventoryHolder = {
+    META: {
+        traitName: 'InventoryHolder',
+        traitGroup: 'InventoryHolder',
+        stateNamespace: '_InventoryHolder_attr',
+        stateModel: {
+            containerID: '',
+            inventoryCapacity: 5
+        },
+        init: function(template) {
+            this.attr._InventoryHolder_attr.inventoryCapacity = template.inventoryCapacity || 5;
+            var container = Game.ItemGenerator.create('_inventoryContainer');
+            container.setCapacity(this.attr._InventoryHolder_attr.inventoryCapacity);
+            this.attr._InventoryHolder_attr.containerID = container.getID();
+        },
+        listeners: {
+            'pickupItems': function(evtData) {
+                return {
+                    addedItems: this.pickupItems(evtData.itemSet)
+                };
+            },
+            'dropItems': function(evtData) {
+                return {
+                    droppedItems: this.dropItems(evtData.itemSet)
+                };
+            }
+        }
+    },
+    _getContainer: function() {
+        return Game.DATASTORE.ITEM[this.attr._InventoryHolder_attr.containerID];
+    },
+    hasInventorySpace: function() {
+        return this._getContainer().hasSpace();
+    },
+    addInventoryItems: function(items_or_ids) {
+        return this._getContainer().addItems(items_or_ids);
+    },
+    getInventoryItemIds: function() {
+        return this._getContainer().getItemIds();
+    },
+    extractInventoryItems: function(ids_or_idxs) {
+        return this._getContainer().extractItems(ids_or_idxs);
+    },
+    pickupItems: function(ids_or_idxs) {
+        var itemsToAdd = [];
+        var fromPile = this.getMap().getItems(this.getPos());
+        var pickupResult = {
+            numItemsPickedUp: 0,
+            numItemsNotPickedUp: ids_or_idxs.length
+        };
+
+        // first check if possible to pick up items
+        if (fromPile.length < 1) {
+            this.raiseSymbolActiveEvent('noItemsToPickup');
+            return pickupResult;
+        }
+        if (!this._getContainer().hasSpace()) {
+            this.raiseSymbolActiveEvent('inventoryFull');
+            this.raiseSymbolActiveEvent('noItemsPickedUp');
+            return pickupResult;
+        }
+
+        // add items from pile
+        for (var i = 0; i < fromPile.length; i++) {
+            if ((ids_or_idxs.indexOf(i) > -1) || (ids_or_idxs.indexOf(fromPile[i].getID()) > -1)) {
+                itemsToAdd.push(fromPile[i]);
+            }
+        }
+        var addResult = this._getContainer().addItems(itemsToAdd);
+        pickupResult.numItemsPickedUp = addResult.numItemsAdded;
+        pickupResult.numItemsNotPickedUp = addResult.numItemsNotAdded;
+        var lastItemFromMap = "";
+        for (var j = 0; j < pickupResult.numItemsPickedUp; j++) {
+            lastItemFromMap = this.getMap().extractItemAt(itemsToAdd[j], this.getPos());
+        }
+
+        // send user messages
+        pickupResult.lastItemPickedUpName = lastItemFromMap.getName();
+        if (pickupResult.numItemsPickedUp > 0) {
+            this.raiseSymbolActiveEvent('someItemsPickedUp', pickupResult);
+        } else {
+            this.raiseSymbolActiveEvent('allItemsPickedUp', pickupResult);
+        }
+
+        return pickupResult;
+    },
+    dropItems: function(ids_or_idxs) {
+        var itemsToDrop = this._getContainer().extractItems(ids_or_idxs);
+        var dropResult = {
+            numItemsDropped: 0
+        };
+        if (itemsToDrop.length < 1) {
+            this.raiseSymbolActiveEvent('inventoryEmpty');
+            return dropResult;
+        }
+        var lastItemDropped = "";
+        for (var i = 0; i < itemsToDrop.length; i++) {
+            if (itemsToDrop[i]) {
+                lastItemDropped = itemsToDrop[i];
+                this.getMap().addItem(itemsToDrop[i], this.getPos());
+                dropResult.numItemsDropped++;
+            }
+        }
+        dropResult.lastItemDroppedName = lastItemDropped.getName();
+        this.raiseSymbolActiveEvent('itemsDropped', dropResult);
+        return dropResult;
+    }
+};
+
+/* ==================== Combat ==================== */
 
 Game.EntityTraits.StatHitPoints = {
     META: {
@@ -310,6 +420,8 @@ Game.EntityTraits.MeleeDefender = {
         return this.attr._MeleeDefender_attr.dodge;
     }
 };
+
+/* ================ Sight / Map ================== */
 
 Game.EntityTraits.Sight = {
     META: {
