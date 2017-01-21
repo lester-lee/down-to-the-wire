@@ -17,7 +17,11 @@ Game.HeistPresets = {
           for (var i=0; i<rooms.length; i++) {
               var room = rooms[i];
               room.getDoors(function(mapX,mapY) {
-                mapTiles[mapX][mapY] = Game.Tile.doorClosedTile;
+                if (ROT.RNG.getUniform() >= 0.2){
+                  mapTiles[mapX][mapY] = Game.Tile.doorClosedTile;
+                }else{
+                  mapTiles[mapX][mapY] = Game.Tile.doorOpenTile;
+                }
               });
           }
 
