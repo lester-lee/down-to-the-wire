@@ -45,8 +45,7 @@ Game.Tile.floorTile = new Game.Tile({
 });
 Game.Tile.wallTile = new Game.Tile({
     name: 'wall',
-    //chr: '█',
-    chr: '░',
+    chr: '█',
     fg: '#bbb',
     opaque: true
 });

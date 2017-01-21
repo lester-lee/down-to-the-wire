@@ -461,14 +461,14 @@ Game.UIMode.heistMenu = {
     switch (action) {
         case 'MOVE_DOWN':
             this.attr._curOption++;
-            this.attr._curOption %= this.navOptions.length;
+            this.attr._curOption %= this.menuOptions.length;
             break;
         case 'MOVE_UP':
             this.attr._curOption--;
-            this.attr._curOption = (this.attr._curOption < 0) ? this.navOptions.length - 1 : this.attr._curOption;
+            this.attr._curOption = (this.attr._curOption < 0) ? this.menuOptions.length - 1 : this.attr._curOption;
             break;
         case 'CONFIRM':
-            this.navFunctions[this.navOptions[this.attr._curOption]]();
+            this.menuFunctions[this.menuOptions[this.attr._curOption]]();
             break;
         case 'CANCEL':
             Game.removeUIMode();
