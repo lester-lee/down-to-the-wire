@@ -241,8 +241,8 @@ Game.EntityTraits.InventoryHolder = {
     addInventoryItems: function(items_or_ids) {
         return this._getContainer().addItems(items_or_ids);
     },
-    getInventoryItemIds: function() {
-        return this._getContainer().getItemIds();
+    getInventoryItemIDs: function() {
+        return this._getContainer().getItemIDs();
     },
     extractInventoryItems: function(ids_or_idxs) {
         return this._getContainer().extractItems(ids_or_idxs);
