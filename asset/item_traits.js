@@ -10,6 +10,12 @@ Game.ItemTraits.Repair = {
         },
         init: function(template) {
             this.attr._Repair_attr.repairValue = template.repairValue || 3;
+            this.attr.itemOptions = this.attr.itemOptions || [];
+            this.attr.itemOptions.push('Use');
+            this.attr.itemFunctions = this.attr.itemFunctions || {};
+            this.attr.itemFunctions['Use'] = function(){
+                Game.UIMode.heist.getAvatar().recover(Game.UIMode.itemMenu.curItem.getRepairValue());
+            };
         },
         listeners: {
             'getStatsForDisplay': function(evtData) {

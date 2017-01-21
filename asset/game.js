@@ -130,10 +130,10 @@ var Game = {
         Game.refresh();
     },
 
-    addUIMode: function(newMode){
+    addUIMode: function(newMode, args){
         this._UIStack.unshift(newMode);
         this._curUIMode = this._UIStack[0];
-        this._curUIMode.enter();
+        this._curUIMode.enter(args);
         Game.refresh();
     },
     removeUIMode: function(){

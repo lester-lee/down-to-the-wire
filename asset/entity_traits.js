@@ -374,7 +374,7 @@ Game.EntityTraits.StatHitPoints = {
         this.attr._HP_attr.curHP -= amt;
     },
     recover: function(amt) {
-        this.attr._HP_attr.curHP = Math.min(this.attr._HP_attr.curHP + amt, this.attr._HitPoints_attr.maxHP);
+        this.attr._HP_attr.curHP = Math.min(this.attr._HP_attr.curHP + amt, this.attr._HP_attr.maxHP);
     }
 };
 
