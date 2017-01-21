@@ -59,8 +59,8 @@ Game.Tile.doorClosedTile = new Game.Tile({
 });
 Game.Tile.doorOpenTile = new Game.Tile({
     name: 'doorOpen',
-    //chr: '⬚',
-    chr: '⨆',
+    chr: '⬚',
+    //chr: '⨆',
     fg: '#bbb',
     opaque: false,
     walkable: true,

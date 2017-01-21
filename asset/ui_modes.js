@@ -209,7 +209,7 @@ Game.UIMode.shipScreen = {
         playerName: null,
         _curOption: 0
     },
-    shipOptions: ["Navigate", "Outfit drones", "Outfit ship", "heist", "Save/Load"],
+    shipOptions: ["Navigate", "Outfit drones", "Outfit ship", "heist", "Save/Load", "Operations Manual"],
     shipFunctions: {
         Navigate: function() {
             Game.addUIMode(Game.UIMode.navigation);
@@ -219,6 +219,9 @@ Game.UIMode.shipScreen = {
         },
         "Save/Load": function() {
             Game.addUIMode(Game.UIMode.persistence);
+        },
+        "Operations Manual": function() {
+            Game.addUIMode(Game.UIMode.helpScreen);
         }
     },
     enter: function() {},
@@ -447,4 +450,39 @@ Game.UIMode.navigation = {
     fromJSON: function(json) {
         return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
     }
+};
+
+Game.UIMode.helpScreen = {
+    curPage: 1,
+
+    enter: function() {},
+    exit: function() {},
+    render: function(display) {
+      //var dimensions = Game.util.getDisplayDim(display);
+      display.drawText(1, 3, "Operations Manual - Page "+this.curPage);
+      this.drawPage(this.curPage, display);
+      //display.drawText(dimensions.w - 14, dimensions.h, "[d] Next page");
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+            default:
+                break;
+        }
+    },
+    drawPage: function(page, display) {
+      if(page === 1){
+        display.drawText(1, 5, "Drone Opperation:");
+        display.drawText(1, 6, "q   w   e");
+        display.drawText(2, 7, "↖ ↑ ↗");
+        display.drawText(1, 8, "a← s →d");
+        display.drawText(2, 9, "↙ ↓ ↘");
+        display.drawText(1, 10, "z   x   c");
+      }else if(page === 2){
+
+      }
+    },
 };
