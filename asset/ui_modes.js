@@ -43,7 +43,6 @@ Game.UIMode.titleScreen = {
             case 'MOVE_UP':
                 this.attr._curOption--;
                 this.attr._curOption = (this.attr._curOption < 0) ? this.titleOptions.length - 1 : this.attr._curOption;
-                this.attr._curOption %= this.titleOptions.length;
                 break;
             case 'CONFIRM':
                 this.titleFunctions[this.titleOptions[this.attr._curOption]]();
@@ -92,7 +91,6 @@ Game.UIMode.persistence = {
             case 'MOVE_UP':
                 this.attr._curOption--;
                 this.attr._curOption = (this.attr._curOption < 0) ? this.persistOptions.length - 1 : this.attr._curOption;
-                this.attr._curOption %= this.persistOptions.length;
                 break;
             case 'CONFIRM':
                 this.persistFunctions[this.persistOptions[this.attr._curOption]]();
@@ -237,7 +235,6 @@ Game.UIMode.shipScreen = {
             case 'MOVE_UP':
                 this.attr._curOption--;
                 this.attr._curOption = (this.attr._curOption < 0) ? this.shipOptions.length - 1 : this.attr._curOption;
-                this.attr._curOption %= this.shipOptions.length;
                 break;
             case 'CONFIRM':
                 this.shipFunctions[this.shipOptions[this.attr._curOption]]();
@@ -429,7 +426,6 @@ Game.UIMode.navigation = {
             case 'MOVE_UP':
                 this.attr._curOption--;
                 this.attr._curOption = (this.attr._curOption < 0) ? this.navOptions.length - 1 : this.attr._curOption;
-                this.attr._curOption %= this.navOptions.length;
                 break;
             case 'CONFIRM':
                 this.navFunctions[this.navOptions[this.attr._curOption]]();
