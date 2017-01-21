@@ -30,10 +30,10 @@ Game.UIMode.heist = {
     setAvatar: function(a) {
         this.attr._avatarID = a.getID();
     },
-    getEngine: function(){
+    getEngine: function() {
         return this.attr._engine;
     },
-    setEngine: function(sched){
+    setEngine: function(sched) {
         this.attr._engine = new ROT.Engine(sched);
     },
     render: function(display) {
@@ -54,8 +54,13 @@ Game.UIMode.heist = {
     },
     moveAvatar: function(dx, dy, dir) {
         Game.Message.ageMessages();
-        var input = {map: this.getMap(), dx: dx, dy: dy, dir: dir};
-        if (this.getAvatar().raiseSymbolActiveEvent('tryWalk',input)) {
+        var input = {
+            map: this.getMap(),
+            dx: dx,
+            dy: dy,
+            dir: dir
+        };
+        if (this.getAvatar().raiseSymbolActiveEvent('tryWalk', input)) {
             this.checkMoveCamera();
             Game.refresh();
         }
@@ -107,7 +112,7 @@ Game.UIMode.heist = {
         this.setMap(new Game.Map(heistType));
         this.setEngine(this.getMap().getScheduler());
         this.setAvatar(Game.EntityGenerator.create('avatar'));
-        this.getMap().addEntity(this.getAvatar(), this.getMap().getRandomTileWalkable());
+        var avSuccess = this.getMap().addEntity(this.getAvatar(), this.getMap().getRandomTileWalkable());
         this.setCameraToAvatar();
     },
     placeAvatar: function() {

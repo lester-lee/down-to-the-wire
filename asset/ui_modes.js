@@ -186,15 +186,15 @@ Game.UIMode.gameIntro = {
             case 'CONFIRM':
                 var inputHTML = document.getElementById('user-input');
                 var inputText = inputHTML.value;
-                if (inputText.length > 0){
-                inputHTML.value = "";
-                inputHTML.parentElement.style.display = "none";
-                Game.UIMode.shipScreen.attr.playerName = inputText;
-                Game.Message.clear();
-                Game.switchUIMode(Game.UIMode.shipScreen);
-              }else {
-                Game.Message.send("You did not enter a name.");
-              }
+                if (inputText.length > 0) {
+                    inputHTML.value = "";
+                    inputHTML.parentElement.style.display = "none";
+                    Game.UIMode.shipScreen.attr.playerName = inputText;
+                    Game.Message.clear();
+                    Game.switchUIMode(Game.UIMode.shipScreen);
+                } else {
+                    Game.Message.send("You did not enter a name.");
+                }
                 break;
             default:
                 break;
@@ -313,11 +313,11 @@ Game.UIMode.navigation = {
         var bg3 = (this.attr._curNode.navNum == 3) ? '#333' : dbg;
         var bg4 = (this.attr._curNode.navNum == 4) ? '#333' : dbg;
         display.drawText(0, 1, this.attr._curNode.starSystem);
-        display.drawText(3, 3, "%c{"+dbg+"}|%c{}%b{" + bg1 + "}" + L['1'] + "%b{}%c{#999}" + L['21'] + L['21'] + L['21'] + "%c{}%b{" + bg2 + "}" + L['2'] + "%b{}");
-        display.drawText(3, 4, "%c{"+dbg+"}|%c{}" + "%c{#999}" + L['31'] + L['41'] + " " + L['32'] + L['42'] + "%c{}");
-        display.drawText(3, 5, "%c{"+dbg+"}|%c{}" + "%c{#999}" + L['31'] + " " + C + " " + L['42'] + "%c{}");
-        display.drawText(3, 6, "%c{"+dbg+"}|%c{}" + "%c{#999}" + L['31'] + L['32'] + " " + L['41'] + L['42'] + "%c{}");
-        display.drawText(3, 7, "%c{"+dbg+"}|%c{}%b{" + bg3 + "}" + L['3'] + "%b{}%c{#999}" + L['43'] + L['43'] + L['43'] + "%c{}%b{" + bg4 + "}" + L['4'] + "%b{}");
+        display.drawText(3, 3, "%c{" + dbg + "}|%c{}%b{" + bg1 + "}" + L['1'] + "%b{}%c{#999}" + L['21'] + L['21'] + L['21'] + "%c{}%b{" + bg2 + "}" + L['2'] + "%b{}");
+        display.drawText(3, 4, "%c{" + dbg + "}|%c{}" + "%c{#999}" + L['31'] + L['41'] + " " + L['32'] + L['42'] + "%c{}");
+        display.drawText(3, 5, "%c{" + dbg + "}|%c{}" + "%c{#999}" + L['31'] + " " + C + " " + L['42'] + "%c{}");
+        display.drawText(3, 6, "%c{" + dbg + "}|%c{}" + "%c{#999}" + L['31'] + L['32'] + " " + L['41'] + L['42'] + "%c{}");
+        display.drawText(3, 7, "%c{" + dbg + "}|%c{}%b{" + bg3 + "}" + L['3'] + "%b{}%c{#999}" + L['43'] + L['43'] + L['43'] + "%c{}%b{" + bg4 + "}" + L['4'] + "%b{}");
 
     },
     resetNavOptions: function() {
@@ -394,7 +394,7 @@ Game.UIMode.navigation = {
         };
         var ships = [];
         var systemName = 'SYSTEM' + Math.floor(ROT.RNG.getUniform() * 10000);
-        var numShips = Game.Util.randomInt(2,4);
+        var numShips = Game.Util.randomInt(2, 4);
         for (var i = 0; i < numShips; i++) {
             var ship = {
                 name: Game.Util.randomShipName(),
@@ -445,36 +445,104 @@ Game.UIMode.navigation = {
     }
 };
 
+Game.UIMode.helpScreen = {
+    curPage: 1,
+
+    enter: function() {},
+    exit: function() {},
+    render: function(display) {
+        //var dimensions = Game.util.getDisplayDim(display);
+        display.drawText(1, 3, "Operations Manual - Page " + this.curPage);
+        this.drawPage(this.curPage, display);
+        //display.drawText(dimensions.w - 14, dimensions.h, "[d] Next page");
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+            default:
+                break;
+        }
+    },
+    drawPage: function(page, display) {
+        if (page === 1) {
+            display.drawText(1, 5, "Drone Opperation:");
+            display.drawText(1, 6, "q   w   e");
+            display.drawText(2, 7, "↖ ↑ ↗");
+            display.drawText(1, 8, "a← s →d");
+            display.drawText(2, 9, "↙ ↓ ↘");
+            display.drawText(1, 10, "z   x   c");
+        } else if (page === 2) {
+
+        }
+    },
+};
+
 Game.UIMode.heistMenu = {
-  attr: {_curOption: 0},
-  menuOptions: ["Inventory","Help","Options","Save/Load" ],
-  enter: function(){},
-  exit: function(){},
-  render: function(display){
-    Game.UIMode.heist.render(display);
-  },
-  renderAvatarInfo: function(display){
-    this.renderMenuOptions();
-  },
-  handleInput: function(inputType, inputData){
-    var action = Game.KeyBinding.getInput(inputType, inputData).key;
-    switch (action) {
-        case 'MOVE_DOWN':
-            this.attr._curOption++;
-            this.attr._curOption %= this.menuOptions.length;
-            break;
-        case 'MOVE_UP':
-            this.attr._curOption--;
-            this.attr._curOption = (this.attr._curOption < 0) ? this.menuOptions.length - 1 : this.attr._curOption;
-            break;
-        case 'CONFIRM':
-            this.menuFunctions[this.menuOptions[this.attr._curOption]]();
-            break;
-        case 'CANCEL':
-            Game.removeUIMode();
-            break;
-        default:
-            break;
+    attr: {
+        _curOption: 0,
+        _abort: false,
+    },
+    menuOptions: ["Inventory", "Help", "Options", "Abort Heist", "Close Menu"],
+    menuFunctions: {
+        'Inventory': function() {
+            console.log("inventory");
+        },
+        'Help': function() {
+            Game.addUIMode(Game.UIMode.helpScreen);
+        },
+        'Options': function() {
+            console.log("options");
+        },
+        'Abort Heist': function() {
+            if (Game.UIMode.heistMenu.attr._abort) {
+                Game.UIMode.heistMenu.attr._abort = false;
+                Game.switchUIMode(Game.UIMode.shipScreen);
+            } else {
+                Game.UIMode.heistMenu.attr._abort = true;                
+                Game.Message.send("Press [Abort Heist] again to leave.");
+                Game.Message.send("If you abort, you will lose this drone.");
+            }
+        },
+        'Close Menu': function(){
+          Game.removeUIMode();
+        }
+    },
+    enter: function() {},
+    exit: function() {},
+    render: function(display) {
+        Game.UIMode.heist.render(display);
+    },
+    renderAvatarInfo: function(display) {
+        this.renderMenuOptions(display);
+    },
+    renderMenuOptions: function(display) {
+        for (var i = 0; i < this.menuOptions.length; i++) {
+            var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 5, '%b{' + bg + '}> ' + this.menuOptions[i]);
+        }
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'MOVE_DOWN':
+                this.attr._curOption++;
+                this.attr._curOption %= this.menuOptions.length;
+                break;
+            case 'MOVE_UP':
+                this.attr._curOption--;
+                this.attr._curOption = (this.attr._curOption < 0) ? this.menuOptions.length - 1 : this.attr._curOption;
+                break;
+            case 'CONFIRM':
+                this.menuFunctions[this.menuOptions[this.attr._curOption]]();
+                break;
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+            default:
+                break;
+        }
     }
-  }
 };

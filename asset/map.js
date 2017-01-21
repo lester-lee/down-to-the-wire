@@ -69,6 +69,9 @@ Game.Map.prototype.setTile = function(pos, newTile) {
 };
 
 Game.Map.prototype.addEntity = function(ent, pos) {
+    while (this.getEntity(pos)){
+      pos = this.getRandomTileWalkable();
+    }    
     this.attr._entitiesByLocation[pos.x + ',' + pos.y] = ent.getID();
     this.attr._locationsByEntity[ent.getID()] = pos;
     ent.setMap(this);
@@ -117,6 +120,7 @@ Game.Map.prototype.getRandomTile = function(filter) {
             y: tY
         });
     } while (!filter(t));
+
     return {
         x: tX,
         y: tY

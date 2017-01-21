@@ -29,7 +29,7 @@ Game.HeistPresets = {
       },
       addMobs: function(map){
         for (var ecount = 0; ecount < 8; ecount++) {
-            map.addEntity(Game.EntityGenerator.create('janitor drone'), map.getRandomTileWalkable());
+            var mobSuccess = map.addEntity(Game.EntityGenerator.create('janitor drone'), map.getRandomTileWalkable());
         }
       },
     }
