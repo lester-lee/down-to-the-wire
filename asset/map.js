@@ -9,6 +9,7 @@ Game.Map = function(mapKey) {
         _height: this._tiles[0].length,
         _entitiesByLocation: {},
         _locationsByEntity: {},
+        _itemsByLocation: {},
         _prevMapID: '',
         _nextMapID: '',
     };
@@ -78,6 +79,14 @@ Game.Map.prototype.addEntity = function(ent, pos) {
     }
 };
 
+Game.Map.prototype.addItem = function (itm,pos) {
+    var loc = pos.x+","+pos.y;
+    if (! this.attr._itemsByLocation[loc]) {
+      this.attr._itemsByLocation[loc] = [];
+    }
+    this.attr._itemsByLocation[loc].push(itm.getId());
+};
+
 Game.Map.prototype.updateEntityLocation = function(ent) {
     var origLoc = this.attr._locationsByEntity[ent.getID()];
     if (origLoc) {
@@ -96,10 +105,42 @@ Game.Map.prototype.getEntity = function(pos) {
     return false;
 };
 
+
+Game.Map.prototype.getItems = function (pos) {
+  var useX = pos.x;
+  var useY = pos.y;
+  var itemIds = this.attr._itemsByLocation[useX+','+useY];
+  if (itemIds) { return itemIds.map(function(iid) { return Game.DATASTORE.ITEM[iid]; }); }
+  return  [];
+};
+
 Game.Map.prototype.extractEntity = function(ent) {
     this.attr._entitiesByLocation[ent.getX() + "," + ent.getY()] = undefined;
     this.attr._locationsByEntity[ent.getID()] = undefined;
     return ent;
+};
+
+Game.Map.prototype.extractItemAt = function (itm_or_idx,pos) {
+  var useX = pos.x;
+  var useY = pos.y;
+  var itemIds = this.attr._itemsByLocation[useX+','+useY];
+  if (! itemIds) { return false; }
+
+  var item = false, extractedId = '';
+  if (Number.isInteger(itm_or_idx)) {
+    extractedId = itemIds.splice(itm_or_idx,1);
+    item = Game.DATASTORE.ITEM[extractedId];
+  } else {
+    var idToFind = itm_or_idx.getId();
+    for (var i = 0; i < itemIds.length; i++) {
+      if (idToFind === itemIds[i]) {
+        extractedId = itemIds.splice(i,1);
+        item = Game.DATASTORE.ITEM[extractedId];
+        break;
+      }
+    }
+  }
+  return item;
 };
 
 Game.Map.prototype.getRandomTile = function(filter) {
@@ -160,11 +201,13 @@ Game.Map.prototype.renderOn = function(display, camX, camY, renderOptions) {
     var checkCellsVisible = opt.visibleCells !== undefined;
     var visibleCells = opt.visibleCells || {};
     var showVisibleEntities = (opt.showVisibleEntities !== undefined) ? opt.showVisibleEntities : true;
+    var showVisibleItems = (opt.showVisibleItems !== undefined) ? opt.showVisibleItems : true;
     var showVisibleTiles = (opt.showVisibleTiles !== undefined) ? opt.showVisibleTiles : true;
 
     var checkCellsMasked = opt.maskedCells !== undefined;
     var maskedCells = opt.maskedCells || {};
     var showMaskedEntities = (opt.showMaskedEntities !== undefined) ? opt.showMaskedEntities : false;
+    var showMaskedItems = (opt.showMaskedItems !== undefined) ? opt.showMaskedItems : false;
     var showMaskedTiles = (opt.showMaskedTiles !== undefined) ? opt.showMaskedTiles : true;
 
     if (!(showVisibleEntities || showVisibleTiles || showMaskedTiles || showMaskedEntities)) {
@@ -196,6 +239,21 @@ Game.Map.prototype.renderOn = function(display, camX, camY, renderOptions) {
                 tile.draw(display, x, y);
             } else if (showMaskedTiles && maskedCells[coord]) {
                 tile.draw(display, x, y, true);
+            }
+
+            var items = this.getItems(mapPos);
+            if (items.length == 1) {
+              if (showVisibleItems && visibleCells[mapCoord]) {
+                items[0].draw(display,x,y);
+              } else if (showMaskedItems && maskedCells[mapCoord]) {
+                items[0].draw(display,x,y,true);
+              }
+            } else if (items.length > 1) {
+              if (showVisibleItems && visibleCells[mapCoord]) {
+                Game.Symbol.ITEM_PILE.draw(display,x,y);
+              } else if (showMaskedItems && maskedCells[mapCoord]) {
+                Game.Symbol.ITEM_PILE.draw(display,x,y,true);
+              }
             }
 
             var ent = this.getEntity(pos);
