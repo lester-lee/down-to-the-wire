@@ -500,13 +500,15 @@ Game.UIMode.heistMenu = {
             if (Game.UIMode.heistMenu.attr._abort) {
                 Game.UIMode.heistMenu.attr._abort = false;
                 Game.switchUIMode(Game.UIMode.shipScreen);
+                Game.Message.clear();
             } else {
-                Game.UIMode.heistMenu.attr._abort = true;                
+                Game.UIMode.heistMenu.attr._abort = true;
                 Game.Message.send("Press [Abort Heist] again to leave.");
                 Game.Message.send("If you abort, you will lose this drone.");
             }
         },
         'Close Menu': function(){
+          Game.Message.clear();
           Game.removeUIMode();
         }
     },
@@ -521,17 +523,19 @@ Game.UIMode.heistMenu = {
     renderMenuOptions: function(display) {
         for (var i = 0; i < this.menuOptions.length; i++) {
             var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
-            display.drawText(0, i + 5, '%b{' + bg + '}> ' + this.menuOptions[i]);
+            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.menuOptions[i]);
         }
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
         switch (action) {
             case 'MOVE_DOWN':
+                this.attr._abort = false;
                 this.attr._curOption++;
                 this.attr._curOption %= this.menuOptions.length;
                 break;
             case 'MOVE_UP':
+                this.attr._abort = false;
                 this.attr._curOption--;
                 this.attr._curOption = (this.attr._curOption < 0) ? this.menuOptions.length - 1 : this.attr._curOption;
                 break;
