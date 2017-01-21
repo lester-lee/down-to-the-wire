@@ -454,20 +454,37 @@ Game.UIMode.navigation = {
 
 Game.UIMode.helpScreen = {
     curPage: 1,
+    numPages: 3,
 
-    enter: function() {},
+    enter: function() {
+      this.curPage = 1;
+    },
     exit: function() {},
     render: function(display) {
-      //var dimensions = Game.util.getDisplayDim(display);
+      var dimensions = Game.Util.getDisplayDim(display);
       display.drawText(1, 3, "Operations Manual - Page "+this.curPage);
       this.drawPage(this.curPage, display);
-      //display.drawText(dimensions.w - 14, dimensions.h, "[d] Next page");
+      if (this.curPage < this.numPages){
+        display.drawText(dimensions.w - 14, dimensions.h - 1, "[d] Next page");
+      }
+      if (this.curPage > 1){
+        display.drawText(0, dimensions.h - 1, "[a] Next page");
+      }
+
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
         switch (action) {
             case 'CANCEL':
                 Game.removeUIMode();
+                break;
+            case 'MOVE_RIGHT':
+            case 'MOVE_DOWN':
+                if(this.curPage < this.numPages){this.curPage++;}
+                break;
+            case 'MOVE_LEFT':
+            case 'MOVE_UP':
+                if(this.curPage > 1){this.curPage--;}
                 break;
             default:
                 break;
@@ -482,6 +499,12 @@ Game.UIMode.helpScreen = {
         display.drawText(2, 9, "↙ ↓ ↘");
         display.drawText(1, 10, "z   x   c");
       }else if(page === 2){
+
+      }
+      else if(page === 3){
+
+      }
+      else if(page === 4){
 
       }
     },
