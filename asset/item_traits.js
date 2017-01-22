@@ -1,8 +1,31 @@
 Game.ItemTraits = {};
 
+Game.ItemTraits.Equipable = {
+  META: {
+    traitName: 'Equipable',
+    traitGroup: 'Equipable',
+    stateNamespace: '_Equipable_attr',
+    stateModel: {
+      equipCategory: null
+    },
+    init: function(){
+      this.attr._Equipable_attr.equipCategory = template.equipCategory || "torso";
+      this.attr.itemOptions = this.attr.itemOptions || [];
+      this.attr.itemOptions.push('Equip');
+      this.attr.itemFunctions = this.attr.itemFunctions || {};
+      this.attr.itemFunctions['Equip'] = function(itemID) {
+          console.log('equip');
+      };
+    }
+  },
+  getEquipCategory: function(){
+    return this.attr._Equipable_attr.equipCategory;
+  }
+}
+
 Game.ItemTraits.Repair = {
     META: {
-        TraitName: 'Repair',
+        traitName: 'Repair',
         traitGroup: 'Repair',
         stateNamespace: '_Repair_attr',
         stateModel: {
@@ -23,13 +46,6 @@ Game.ItemTraits.Repair = {
                 avatar.raiseSymbolActiveEvent('recoverHP',{hp:recoverAmt});
                 avatar.raiseSymbolActiveEvent('actionDone');
             };
-        },
-        listeners: {
-            'getStatsForDisplay': function(evtData) {
-                return {
-                    'repair value': this.getRepairValue()
-                };
-            }
         }
     },
     getRepairValue: function() {
@@ -110,27 +126,4 @@ Game.ItemTraits.Container = {
           }
         }
     }
-    /*
-    extractItems: function(IDs_or_IDxs) {
-        var IDsOnly = JSON.parse(JSON.stringify(IDs_or_IDxs)); // clone so we're not accidentally mucking with the param array with is passed by reference
-        // first convert indexes to IDs - uniformity makes the rest of this easier
-        // doing this in two passes so itemIDs doesn't change mID-loop
-        console.dir(IDsOnly);
-        for (var i = 0; i < IDsOnly.length; i++) {
-            if (!isNaN(IDsOnly[i])) {
-                IDsOnly[i] = this.attr._Container_attr.itemIDs[IDsOnly[i]];
-            }
-        }
-        var ret = [];
-        while (IDsOnly.length > 0) {
-            var curID = IDsOnly.shift();
-            var IDIDx = this.attr._Container_attr.itemIDs.indexOf(curID);
-            if (IDIDx > -1) {
-                this.attr._Container_attr.itemIDs.splice(IDIDx, 1);
-                ret.push(Game.DATASTORE.ITEM[curID]);
-            }
-        }
-        return ret;
-    }
-    */
 };

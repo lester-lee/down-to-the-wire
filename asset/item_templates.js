@@ -13,3 +13,11 @@ Game.ItemGenerator.learn({
     repairValue: 3,
     traits: ['Repair']
 });
+
+Game.ItemGenerator.learn({
+  name: '180 Camera',
+  description: "it's a camera",
+  chr: "C",
+  fg: "#2f2",
+  traits: ['Equipable','StatModifier']
+});

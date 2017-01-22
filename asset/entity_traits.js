@@ -211,6 +211,36 @@ Game.EntityTraits.Chronicle = {
     }
 };
 
+Game.EntityTraits.EquipmentHolder = {
+    META: {
+        traitName: 'EquipmentHolder',
+        traitGroup: 'InventoryHolder',
+        stateNamespace: '_EquipmentHolder_attr',
+        stateModel: {
+            equipped: {}
+        },
+        init: function(template) {
+            this.attr._EquipmentHolder_attr.equipped = template.equipped || {
+                head: null,
+                torso: null,
+                legs: null,
+                hand1: null,
+                hand2: null,
+                feet: null
+            };
+        }
+    },
+    addEquipment: function(equipment) {
+        var cat = equipment.getEquipCategory();
+        this.attr._EquipmentHolder_attr.equipped[cat] = equipment.getID();
+    },
+    removeEquipment: function(equipment) {
+        var cat = equipment.getEquipCategory();
+        this.attr._EquipmentHolder_attr.equipped[cat] = null;
+        this.addInventoryItems([equipment]);
+    }
+};
+
 Game.EntityTraits.InventoryHolder = {
     META: {
         traitName: 'InventoryHolder',
