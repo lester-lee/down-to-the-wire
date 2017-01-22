@@ -240,7 +240,18 @@ Game.EntityTraits.EquipmentHolder = {
         var cat = equipment.getEquipCategory();
         this.attr._EquipmentHolder_attr.equipped[cat] = null;
         this.addInventoryItems([equipment]);
-    }
+    },
+    getEquipmentItemIDs: function() {
+        var IDs = [];
+        var equipped = this.attr._EquipmentHolder_attr.equipped;
+        var equipCategories = Object.keys(equipped);
+        equipCategories.forEach(function(elem) {
+            if (equipped[elem] != null){
+              IDs.push(equipped[elem]);
+            }
+        });
+        return IDs;
+    },
 };
 
 Game.EntityTraits.InventoryHolder = {

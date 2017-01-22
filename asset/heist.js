@@ -216,8 +216,10 @@ Game.UIMode.heist = {
                 Game.addUIMode(Game.UIMode.heistMenu);
                 break;
             case 'INVENTORY':
-                console.log('yo');
                 Game.addUIMode(Game.UIMode.inventory);
+                break;
+            case 'EQUIPMENT':
+                Game.addUIMode(Game.UIMode.inventory, true);
                 break;
             case 'NEXT_LEVEL':
                 this.nextLevel();

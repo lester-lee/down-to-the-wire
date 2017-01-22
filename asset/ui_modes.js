@@ -499,15 +499,21 @@ Game.UIMode.inventory = {
     attr: {
         _curOption: 0
     },
+    equip: false,
     avatar: null,
     itemIDs: null,
-    enter: function() {
+    enter: function(equip) {
         this.avatar = Game.UIMode.heist.getAvatar();
-        this.itemIDs = this.avatar.getInventoryItemIDs();
+        this.equip = equip || false;
+        this.refreshItemIDs();
     },
-    exit: function() {},
+    exit: function() {
+        this.equip = false;
+        this.attr._curOption = 0;
+    },
     render: function(display) {
-        display.drawText(2, 1, "Inventory");
+        var str = (this.equip) ? "Equipment" : "Inventory";
+        display.drawText(2, 1, str);
         this.renderInventory(display);
     },
     renderInventory: function(display) {
@@ -518,8 +524,12 @@ Game.UIMode.inventory = {
                 display.drawText(0, i + 3, '%b{' + bg + '}> ' + item.getName() + ' - ' + item.getDescription());
             }
         } else {
-            display.drawText(0, 3, "You do not have any items.");
+            var str = (this.equip) ? "anything equipped." : "any items.";
+            display.drawText(0, 3, "You do not have " + str);
         }
+    },
+    refreshItemIDs: function() {
+        this.itemIDs = (this.equip) ? this.avatar.getEquipmentItemIDs() : this.avatar.getInventoryItemIDs();
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
@@ -590,10 +600,13 @@ Game.UIMode.heistMenu = {
         _curOption: 0,
         _abort: false,
     },
-    menuOptions: ["Inventory", "Help", "Options", "Abort Heist", "Close Menu"],
+    menuOptions: ["Inventory", "Equipment", "Help", "Options", "Abort Heist", "Close Menu"],
     menuFunctions: {
         'Inventory': function() {
             Game.addUIMode(Game.UIMode.inventory);
+        },
+        'Equipment': function() {
+            Game.addUIMode(Game.UIMode.inventory, true);
         },
         'Help': function() {
             Game.addUIMode(Game.UIMode.helpScreen);

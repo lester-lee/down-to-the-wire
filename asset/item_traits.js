@@ -6,7 +6,8 @@ Game.ItemTraits.Equipable = {
         traitGroup: 'Equipable',
         stateNamespace: '_Equipable_attr',
         stateModel: {
-            equipCategory: null
+            equipCategory: null,
+            equipped: false
         },
         init: function(template) {
             this.attr._Equipable_attr.equipCategory = template.equipCategory || "torso";
@@ -15,20 +16,39 @@ Game.ItemTraits.Equipable = {
             this.attr.itemOptions.push('Unequip');
             this.attr.itemFunctions = this.attr.itemFunctions || {};
             this.attr.itemFunctions['Equip'] = function(itemID) {
-                var avatar = Game.UIMode.heist.getAvatar();
-                avatar.addEquipment(itemID);                
-                avatar.extractInventoryItems(itemID);
-                console.log('equipped');
+                var item = Game.DATASTORE.ITEM[itemID];
+                if (!item.isEquipped()) {
+                    item.toggleEquipped();
+                    var avatar = Game.UIMode.heist.getAvatar();
+                    avatar.addEquipment(itemID);
+                    avatar.extractInventoryItems(itemID);
+                    Game.removeUIMode();
+                } else {
+                    Game.Message.send("Yer already wearin that.");
+                }
             };
             this.attr.itemFunctions['Unequip'] = function(itemID) {
-                var avatar = Game.UIMode.heist.getAvatar();
-                avatar.removeEquipment(itemID);
-                console.log('unequipped');
+                var item = Game.DATASTORE.ITEM[itemID];
+                if (item.isEquipped()) {
+                    item.toggleEquipped();
+                    var avatar = Game.UIMode.heist.getAvatar();
+                    avatar.removeEquipment(itemID);
+                    Game.UIMode.inventory.refreshItemIDs();
+                    Game.removeUIMode();
+                } else {
+                    Game.Message.send("You'd have to equip that first.");
+                }
             };
         }
     },
     getEquipCategory: function() {
         return this.attr._Equipable_attr.equipCategory;
+    },
+    toggleEquipped: function() {
+        this.attr._Equipable_attr.equipped = !this.attr._Equipable_attr.equipped;
+    },
+    isEquipped: function() {
+        return this.attr._Equipable_attr.equipped;
     }
 }
 

@@ -443,6 +443,14 @@ Game.KeyBinding = {
               inputCtrl: false
           }
         },
+        EQUIPMENT: {
+          all: {
+              inputMatch: ROT.VK_I,
+              inputType: 'keydown',
+              inputShift: true,
+              inputCtrl: false
+          }
+        },
 
         CHANGE_BINDINGS: {
             all: {
