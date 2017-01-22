@@ -548,6 +548,7 @@ Game.UIMode.inventory = {
                 break;
             case 'MOVE_LEFT':
             case 'MOVE_RIGHT':
+                this.attr._curOption = 0;
                 this.toggleEquipment();
                 break;
             case 'CONFIRM':

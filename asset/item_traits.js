@@ -17,12 +17,14 @@ Game.ItemTraits.Equipable = {
             this.attr.itemFunctions = this.attr.itemFunctions || {};
             this.attr.itemFunctions['Equip'] = function(itemID) {
                 var item = Game.DATASTORE.ITEM[itemID];
-                if (!item.isEquipped()) {
+                var cat = item.getEquipCategory();
+                var avatar = Game.UIMode.heist.getAvatar();
+                if (!item.isEquipped() && avatar.checkEquipmentCategory(cat)) {
                     item.toggleEquipped();
-                    var avatar = Game.UIMode.heist.getAvatar();
                     avatar.addEquipment(itemID);
-                    avatar.extractInventoryItems(itemID);
                     Game.removeUIMode();
+                } else if (!avatar.checkEquipmentCategory(cat)) {
+                    avatar.swapEquipment(itemID);
                 } else {
                     Game.Message.send("Yer already wearin that.");
                 }

@@ -234,6 +234,7 @@ Game.EntityTraits.EquipmentHolder = {
         var equipment = Game.DATASTORE.ITEM[equipID];
         var cat = equipment.getEquipCategory();
         this.attr._EquipmentHolder_attr.equipped[cat] = equipment.getID();
+        this.extractInventoryItems(equipID);
     },
     removeEquipment: function(equipID) {
         var equipment = Game.DATASTORE.ITEM[equipID];
@@ -241,13 +242,28 @@ Game.EntityTraits.EquipmentHolder = {
         this.attr._EquipmentHolder_attr.equipped[cat] = null;
         this.addInventoryItems([equipment]);
     },
+    removeEquipmentCategory: function(cat) {
+        var equipID = this.attr._EquipmentHolder_attr.equipped[cat];
+        if (equipID) {
+            this.removeEquipment(equipID);
+        }
+    },
+    swapEquipment: function(newEquipID) {
+        var equipment = Game.DATASTORE.ITEM[newEquipID];
+        var cat = equipment.getEquipCategory();
+        this.removeEquipmentCategory(cat);
+        this.addEquipment(newEquipID);
+    },
+    checkEquipmentCategory: function(cat) {
+        return this.attr._EquipmentHolder_attr.equipped[cat] === null;
+    },
     getEquipmentItemIDs: function() {
         var IDs = [];
         var equipped = this.attr._EquipmentHolder_attr.equipped;
         var equipCategories = Object.keys(equipped);
         equipCategories.forEach(function(elem) {
-            if (equipped[elem] != null){
-              IDs.push(equipped[elem]);
+            if (equipped[elem] != null) {
+                IDs.push(equipped[elem]);
             }
         });
         return IDs;
