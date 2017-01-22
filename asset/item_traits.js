@@ -154,7 +154,6 @@ Game.ItemTraits.Container = {
         if (IDs.constructor !== Array) {
             IDs = [IDs];
         }
-        console.dir(IDs);
         while (IDs.length > 0) {
             var curID = IDs.shift();
             var IDidx = this.attr._Container_attr.itemIDs.indexOf(curID);

@@ -313,10 +313,10 @@ Game.Map.prototype.renderFovOn = function(display, camX, camY, radius) {
 };
 
 Game.Map.prototype.toJSON = function() {
-    var json = Game.UIMode.gamePersistence.BASE_toJSON.call(this);
-    return json;
+    // var json = Game.UIMode.persistence.BASE_toJSON.call(this);
+    // return json;
 };
 
 Game.Map.prototype.fromJSON = function(json) {
-    Game.UIMode.gamePersistence.BASE_fromJSON.call(this, json);
+    // Game.UIMode.persistence.BASE_fromJSON.call(this, json);
 };

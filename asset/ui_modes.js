@@ -531,6 +531,10 @@ Game.UIMode.inventory = {
     refreshItemIDs: function() {
         this.itemIDs = (this.equip) ? this.avatar.getEquipmentItemIDs() : this.avatar.getInventoryItemIDs();
     },
+    toggleEquipment: function() {
+        this.equip = !this.equip;
+        this.refreshItemIDs();
+    },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
         switch (action) {
@@ -541,6 +545,10 @@ Game.UIMode.inventory = {
             case 'MOVE_UP':
                 this.attr._curOption--;
                 this.attr._curOption = (this.attr._curOption < 0) ? this.itemIDs.length - 1 : this.attr._curOption;
+                break;
+            case 'MOVE_LEFT':
+            case 'MOVE_RIGHT':
+                this.toggleEquipment();
                 break;
             case 'CONFIRM':
                 if (this.itemIDs.length > 0) {
@@ -563,6 +571,7 @@ Game.UIMode.itemMenu = {
         this.curItem = Game.DATASTORE.ITEM[itemID];
         this.itemOptions = this.curItem.getOptions();
         this.itemFunctions = this.curItem.getFunctions();
+        this.curOption = 0;
     },
     exit: function() {},
     render: function(display) {

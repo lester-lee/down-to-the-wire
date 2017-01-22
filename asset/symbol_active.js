@@ -79,9 +79,9 @@ Game.SymbolActive.prototype.raiseSymbolActiveEvent = function(evtLabel, evtData)
 
 
 Game.SymbolActive.prototype.toJSON = function() {
-    return Game.UIMode.gamePersistence.BASE_toJSON.call(this);
+    // return Game.UIMode.persistence.BASE_toJSON.call(this);
 };
 
 Game.SymbolActive.prototype.fromJSON = function(json) {
-    return Game.UIMode.gamePersistence.BASE_fromJSON.call(this, json);
+    // return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
 };
