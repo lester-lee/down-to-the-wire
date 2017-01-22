@@ -13,7 +13,7 @@ Game.EntityGenerator.learn({
     traits: [
         "PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
         "PlayerActor", "StatHitPoints", "MeleeAttacker", "MeleeDefender", "DoorOpener",
-        "InventoryHolder"
+        "InventoryHolder", "EquipmentHolder"
     ]
 });
 

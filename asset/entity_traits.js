@@ -230,11 +230,13 @@ Game.EntityTraits.EquipmentHolder = {
             };
         }
     },
-    addEquipment: function(equipment) {
+    addEquipment: function(equipID) {
+        var equipment = Game.DATASTORE.ITEM[equipID];
         var cat = equipment.getEquipCategory();
         this.attr._EquipmentHolder_attr.equipped[cat] = equipment.getID();
     },
-    removeEquipment: function(equipment) {
+    removeEquipment: function(equipID) {
+        var equipment = Game.DATASTORE.ITEM[equipID];
         var cat = equipment.getEquipCategory();
         this.attr._EquipmentHolder_attr.equipped[cat] = null;
         this.addInventoryItems([equipment]);

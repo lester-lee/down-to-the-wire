@@ -1,26 +1,35 @@
 Game.ItemTraits = {};
 
 Game.ItemTraits.Equipable = {
-  META: {
-    traitName: 'Equipable',
-    traitGroup: 'Equipable',
-    stateNamespace: '_Equipable_attr',
-    stateModel: {
-      equipCategory: null
+    META: {
+        traitName: 'Equipable',
+        traitGroup: 'Equipable',
+        stateNamespace: '_Equipable_attr',
+        stateModel: {
+            equipCategory: null
+        },
+        init: function(template) {
+            this.attr._Equipable_attr.equipCategory = template.equipCategory || "torso";
+            this.attr.itemOptions = this.attr.itemOptions || [];
+            this.attr.itemOptions.push('Equip');
+            this.attr.itemOptions.push('Unequip');
+            this.attr.itemFunctions = this.attr.itemFunctions || {};
+            this.attr.itemFunctions['Equip'] = function(itemID) {
+                var avatar = Game.UIMode.heist.getAvatar();
+                avatar.addEquipment(itemID);                
+                avatar.extractInventoryItems(itemID);
+                console.log('equipped');
+            };
+            this.attr.itemFunctions['Unequip'] = function(itemID) {
+                var avatar = Game.UIMode.heist.getAvatar();
+                avatar.removeEquipment(itemID);
+                console.log('unequipped');
+            };
+        }
     },
-    init: function(){
-      this.attr._Equipable_attr.equipCategory = template.equipCategory || "torso";
-      this.attr.itemOptions = this.attr.itemOptions || [];
-      this.attr.itemOptions.push('Equip');
-      this.attr.itemFunctions = this.attr.itemFunctions || {};
-      this.attr.itemFunctions['Equip'] = function(itemID) {
-          console.log('equip');
-      };
+    getEquipCategory: function() {
+        return this.attr._Equipable_attr.equipCategory;
     }
-  },
-  getEquipCategory: function(){
-    return this.attr._Equipable_attr.equipCategory;
-  }
 }
 
 Game.ItemTraits.Repair = {
@@ -43,7 +52,9 @@ Game.ItemTraits.Repair = {
                 avatar.extractInventoryItems(itemID);
                 // return to heist screen
                 Game.goBaseUIMode();
-                avatar.raiseSymbolActiveEvent('recoverHP',{hp:recoverAmt});
+                avatar.raiseSymbolActiveEvent('recoverHP', {
+                    hp: recoverAmt
+                });
                 avatar.raiseSymbolActiveEvent('actionDone');
             };
         }
@@ -55,6 +66,12 @@ Game.ItemTraits.Repair = {
         this.attr._Repair_attr.repairValue = v;
     }
 };
+
+// Game.ItemTraits.StatModifier = {
+//   META: {
+//
+//   }
+// };
 
 Game.ItemTraits.Container = {
     META: {
@@ -113,17 +130,17 @@ Game.ItemTraits.Container = {
     getItemIDs: function() {
         return this.attr._Container_attr.itemIDs;
     },
-    extractItems: function(IDs){
-        if (IDs.constructor !== Array){
-          IDs = [IDs];
+    extractItems: function(IDs) {
+        if (IDs.constructor !== Array) {
+            IDs = [IDs];
         }
         console.dir(IDs);
-        while (IDs.length > 0){
-          var curID = IDs.shift();
-          var IDidx = this.attr._Container_attr.itemIDs.indexOf(curID);
-          if (IDidx > -1){
-            this.attr._Container_attr.itemIDs.splice(IDidx, 1);
-          }
+        while (IDs.length > 0) {
+            var curID = IDs.shift();
+            var IDidx = this.attr._Container_attr.itemIDs.indexOf(curID);
+            if (IDidx > -1) {
+                this.attr._Container_attr.itemIDs.splice(IDidx, 1);
+            }
         }
     }
 };

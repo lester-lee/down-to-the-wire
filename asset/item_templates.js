@@ -19,5 +19,5 @@ Game.ItemGenerator.learn({
   description: "it's a camera",
   chr: "C",
   fg: "#2f2",
-  traits: ['Equipable','StatModifier']
+  traits: ['Equipable']
 });
