@@ -217,7 +217,7 @@ Game.Map.prototype.renderOn = function(display, camX, camY, renderOptions) {
     var checkCellsMasked = opt.maskedCells !== undefined;
     var maskedCells = opt.maskedCells || {};
     var showMaskedEntities = (opt.showMaskedEntities !== undefined) ? opt.showMaskedEntities : false;
-    var showMaskedItems = (opt.showMaskedItems !== undefined) ? opt.showMaskedItems : false;
+    var showMaskedItems = (opt.showMaskedItems !== undefined) ? opt.showMaskedItems : true;
     var showMaskedTiles = (opt.showMaskedTiles !== undefined) ? opt.showMaskedTiles : true;
 
     if (!(showVisibleEntities || showVisibleTiles || showMaskedTiles || showMaskedEntities)) {

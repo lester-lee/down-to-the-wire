@@ -32,7 +32,7 @@ Game.EntityTraits.PlayerMessager = {
             'damagedBy': function(evtData) {
                 Game.Message.send(evtData.damager.getName() + " hit you for " + evtData.damage + " damage");
             },
-            'recoverHP' : function(evtData){
+            'recoverHP': function(evtData) {
                 Game.Message.send("You recovered " + evtData.hp + "HP");
             },
             'killed': function(evtData) {
@@ -94,6 +94,9 @@ Game.EntityTraits.PlayerActor = {
             },
             'killed': function(evtData) {
                 Game.switchUIMode(Game.UIMode.titleScreen);
+            },
+            'injured': function(evtData) {
+                this.raiseSymbolActiveEvent('forget');
             }
         }
     },
@@ -346,6 +349,9 @@ Game.EntityTraits.StatHitPoints = {
                     attacked: this,
                     damage: dmg
                 });
+                if (this.getCurHP() <= .5 * this.getMaxHP()) {
+                    this.raiseSymbolActiveEvent('injured');
+                }
                 if (this.getCurHP() <= 0) {
                     this.raiseSymbolActiveEvent('killed', {
                         dead: this,
@@ -488,7 +494,7 @@ Game.EntityTraits.Sight = {
     },
 
     canSeeEntity: function(ent) {
-        if (!ent || this.getMap().getID() !== ent.getMap().getID()) {
+        if (!ent || this.getMapID() !== ent.getMapID()) {
             return false;
         }
         return this.canSeeCoord(ent.getPos());
@@ -556,10 +562,15 @@ Game.EntityTraits.MapMemory = {
         },
         init: function(template) {
             this.attr._MapMemory_attr.mapsHash = template.mapsHash || {};
+        },
+        listeners: {
+            'forget': function(evtData) {
+                this.forgetRandomCoords(this.getMapID());
+            }
         }
     },
     rememberCoords: function(coordSet, mapID) {
-        var mapKey = mapID || this.getMap().getID();
+        var mapKey = mapID || this.getMapID();
         if (!this.attr._MapMemory_attr.mapsHash[mapKey]) {
             this.attr._MapMemory_attr.mapsHash[mapKey] = {};
         }
@@ -570,8 +581,16 @@ Game.EntityTraits.MapMemory = {
         }
     },
     getRememberedCoordsForMap: function(mapID) {
-        var mapKey = mapID || this.getMap().getID();
+        var mapKey = mapID || this.getMapID();
         return this.attr._MapMemory_attr.mapsHash[mapKey] || {};
+    },
+    forgetRandomCoords: function(mapID) {
+        var mapKey = mapID || this.getMapID();
+        var keys = Object.keys(this.attr._MapMemory_attr.mapsHash[mapKey]);
+        var times = ROT.RNG.getUniform() * keys.length;
+        for (var i = 0; i < times; i++) {
+            delete this.attr._MapMemory_attr.mapsHash[mapKey][keys.pop()];
+        }
     }
 };
 

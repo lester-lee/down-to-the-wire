@@ -24,6 +24,9 @@ Game.Entity.prototype.getMap = function() {
 Game.Entity.prototype.setMap = function(map) {
     this.attr._mapID = map.getID();
 };
+Game.Entity.prototype.getMapID = function() {
+    return this.attr._mapID;
+}
 
 Game.Entity.prototype.getScheduler = function(){
     return this.getMap().getScheduler();
