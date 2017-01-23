@@ -32,6 +32,9 @@ Game.EntityTraits.PlayerMessager = {
             'damagedBy': function(evtData) {
                 Game.Message.send(evtData.damager.getName() + " hit you for " + evtData.damage + " damage");
             },
+            'damagedEquipment': function(evtData) {
+                Game.Message.send(evtData.damager.getName() + " hit "+evtData.equipment+" for " + evtData.damage + " damage");
+            },
             'recoverHP': function(evtData) {
                 Game.Message.send("You recovered " + evtData.hp + "HP");
             },
@@ -233,6 +236,7 @@ Game.EntityTraits.EquipmentHolder = {
             this.attr._EquipmentHolder_attr.equipped = template.equipped || {
                 head: null,
                 core: null,
+                torso: null,
                 legs: null,
                 weapon: null,
                 arms: null,
@@ -291,6 +295,13 @@ Game.EntityTraits.EquipmentHolder = {
         });
         return IDs;
     },
+    getRandomEquipmentID: function() {
+        var equipped = this.attr._EquipmentHolder_attr.equipped;
+        var keys = Object.keys(equipped);
+        var cat = keys.random();
+        var equipID = this.attr._EquipmentHolder_attr.equipped[cat];
+        return equipID;
+    }
 };
 
 Game.EntityTraits.InventoryHolder = {
@@ -419,30 +430,44 @@ Game.EntityTraits.StatHitPoints = {
         },
         listeners: {
             'attacked': function(evtData) {
-                var defense = this.raiseSymbolActiveEvent('getDefense').defense || 1;
-                var attack = evtData.attack;
-                var dmg = Game.Util.calcDamage(attack, defense);
-                this.takeDamage(dmg);
-                this.raiseSymbolActiveEvent('damagedBy', {
-                    damager: evtData.attacker,
-                    damage: dmg
-                });
-                evtData.attacker.raiseSymbolActiveEvent('dealtDamage', {
-                    attacked: this,
-                    damage: dmg
-                });
-                if (this.getCurHP() <= .5 * this.getMaxHP()) {
-                    this.raiseSymbolActiveEvent('injured');
-                }
-                if (this.getCurHP() <= 0) {
-                    this.raiseSymbolActiveEvent('killed', {
-                        dead: this,
-                        killer: evtData.attacker
+                var dmg = evtData.attack;
+                var equipID = this.getRandomEquipmentID();
+                if (equipID) { // still has equipment left
+                    var equipment = Game.DATASTORE.ITEM[equipID];
+                    this.raiseSymbolActiveEvent('damagedEquipment', {
+                        damager: evtData.attacker,
+                        equipment: equipment.getName(),
+                        damage: dmg
                     });
-                    evtData.attacker.raiseSymbolActiveEvent('madeKill', {
-                        dead: this,
-                        killer: evtData.attacker
+                    equipment.raiseSymbolActiveEvent('attacked', {
+                        equipper: this,
+                        damager: evtData.attacker,
+                        damage: dmg
                     });
+                    evtData.attacker.raiseSymbolActiveEvent('dealtDamage', {
+                        attacked: equipment.getName(),
+                        damage: dmg
+                    });
+                } else {
+                    this.takeDamage(dmg);
+                    this.raiseSymbolActiveEvent('damagedBy', {
+                        damager: evtData.attacker,
+                        damage: dmg
+                    });
+                    evtData.attacker.raiseSymbolActiveEvent('dealtDamage', {
+                        attacked: this,
+                        damage: dmg
+                    });
+                    if (this.getCurHP() <= 0) {
+                        this.raiseSymbolActiveEvent('killed', {
+                            dead: this,
+                            killer: evtData.attacker
+                        });
+                        evtData.attacker.raiseSymbolActiveEvent('madeKill', {
+                            dead: this,
+                            killer: evtData.attacker
+                        });
+                    }
                 }
             },
             'killed': function(evtData) {

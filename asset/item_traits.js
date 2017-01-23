@@ -44,6 +44,29 @@ Game.ItemTraits.Equipable = {
                     Game.Message.send("You'd have to equip that first.");
                 }
             };
+        },
+        listeners: {
+            'attacked': function(evtData) {
+                var dmg = evtData.damage;
+                this.takeDamage(dmg);
+                if (this.getCurHP() <= 0) {
+                    this.raiseSymbolActiveEvent('destroyed', {
+                        equipper: evtData.equipper,
+                        destroyed: this,
+                        destroyer: evtData.damager
+                    });
+                }
+            },
+            'destroyed': function(evtData) {
+                Game.Message.send(this.getName() + " has been destroyed.");
+                this.raiseSymbolActiveEvent('unequip', {
+                    actor: evtData.equipper
+                });
+                var scrap = Game.ItemGenerator.create('Scrap Metal');
+                var actor = Game.UIMode.heist.getAvatar();
+                actor.removeEquipment(this.getID());
+                Game.DATASTORE.ITEM[this.getID()] = scrap;
+            }
         }
     },
     getMaxHP: function() {
