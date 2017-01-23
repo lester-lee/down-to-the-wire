@@ -132,6 +132,18 @@ Game.EntityTraits.PlayerActor = {
     }
 };
 
+Game.EntityTraits.SpeciesDrone = {
+    META: {
+        traitName: 'SpeciesDrone',
+        traitGroup: 'Species',
+        init: function() {
+            this.setName(Game.Util.randomDroneName());
+        }
+    }
+};
+
+/* =========================================================================== */
+
 Game.EntityTraits.WalkerCorporeal = {
     META: {
         traitName: 'WalkerCorporeal',

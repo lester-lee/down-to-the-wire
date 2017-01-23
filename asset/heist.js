@@ -8,8 +8,11 @@ Game.UIMode.heist = {
         _avDispY: 50,
         _engine: null
     },
-    enter: function(heistType) {
-        this.setupNewGame(heistType);
+    enter: function(heistArgs) {
+        var mapType = heistArgs.map;
+        var droneID = heistArgs.drone;        
+        this.attr._avatarID = droneID;
+        this.setupNewGame(mapType);
         this.getEngine().unlock();
         Game.refresh();
     },
@@ -111,8 +114,7 @@ Game.UIMode.heist = {
     setupNewGame: function(heistType) {
         this.setMap(new Game.Map(heistType));
         this.setEngine(this.getMap().getScheduler());
-        this.setAvatar(Game.EntityGenerator.create('avatar'));
-        var avSuccess = this.getMap().addEntity(this.getAvatar(), this.getMap().getRandomTileWalkable());
+        this.getMap().addEntity(this.getAvatar(), this.getMap().getRandomTileWalkable());
         this.setCameraToAvatar();
     },
     placeAvatar: function() {

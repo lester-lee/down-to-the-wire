@@ -1,7 +1,23 @@
 Game.EntityGenerator = new Game.Generator('entities', Game.Entity);
 
+// Game.EntityGenerator.learn({
+//     name: 'avatar',
+//     chr: 'D',
+//     fg: '#fff',
+//     maxHP: 10,
+//     dodge: .1,
+//     defaultEquipment: ["90 Camera", "Movement Apparatus", "Big Fist"],
+//     traits: [
+//         "PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
+//         "PlayerActor", "StatHitPoints", "MeleeAttacker", "DoorOpener",
+//         "InventoryHolder", "EquipmentHolder"
+//     ]
+// });
+
+
 Game.EntityGenerator.learn({
-    name: 'avatar',
+    name: '',
+    type: 'initial_drone',
     chr: 'D',
     fg: '#fff',
     maxHP: 10,
@@ -10,10 +26,9 @@ Game.EntityGenerator.learn({
     traits: [
         "PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
         "PlayerActor", "StatHitPoints", "MeleeAttacker", "DoorOpener",
-        "InventoryHolder", "EquipmentHolder"
+        "InventoryHolder", "EquipmentHolder", "SpeciesDrone"
     ]
-});
-
+}, "initial_drone");
 
 Game.EntityGenerator.learn({
     name: 'janitor drone',
@@ -23,7 +38,7 @@ Game.EntityGenerator.learn({
     dodge: .1,
     defaultEquipment: ["180 Camera", "Movement Apparatus", "Big Fist"],
     traits: [
-      "Sight", "WanderChaserActor", "WalkerCorporeal", "StatHitPoints",
-      "MeleeAttacker", "InventoryHolder", "EquipmentHolder"
+        "Sight", "WanderChaserActor", "WalkerCorporeal", "StatHitPoints",
+        "MeleeAttacker", "InventoryHolder", "EquipmentHolder"
     ]
 });

@@ -107,6 +107,7 @@ Game.UIMode.persistence = {
     newGame: function() {
         Game.clearDatastore();
         Game.setRandomSeed(5 + Math.floor(ROT.RNG.getUniform() * 100000));
+        Game.UIMode.shipScreen.setupShipStatus();
         Game.UIMode.navigation.setupNavMap();
         Game.switchUIMode(Game.UIMode.gameIntro);
     },
@@ -205,12 +206,13 @@ Game.UIMode.gameIntro = {
 Game.UIMode.shipScreen = {
     attr: {
         playerName: null,
-        _curOption: 0
+        _curOption: 0,
+        drones: []
     },
     shipOptions: ["Navigate", "Outfit drones", "Outfit ship", "heist", "Operations Manual", "Save/Load"],
     shipFunctions: {
         Navigate: function() {
-            Game.addUIMode(Game.UIMode.navigation);
+            Game.addUIMode(Game.UIMode.navigation, Game.UIMode.shipScreen.deployDroneID());
         },
         heist: function() {
             Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
@@ -230,6 +232,22 @@ Game.UIMode.shipScreen = {
         display.drawText(0, 1, "The GSV " + this.attr.playerName + ": STATUS");
         this.renderShipOptions(display);
     },
+    renderShipOptions: function(display) {
+        for (var i = 0; i < this.shipOptions.length; i++) {
+            var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.shipOptions[i]);
+        }
+    },
+    setupShipStatus: function(){
+        var firstDrone = Game.EntityGenerator.create('initial_drone');
+        this.addDrone(firstDrone);
+    },
+    addDrone: function(drone){
+        this.attr.drones.push(drone.getID());
+    },
+    deployDroneID: function(){
+        return this.attr.drones[0];
+    },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
         switch (action) {
@@ -247,12 +265,6 @@ Game.UIMode.shipScreen = {
             case 'PERSISTENCE':
                 Game.switchUIMode(Game.UIMode.persistence);
                 break;
-        }
-    },
-    renderShipOptions: function(display) {
-        for (var i = 0; i < this.shipOptions.length; i++) {
-            var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
-            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.shipOptions[i]);
         }
     },
     toJSON: function() {
@@ -280,6 +292,7 @@ Game.UIMode.navigation = {
             '42': ' ',
             '43': ' '
         },
+        _curDroneID: ''
     },
     navOptions: ['Begin docking procedure'],
     navFunctions: {
@@ -287,8 +300,9 @@ Game.UIMode.navigation = {
             Game.UIMode.navigation.dock();
         }
     },
-    enter: function() {
+    enter: function(droneID) {
         this.setupNavOptions();
+        this.attr._curDroneID = droneID;
     },
     exit: function() {},
     render: function(display) {
@@ -334,7 +348,7 @@ Game.UIMode.navigation = {
     },
     dock: function() {
         if (Game.UIMode.navigation.attr._curNode.mapType.localeCompare('void') != 0) {
-            Game.switchUIMode(Game.UIMode.heist, Game.UIMode.navigation.attr._curNode.mapType);
+            Game.switchUIMode(Game.UIMode.heist, {map:Game.UIMode.navigation.attr._curNode.mapType,drone:this.attr._curDroneID});
         } else {
             Game.Message.send('There is nothing to dock with here.');
         }

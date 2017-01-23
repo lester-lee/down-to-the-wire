@@ -6,8 +6,8 @@ Game.Generator = function(gName, constructfn, defaultTemplate){
 };
 
 Game.Generator.prototype.learn = function(template, key){
-  if (!template.name) {
-    console.log('template needs name attr');
+  if (!template.name && !key) {
+    console.log('template needs name or key');
     return false;
   }
   key = key || template.name;
