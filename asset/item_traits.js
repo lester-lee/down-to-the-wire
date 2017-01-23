@@ -58,7 +58,6 @@ Game.ItemTraits.Equipable = {
                 }
             },
             'destroyed': function(evtData) {
-                console.dir(evtData);
                 Game.Message.send(this.getName() + " has been destroyed.");
                 this.raiseSymbolActiveEvent('unequip', {
                     actor: evtData.equipper
