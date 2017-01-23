@@ -6,8 +6,7 @@ Game.UIMode.heist = {
         _cameraY: 50,
         _avDispX: 50,
         _avDispY: 50,
-        _engine: null,
-        _curActorID: '',
+        _engine: null
     },
     enter: function(heistType) {
         this.setupNewGame(heistType);
@@ -30,12 +29,6 @@ Game.UIMode.heist = {
     },
     setAvatar: function(a) {
         this.attr._avatarID = a.getID();
-    },
-    getCurrentActor: function() {
-        return Game.DATASTORE.ENTITY[this.attr._curActorID];
-    },
-    setCurrentActor: function(a) {
-        this.attr._curActorID = a.getID();
     },
     getEngine: function() {
         return this.attr._engine;

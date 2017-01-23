@@ -125,7 +125,6 @@ Game.EntityTraits.PlayerActor = {
         this.isActing(true);
         Game.refresh();
         Game.UIMode.heist.getEngine().lock();
-        Game.UIMode.heist.setCurrentActor(this);
         this.isActing(false);
     }
 };
@@ -235,8 +234,8 @@ Game.EntityTraits.EquipmentHolder = {
                 head: null,
                 core: null,
                 legs: null,
-                hand1: null,
-                hand2: null,
+                weapon: null,
+                arms: null,
                 feet: null
             };
             var item;
@@ -420,7 +419,7 @@ Game.EntityTraits.StatHitPoints = {
         },
         listeners: {
             'attacked': function(evtData) {
-                var defense = this.raiseSymbolActiveEvent('getDefense').defense || 0;
+                var defense = this.raiseSymbolActiveEvent('getDefense').defense || 1;
                 var attack = evtData.attack;
                 var dmg = Game.Util.calcDamage(attack, defense);
                 this.takeDamage(dmg);
@@ -477,42 +476,61 @@ Game.EntityTraits.MeleeAttacker = {
         traitGroup: 'Attacker',
         stateNamespace: '_MeleeAttacker_attr',
         stateModel: {
-            attack: 1,
-            attackAccuracy: .95
+            attack: 0,
+            attackAccuracy: 0,
+            canAttack: false
         },
         init: function(template) {
-            this.attr._MeleeAttacker_attr.attack = template.attack || 1;
+            this.attr._MeleeAttacker_attr.attack = template.attack || 0;
+            this.attr._MeleeAttacker_attr.attack = template.attackAccuracy || 0;
         },
         listeners: {
             'bumpEntity': function(evtData) {
-                var hit = this.getAttackAccuracy();
-                var dodge = evtData.target.raiseSymbolActiveEvent('getDodge').dodge || 0;
-                if (ROT.RNG.getUniform() <= Math.max(0, hit - dodge)) {
-                    evtData.target.raiseSymbolActiveEvent('attacked', {
-                        attacker: evtData.actor,
-                        attack: this.getAttack()
-                    });
+                if (this.canAttack()) {
+                    var hit = this.getAttackAccuracy();
+                    var dodge = evtData.target.raiseSymbolActiveEvent('getDodge').dodge || 0;
+                    if (ROT.RNG.getUniform() <= Math.max(0, hit - dodge)) {
+                        evtData.target.raiseSymbolActiveEvent('attacked', {
+                            attacker: evtData.actor,
+                            attack: this.getAttack()
+                        });
+                    } else {
+                        this.raiseSymbolActiveEvent('attackMiss', {
+                            attacker: evtData.actor,
+                            target: evtData.target
+                        });
+                        evtData.target.raiseSymbolActiveEvent('attackAvoided', {
+                            attacker: evtData.actor,
+                            target: evtData.target
+                        });
+                    }
                 } else {
-                    this.raiseSymbolActiveEvent('attackMiss', {
-                        attacker: evtData.actor,
-                        target: evtData.target
-                    });
-                    evtData.target.raiseSymbolActiveEvent('attackAvoided', {
-                        attacker: evtData.actor,
-                        target: evtData.target
-                    });
+                    Game.Message.send(this.getName() + " has nothing to attack with.");
                 }
             }
         }
     },
+    setAttack: function(n) {
+        this.attr._MeleeAttacker_attr.attack = n;
+    },
     getAttack: function() {
         return this.attr._MeleeAttacker_attr.attack;
     },
+    setAttackAccuracy: function(n) {
+        this.attr._MeleeAttacker_attr.attackAccuracy = n;
+    },
     getAttackAccuracy: function() {
         return this.attr._MeleeAttacker_attr.attackAccuracy;
+    },
+    toggleAttack: function() {
+        this.attr._MeleeAttacker_attr.canAttack = !this.attr._MeleeAttacker_attr.canAttack;
+    },
+    canAttack: function() {
+        return this.attr._MeleeAttacker_attr.canAttack;
     }
 };
 
+/*
 Game.EntityTraits.MeleeDefender = {
     META: {
         traitName: 'MeleeDefender',
@@ -546,6 +564,7 @@ Game.EntityTraits.MeleeDefender = {
         return this.attr._MeleeDefender_attr.dodge;
     }
 };
+*/
 
 /* ================ Sight / Map ================== */
 
@@ -772,7 +791,6 @@ Game.EntityTraits.WanderChaserActor = {
     act: function() {
         var engine = Game.UIMode.heist.getEngine();
         engine.lock();
-        Game.UIMode.heist.setCurrentActor(this);
         var moveDeltas = this.getMoveDeltas();
         var input = {
             map: this.getMap(),

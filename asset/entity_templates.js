@@ -5,37 +5,25 @@ Game.EntityGenerator.learn({
     chr: 'D',
     fg: '#fff',
     maxHP: 10,
-    attack: 5,
-    defense: 2,
     dodge: .1,
-    defaultEquipment: ["90 Camera", "Movement Apparatus"],
+    defaultEquipment: ["90 Camera", "Movement Apparatus", "Big Fist"],
     traits: [
         "PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
-        "PlayerActor", "StatHitPoints", "MeleeAttacker", "MeleeDefender", "DoorOpener",
+        "PlayerActor", "StatHitPoints", "MeleeAttacker", "DoorOpener",
         "InventoryHolder", "EquipmentHolder"
     ]
 });
 
-Game.EntityGenerator.learn({
-    name: 'manta ray',
-    chr: 'm',
-    fg: '#0bf',
-    maxHP: 5,
-    dodge: .1,
-    traits: ["WalkerCorporeal", "Chronicle", "StatHitPoints", "MeleeDefender"]
-});
 
 Game.EntityGenerator.learn({
     name: 'janitor drone',
     chr: 'j',
     fg: '#0bf',
     maxHP: 10,
-    attack: 3,
-    attackAccuracy: .6,
-    defense: 1,
     dodge: .1,
-    defaultEquipment: ["360 Camera", "Movement Apparatus"],
+    defaultEquipment: ["360 Camera", "Movement Apparatus", "Big Fist"],
     traits: [
       "Sight", "WanderChaserActor", "WalkerCorporeal", "StatHitPoints",
-      "MeleeAttacker", "MeleeDefender", "InventoryHolder", "EquipmentHolder"]
+      "MeleeAttacker", "InventoryHolder", "EquipmentHolder"
+    ]
 });

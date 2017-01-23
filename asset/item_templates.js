@@ -47,6 +47,25 @@ Game.ItemGenerator.learn({
   traits: ['Equipable','StatModifierSight']
 });
 
+
+Game.ItemGenerator.learn({
+  name: 'Scrap Metal',
+  description: "maybe you'll be able to use it",
+  chr: "F",
+  fg: "#333"
+});
+
+Game.ItemGenerator.learn({
+  name: 'Big Fist',
+  description: "you can punch now",
+  chr: "F",
+  fg: "#333",
+  equipCategory: "weapon",
+  attack: 1,
+  accuracy: .95,
+  traits: ['Equipable','StatModifierAttack']
+});
+
 Game.ItemGenerator.learn({
   name: 'Movement Apparatus',
   description: "it lets you move",
