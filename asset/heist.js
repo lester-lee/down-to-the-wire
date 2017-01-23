@@ -10,7 +10,7 @@ Game.UIMode.heist = {
     },
     enter: function(heistArgs) {
         var mapType = heistArgs.map;
-        var droneID = heistArgs.drone;        
+        var droneID = heistArgs.drone;
         this.attr._avatarID = droneID;
         this.setupNewGame(mapType);
         this.getEngine().unlock();
@@ -114,7 +114,10 @@ Game.UIMode.heist = {
     setupNewGame: function(heistType) {
         this.setMap(new Game.Map(heistType));
         this.setEngine(this.getMap().getScheduler());
-        this.getMap().addEntity(this.getAvatar(), this.getMap().getRandomTileWalkable());
+        var startTile = this.getMap().getRandomTileWalkable();
+        var airlockTile = {x:startTile.x, y:startTile.y-1};
+        this.getMap().addEntity(this.getAvatar(), startTile);
+        this.getMap().setTile(airlockTile, Game.Tile.airlockTile);
         this.setCameraToAvatar();
     },
     placeAvatar: function() {

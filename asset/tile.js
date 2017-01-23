@@ -64,3 +64,10 @@ Game.Tile.doorOpenTile = new Game.Tile({
     opaque: false,
     walkable: true,
 });
+Game.Tile.airlockTile = new Game.Tile({
+    name: 'airlock',
+    chr: '☼',
+    fg: '#ff0',
+    opaque: false,
+    walkable: true
+});
