@@ -19,9 +19,9 @@ Game.EntityGenerator.learn({
     name: 'janitor drone',
     chr: 'j',
     fg: '#0bf',
-    maxHP: 10,
+    maxHP: 5,
     dodge: .1,
-    defaultEquipment: ["360 Camera", "Movement Apparatus", "Big Fist"],
+    defaultEquipment: ["180 Camera", "Movement Apparatus", "Big Fist"],
     traits: [
       "Sight", "WanderChaserActor", "WalkerCorporeal", "StatHitPoints",
       "MeleeAttacker", "InventoryHolder", "EquipmentHolder"

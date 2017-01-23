@@ -33,7 +33,7 @@ Game.EntityTraits.PlayerMessager = {
                 Game.Message.send(evtData.damager.getName() + " hit you for " + evtData.damage + " damage");
             },
             'damagedEquipment': function(evtData) {
-                Game.Message.send(evtData.damager.getName() + " hit "+evtData.equipment+" for " + evtData.damage + " damage");
+                Game.Message.send(evtData.damager.getName() + " hit " + evtData.equipment + " for " + evtData.damage + " damage");
             },
             'recoverHP': function(evtData) {
                 Game.Message.send("You recovered " + evtData.hp + "HP");
@@ -148,40 +148,38 @@ Game.EntityTraits.WalkerCorporeal = {
         }
     },
     tryWalk: function(map, dx, dy, dir) {
-        if (this.canMove()) {
-            var newX = Math.min(Math.max(0, this.getX()), map.getWidth()) + dx;
-            var newY = Math.min(Math.max(0, this.getY()), map.getWidth()) + dy;
-            var newPos = {
-                x: newX,
-                y: newY
-            };
-            this.setDirection(dir);
-            Game.refresh();
-            var ent = map.getEntity(newPos);
-            if (ent) {
-                this.raiseSymbolActiveEvent('bumpEntity', {
-                    actor: this,
-                    target: ent
-                });
-                this.raiseSymbolActiveEvent('actionDone');
-                return true;
-            }
-            var nextTile = map.getTile(newPos);
-            if (nextTile.isWalkable()) {
-                this.setPos(newPos);
-                map.updateEntityLocation(this);
-                this.raiseSymbolActiveEvent('actionDone');
-                return true;
-            } else if (nextTile.getName() === 'doorClosed') {
-                this.raiseSymbolActiveEvent('doorOpenAttempt', {
-                    targetPos: newPos
-                });
-            } else {
-                this.raiseSymbolActiveEvent('walkForbidden', {
-                    target: nextTile
-                });
-                return false;
-            }
+        var newX = Math.min(Math.max(0, this.getX()), map.getWidth()) + dx;
+        var newY = Math.min(Math.max(0, this.getY()), map.getWidth()) + dy;
+        var newPos = {
+            x: newX,
+            y: newY
+        };
+        this.setDirection(dir);
+        Game.refresh();
+        var ent = map.getEntity(newPos);
+        if (ent) {
+            this.raiseSymbolActiveEvent('bumpEntity', {
+                actor: this,
+                target: ent
+            });
+            this.raiseSymbolActiveEvent('actionDone');
+            return true;
+        }
+        var nextTile = map.getTile(newPos);
+        if (nextTile.isWalkable() && this.canMove()) {
+            this.setPos(newPos);
+            map.updateEntityLocation(this);
+            this.raiseSymbolActiveEvent('actionDone');
+            return true;
+        } else if (nextTile.getName() === 'doorClosed') {
+            this.raiseSymbolActiveEvent('doorOpenAttempt', {
+                targetPos: newPos
+            });
+        } else {
+            this.raiseSymbolActiveEvent('walkForbidden', {
+                target: nextTile
+            });
+            return false;
         }
     },
     getDirection: function() {
