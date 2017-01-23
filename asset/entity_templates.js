@@ -10,7 +10,7 @@ Game.EntityGenerator.learn({
     dodge: .1,
     sightRadius: 4,
     sightAngle: 90,
-    defaultEquipment: ["90 Camera"],
+    defaultEquipment: ["90 Camera", "Movement Apparatus"],
     traits: [
         "PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
         "PlayerActor", "StatHitPoints", "MeleeAttacker", "MeleeDefender", "DoorOpener",

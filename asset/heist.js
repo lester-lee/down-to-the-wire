@@ -119,6 +119,8 @@ Game.UIMode.heist = {
         this.setMap(new Game.Map(heistType));
         this.setEngine(this.getMap().getScheduler());
         this.setAvatar(Game.EntityGenerator.create('avatar'));
+        // this.setCurrentActor(this.getAvatar());
+        // this.getAvatar().setupEquipment();
         var avSuccess = this.getMap().addEntity(this.getAvatar(), this.getMap().getRandomTileWalkable());
         this.setCameraToAvatar();
     },

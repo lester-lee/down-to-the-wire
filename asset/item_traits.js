@@ -22,10 +22,8 @@ Game.ItemTraits.Equipable = {
                 if (!item.isEquipped() && actor.checkEquipmentCategory(cat)) {
                     actor.addEquipment(itemID);
                     Game.removeUIMode();
-                    item.raiseSymbolActiveEvent('equip');
                 } else if (!item.isEquipped() && !actor.checkEquipmentCategory(cat)) {
                     actor.swapEquipment(itemID);
-                    item.raiseSymbolActiveEvent('equip');
                     Game.removeUIMode();
                 } else {
                     Game.Message.send("Yer already wearin that.");
@@ -38,7 +36,6 @@ Game.ItemTraits.Equipable = {
                     actor.removeEquipment(itemID);
                     Game.UIMode.inventory.refreshItemIDs();
                     Game.removeUIMode();
-                    item.raiseSymbolActiveEvent('unequip');
                 } else {
                     Game.Message.send("You'd have to equip that first.");
                 }
@@ -107,14 +104,15 @@ Game.ItemTraits.StatModifierSight = {
             this.attr._StatModifier_Sight_attr.newSightAngle = template.newSightAngle || 90;
         },
         listeners: {
-            'equip': function() {
-                var actor = Game.UIMode.heist.getCurrentActor();
+            'equip': function(evtData) {
+                var actor = evtData.actor;
                 var newValues = this.getNewSightValues();
+                console.dir(actor);
                 actor.setSightRadius(newValues.rad);
                 actor.setSightAngle(newValues.ang);
             },
-            'unequip': function() {
-                var actor = Game.UIMode.heist.getCurrentActor();
+            'unequip': function(evtData) {
+                var actor = evtData.actor;
                 actor.setSightRadius(0);
                 actor.setSightAngle(0);
             }
@@ -150,16 +148,13 @@ Game.ItemTraits.StatModifierMovement = {
           this.attr._StatModifier_Movement_attr.moveSpeed = template.moveSpeed || 1000;
       },
       listeners: {
-          'equip': function() {
-              var actor = Game.UIMode.heist.getCurrentActor();
-              var newValues = this.getNewSightValues();
-              actor.setSightRadius(newValues.rad);
-              actor.setSightAngle(newValues.ang);
+          'equip': function(evtData) {
+              var actor = evtData.actor;
+              actor.toggleMove();
           },
-          'unequip': function() {
-              var actor = Game.UIMode.heist.getCurrentActor();
-              actor.setSightRadius(0);
-              actor.setSightAngle(0);
+          'unequip': function(evtData) {
+              var actor = evtData.actor;
+              actor.toggleMove();
           }
       }
   },

@@ -124,7 +124,7 @@ Game.EntityTraits.PlayerActor = {
         } // gate to deal with JS timing issues
         this.isActing(true);
         Game.refresh();
-        Game.UIMode.heist.getEngine().lock();        
+        Game.UIMode.heist.getEngine().lock();
         Game.UIMode.heist.setCurrentActor(this);
         this.isActing(false);
     }
@@ -188,10 +188,10 @@ Game.EntityTraits.WalkerCorporeal = {
     setDirection: function(dir) {
         this.attr._Walker_attr.direction = dir;
     },
-    toggleMove: function(){
+    toggleMove: function() {
         this.attr._Walker_attr.moving = !this.attr._Walker_attr.moving;
     },
-    canMove: function(){
+    canMove: function() {
         return this.attr._Walker_attr.moving;
     }
 };
@@ -250,6 +250,9 @@ Game.EntityTraits.EquipmentHolder = {
         var equipment = Game.DATASTORE.ITEM[equipID];
         var cat = equipment.getEquipCategory();
         equipment.toggleEquipped();
+        equipment.raiseSymbolActiveEvent('equip', {
+            actor: this
+        });
         this.attr._EquipmentHolder_attr.equipped[cat] = equipment.getID();
         this.extractInventoryItems(equipID);
     },
@@ -257,6 +260,9 @@ Game.EntityTraits.EquipmentHolder = {
         var equipment = Game.DATASTORE.ITEM[equipID];
         var cat = equipment.getEquipCategory();
         equipment.toggleEquipped();
+        equipment.raiseSymbolActiveEvent('unequip', {
+            actor: this
+        });
         this.attr._EquipmentHolder_attr.equipped[cat] = null;
         this.addInventoryItems([equipment]);
     },
