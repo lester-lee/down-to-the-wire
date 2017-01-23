@@ -20,13 +20,13 @@ Game.ItemTraits.Equipable = {
                 var cat = item.getEquipCategory();
                 var avatar = Game.UIMode.heist.getAvatar();
                 if (!item.isEquipped() && avatar.checkEquipmentCategory(cat)) {
-                    item.toggleEquipped();
                     avatar.addEquipment(itemID);
                     Game.removeUIMode();
                     item.raiseSymbolActiveEvent('equip');
                 } else if (!item.isEquipped() && !avatar.checkEquipmentCategory(cat)) {
                     avatar.swapEquipment(itemID);
                     item.raiseSymbolActiveEvent('equip');
+                    Game.removeUIMode();
                 } else {
                     Game.Message.send("Yer already wearin that.");
                 }
@@ -34,7 +34,6 @@ Game.ItemTraits.Equipable = {
             this.attr.itemFunctions['Unequip'] = function(itemID) {
                 var item = Game.DATASTORE.ITEM[itemID];
                 if (item.isEquipped()) {
-                    item.toggleEquipped();
                     var avatar = Game.UIMode.heist.getAvatar();
                     avatar.removeEquipment(itemID);
                     Game.UIMode.inventory.refreshItemIDs();
@@ -100,8 +99,6 @@ Game.ItemTraits.StatModifierSight = {
         traitGroup: 'StatModifier',
         stateNamespace: '_StatModifier_Sight_attr',
         stateModel: {
-            oldSightRadius: 0,
-            oldSightAngle: 0,
             newSightRadius: 0,
             newSightAngle: 0
         },
@@ -112,18 +109,14 @@ Game.ItemTraits.StatModifierSight = {
         listeners: {
             'equip': function() {
                 var avatar = Game.UIMode.heist.getAvatar();
-                var oldRadius = avatar.getSightRadius();
-                var oldAngle = avatar.getSightAngle();
-                this.setOldSightValues(oldRadius, oldAngle);
                 var newValues = this.getNewSightValues();
                 avatar.setSightRadius(newValues.rad);
                 avatar.setSightAngle(newValues.ang);
             },
             'unequip': function() {
                 var avatar = Game.UIMode.heist.getAvatar();
-                var oldValues = this.getOldSightValues();
-                avatar.setSightRadius(oldValues.rad);
-                avatar.setSightAngle(oldValues.ang);
+                avatar.setSightRadius(0);
+                avatar.setSightAngle(0);
             }
         }
     },

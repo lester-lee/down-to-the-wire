@@ -15,11 +15,31 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
+  name: '90 Camera',
+  description: "it's a camera",
+  chr: "C",
+  fg: "#f22",
+  newSightRadius: 4,
+  newSightAngle: 90,
+  traits: ['Equipable','StatModifierSight']
+});
+
+Game.ItemGenerator.learn({
   name: '180 Camera',
   description: "it's a camera",
   chr: "C",
   fg: "#2f2",
   newSightRadius: 10,
   newSightAngle: 180,
+  traits: ['Equipable','StatModifierSight']
+});
+
+Game.ItemGenerator.learn({
+  name: '360 Camera',
+  description: "it's a camera",
+  chr: "C",
+  fg: "#22f",
+  newSightRadius: 10,
+  newSightAngle: 360,
   traits: ['Equipable','StatModifierSight']
 });

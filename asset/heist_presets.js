@@ -31,7 +31,7 @@ Game.HeistPresets = {
         },
         addMobs: function(map) {
             for (var ecount = 0; ecount < 8; ecount++) {
-                var mobSuccess = map.addEntity(Game.EntityGenerator.create('janitor drone'), map.getRandomTileWalkable());
+                // var mobSuccess = map.addEntity(Game.EntityGenerator.create('janitor drone'), map.getRandomTileWalkable());
             }
         },
         addItems: function(map) {
@@ -40,6 +40,9 @@ Game.HeistPresets = {
             }
             for (var icount = 0; icount < 8; icount++) {
                 map.addItem(Game.ItemGenerator.create('180 Camera'), map.getRandomTileWalkable());
+            }
+            for (var icount = 0; icount < 8; icount++) {
+                map.addItem(Game.ItemGenerator.create('360 Camera'), map.getRandomTileWalkable());
             }
         }
     }

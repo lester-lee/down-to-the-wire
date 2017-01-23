@@ -220,6 +220,7 @@ Game.EntityTraits.EquipmentHolder = {
             equipped: {}
         },
         init: function(template) {
+            var defaultEquipment = template.defaultEquipment || [];
             this.attr._EquipmentHolder_attr.equipped = template.equipped || {
                 head: null,
                 torso: null,
@@ -228,17 +229,24 @@ Game.EntityTraits.EquipmentHolder = {
                 hand2: null,
                 feet: null
             };
+            var item;
+            for (var i = 0; i < defaultEquipment.length; i++) {
+                item = Game.ItemGenerator.create(defaultEquipment[i]);
+                this.addEquipment(item.getID());
+            }
         }
     },
     addEquipment: function(equipID) {
         var equipment = Game.DATASTORE.ITEM[equipID];
         var cat = equipment.getEquipCategory();
+        equipment.toggleEquipped();
         this.attr._EquipmentHolder_attr.equipped[cat] = equipment.getID();
         this.extractInventoryItems(equipID);
     },
     removeEquipment: function(equipID) {
         var equipment = Game.DATASTORE.ITEM[equipID];
         var cat = equipment.getEquipCategory();
+        equipment.toggleEquipped();
         this.attr._EquipmentHolder_attr.equipped[cat] = null;
         this.addInventoryItems([equipment]);
     },
