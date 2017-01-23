@@ -19,6 +19,7 @@ Game.ItemGenerator.learn({
   description: "it's a camera",
   chr: "C",
   fg: "#f22",
+  equipCategory: "head",
   newSightRadius: 4,
   newSightAngle: 90,
   traits: ['Equipable','StatModifierSight']
@@ -29,6 +30,7 @@ Game.ItemGenerator.learn({
   description: "it's a camera",
   chr: "C",
   fg: "#2f2",
+  equipCategory: "head",
   newSightRadius: 10,
   newSightAngle: 180,
   traits: ['Equipable','StatModifierSight']
@@ -39,7 +41,17 @@ Game.ItemGenerator.learn({
   description: "it's a camera",
   chr: "C",
   fg: "#22f",
+  equipCategory: "head",
   newSightRadius: 10,
   newSightAngle: 360,
   traits: ['Equipable','StatModifierSight']
+});
+
+Game.ItemGenerator.learn({
+  name: 'Movement Apparatus',
+  description: "it lets you move",
+  chr: "L",
+  fg: "#eee",
+  equipCategory: "legs",
+  traits: ['Equipable','StatModifierMovement']
 });

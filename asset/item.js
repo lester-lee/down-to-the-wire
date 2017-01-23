@@ -4,10 +4,11 @@ Game.Item = function(template) {
     this._traitSet = Game.ItemTraits;
     Game.SymbolActive.call(this, template);
     this.attr._generator_key = template._generator_key || '';
+    this.attr._broken = false;
     this.attr.itemOptions = this.attr.itemOptions || [];
     this.attr.itemOptions.push('Cancel');
     this.attr.itemFunctions = this.attr.itemFunctions || {};
-    this.attr.itemFunctions['Cancel'] = function(){
+    this.attr.itemFunctions['Cancel'] = function() {
         Game.removeUIMode();
     };
 
@@ -21,4 +22,16 @@ Game.Item.prototype.getOptions = function() {
 }
 Game.Item.prototype.getFunctions = function() {
     return this.attr.itemFunctions;
+}
+
+Game.Item.prototype.isFunctional = function() {
+    return !this.attr._broken;
+}
+
+Game.Item.prototype.break = function() {
+    this.attr._broken = true;
+}
+
+Game.Item.prototype.Repair = function() {
+    this.attr._broken = false;
 }

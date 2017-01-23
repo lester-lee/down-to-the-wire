@@ -124,7 +124,8 @@ Game.EntityTraits.PlayerActor = {
         } // gate to deal with JS timing issues
         this.isActing(true);
         Game.refresh();
-        Game.UIMode.heist.getEngine().lock();
+        Game.UIMode.heist.getEngine().lock();        
+        Game.UIMode.heist.setCurrentActor(this);
         this.isActing(false);
     }
 };
@@ -135,7 +136,8 @@ Game.EntityTraits.WalkerCorporeal = {
         traitGroup: 'Walker',
         stateNamespace: '_Walker_attr',
         stateModel: {
-            direction: 0
+            direction: 0,
+            moving: false
         },
         listeners: {
             'tryWalk': function(evtData) {
@@ -144,38 +146,40 @@ Game.EntityTraits.WalkerCorporeal = {
         }
     },
     tryWalk: function(map, dx, dy, dir) {
-        var newX = Math.min(Math.max(0, this.getX()), map.getWidth()) + dx;
-        var newY = Math.min(Math.max(0, this.getY()), map.getWidth()) + dy;
-        var newPos = {
-            x: newX,
-            y: newY
-        };
-        this.setDirection(dir);
-        Game.refresh();
-        var ent = map.getEntity(newPos);
-        if (ent) {
-            this.raiseSymbolActiveEvent('bumpEntity', {
-                actor: this,
-                target: ent
-            });
-            this.raiseSymbolActiveEvent('actionDone');
-            return true;
-        }
-        var nextTile = map.getTile(newPos);
-        if (nextTile.isWalkable()) {
-            this.setPos(newPos);
-            map.updateEntityLocation(this);
-            this.raiseSymbolActiveEvent('actionDone');
-            return true;
-        } else if (nextTile.getName() === 'doorClosed') {
-            this.raiseSymbolActiveEvent('doorOpenAttempt', {
-                targetPos: newPos
-            });
-        } else {
-            this.raiseSymbolActiveEvent('walkForbidden', {
-                target: nextTile
-            });
-            return false;
+        if (this.canMove()) {
+            var newX = Math.min(Math.max(0, this.getX()), map.getWidth()) + dx;
+            var newY = Math.min(Math.max(0, this.getY()), map.getWidth()) + dy;
+            var newPos = {
+                x: newX,
+                y: newY
+            };
+            this.setDirection(dir);
+            Game.refresh();
+            var ent = map.getEntity(newPos);
+            if (ent) {
+                this.raiseSymbolActiveEvent('bumpEntity', {
+                    actor: this,
+                    target: ent
+                });
+                this.raiseSymbolActiveEvent('actionDone');
+                return true;
+            }
+            var nextTile = map.getTile(newPos);
+            if (nextTile.isWalkable()) {
+                this.setPos(newPos);
+                map.updateEntityLocation(this);
+                this.raiseSymbolActiveEvent('actionDone');
+                return true;
+            } else if (nextTile.getName() === 'doorClosed') {
+                this.raiseSymbolActiveEvent('doorOpenAttempt', {
+                    targetPos: newPos
+                });
+            } else {
+                this.raiseSymbolActiveEvent('walkForbidden', {
+                    target: nextTile
+                });
+                return false;
+            }
         }
     },
     getDirection: function() {
@@ -183,6 +187,12 @@ Game.EntityTraits.WalkerCorporeal = {
     },
     setDirection: function(dir) {
         this.attr._Walker_attr.direction = dir;
+    },
+    toggleMove: function(){
+        this.attr._Walker_attr.moving = !this.attr._Walker_attr.moving;
+    },
+    canMove: function(){
+        return this.attr._Walker_attr.moving;
     }
 };
 
@@ -223,7 +233,7 @@ Game.EntityTraits.EquipmentHolder = {
             var defaultEquipment = template.defaultEquipment || [];
             this.attr._EquipmentHolder_attr.equipped = template.equipped || {
                 head: null,
-                torso: null,
+                core: null,
                 legs: null,
                 hand1: null,
                 hand2: null,
@@ -756,6 +766,7 @@ Game.EntityTraits.WanderChaserActor = {
     act: function() {
         var engine = Game.UIMode.heist.getEngine();
         engine.lock();
+        Game.UIMode.heist.setCurrentActor(this);
         var moveDeltas = this.getMoveDeltas();
         var input = {
             map: this.getMap(),

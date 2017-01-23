@@ -18,13 +18,13 @@ Game.ItemTraits.Equipable = {
             this.attr.itemFunctions['Equip'] = function(itemID) {
                 var item = Game.DATASTORE.ITEM[itemID];
                 var cat = item.getEquipCategory();
-                var avatar = Game.UIMode.heist.getAvatar();
-                if (!item.isEquipped() && avatar.checkEquipmentCategory(cat)) {
-                    avatar.addEquipment(itemID);
+                var actor = Game.UIMode.heist.getCurrentActor();
+                if (!item.isEquipped() && actor.checkEquipmentCategory(cat)) {
+                    actor.addEquipment(itemID);
                     Game.removeUIMode();
                     item.raiseSymbolActiveEvent('equip');
-                } else if (!item.isEquipped() && !avatar.checkEquipmentCategory(cat)) {
-                    avatar.swapEquipment(itemID);
+                } else if (!item.isEquipped() && !actor.checkEquipmentCategory(cat)) {
+                    actor.swapEquipment(itemID);
                     item.raiseSymbolActiveEvent('equip');
                     Game.removeUIMode();
                 } else {
@@ -34,8 +34,8 @@ Game.ItemTraits.Equipable = {
             this.attr.itemFunctions['Unequip'] = function(itemID) {
                 var item = Game.DATASTORE.ITEM[itemID];
                 if (item.isEquipped()) {
-                    var avatar = Game.UIMode.heist.getAvatar();
-                    avatar.removeEquipment(itemID);
+                    var actor = Game.UIMode.heist.getCurrentActor();
+                    actor.removeEquipment(itemID);
                     Game.UIMode.inventory.refreshItemIDs();
                     Game.removeUIMode();
                     item.raiseSymbolActiveEvent('unequip');
@@ -54,7 +54,7 @@ Game.ItemTraits.Equipable = {
     isEquipped: function() {
         return this.attr._Equipable_attr.equipped;
     }
-}
+};
 
 Game.ItemTraits.Repair = {
     META: {
@@ -70,16 +70,16 @@ Game.ItemTraits.Repair = {
             this.attr.itemOptions.push('Use');
             this.attr.itemFunctions = this.attr.itemFunctions || {};
             this.attr.itemFunctions['Use'] = function(itemID) {
-                var avatar = Game.UIMode.heist.getAvatar();
+                var actor = Game.UIMode.heist.getCurrentActor();
                 var recoverAmt = Game.UIMode.itemMenu.curItem.getRepairValue();
-                avatar.recover(recoverAmt);
-                avatar.extractInventoryItems(itemID);
+                actor.recover(recoverAmt);
+                actor.extractInventoryItems(itemID);
                 // return to heist screen
                 Game.goBaseUIMode();
-                avatar.raiseSymbolActiveEvent('recoverHP', {
+                actor.raiseSymbolActiveEvent('recoverHP', {
                     hp: recoverAmt
                 });
-                avatar.raiseSymbolActiveEvent('actionDone');
+                actor.raiseSymbolActiveEvent('actionDone');
             };
         }
     },
@@ -108,15 +108,15 @@ Game.ItemTraits.StatModifierSight = {
         },
         listeners: {
             'equip': function() {
-                var avatar = Game.UIMode.heist.getAvatar();
+                var actor = Game.UIMode.heist.getCurrentActor();
                 var newValues = this.getNewSightValues();
-                avatar.setSightRadius(newValues.rad);
-                avatar.setSightAngle(newValues.ang);
+                actor.setSightRadius(newValues.rad);
+                actor.setSightAngle(newValues.ang);
             },
             'unequip': function() {
-                var avatar = Game.UIMode.heist.getAvatar();
-                avatar.setSightRadius(0);
-                avatar.setSightAngle(0);
+                var actor = Game.UIMode.heist.getCurrentActor();
+                actor.setSightRadius(0);
+                actor.setSightAngle(0);
             }
         }
     },
@@ -136,7 +136,34 @@ Game.ItemTraits.StatModifierSight = {
             ang: this.attr._StatModifier_Sight_attr.newSightAngle
         };
     }
-}
+};
+
+Game.ItemTraits.StatModifierMovement = {
+  META: {
+      traitName: 'StatModifierMovement',
+      traitGroup: 'StatModifier',
+      stateNamespace: '_StatModifier_Movement_attr',
+      stateModel: {
+          moveSpeed: 1000
+      },
+      init: function(template) {
+          this.attr._StatModifier_Movement_attr.moveSpeed = template.moveSpeed || 1000;
+      },
+      listeners: {
+          'equip': function() {
+              var actor = Game.UIMode.heist.getCurrentActor();
+              var newValues = this.getNewSightValues();
+              actor.setSightRadius(newValues.rad);
+              actor.setSightAngle(newValues.ang);
+          },
+          'unequip': function() {
+              var actor = Game.UIMode.heist.getCurrentActor();
+              actor.setSightRadius(0);
+              actor.setSightAngle(0);
+          }
+      }
+  },
+};
 
 /* =============================================== */
 
