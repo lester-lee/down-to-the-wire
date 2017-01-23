@@ -555,12 +555,12 @@ Game.EntityTraits.Sight = {
         traitGroup: 'Sense',
         stateNamespace: '_Sight_attr',
         stateModel: {
-            sightRadius: 3,
-            sightAngle: 90
+            sightRadius: 0,
+            sightAngle: 0
         },
         init: function(template) {
-            this.attr._Sight_attr.sightRadius = template.sightRadius || 3;
-            this.attr._Sight_attr.sightAngle = template.sightAngle || 90;
+            this.attr._Sight_attr.sightRadius = template.sightRadius || 0;
+            this.attr._Sight_attr.sightAngle = template.sightAngle || 0;
         }
     },
     getSightRadius: function() {

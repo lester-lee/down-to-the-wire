@@ -8,8 +8,6 @@ Game.EntityGenerator.learn({
     attack: 5,
     defense: 2,
     dodge: .1,
-    sightRadius: 4,
-    sightAngle: 90,
     defaultEquipment: ["90 Camera", "Movement Apparatus"],
     traits: [
         "PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
@@ -36,7 +34,8 @@ Game.EntityGenerator.learn({
     attackAccuracy: .6,
     defense: 1,
     dodge: .1,
-    sightRadius: 4,
-    sightAngle: 360,
-    traits: ["Sight", "WanderChaserActor", "WalkerCorporeal", "StatHitPoints", "MeleeAttacker", "MeleeDefender"]
+    defaultEquipment: ["360 Camera", "Movement Apparatus"],
+    traits: [
+      "Sight", "WanderChaserActor", "WalkerCorporeal", "StatHitPoints",
+      "MeleeAttacker", "MeleeDefender", "InventoryHolder", "EquipmentHolder"]
 });

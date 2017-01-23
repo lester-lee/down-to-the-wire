@@ -107,7 +107,6 @@ Game.ItemTraits.StatModifierSight = {
             'equip': function(evtData) {
                 var actor = evtData.actor;
                 var newValues = this.getNewSightValues();
-                console.dir(actor);
                 actor.setSightRadius(newValues.rad);
                 actor.setSightAngle(newValues.ang);
             },
