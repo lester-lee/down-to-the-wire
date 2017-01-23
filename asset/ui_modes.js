@@ -24,7 +24,13 @@ Game.UIMode.titleScreen = {
         }
     },
     render: function(display) {
-        display.drawText(1, 4, "this is a title screen");
+        display.drawText(1, 4, "___  ____ _ _ _ _  _    ___ ____");
+        display.drawText(1, 5, "|  \\ |  | | | | |\\ |     |  |  |   ");
+        display.drawText(1, 6, "|__/ |__| |_|_| | \\|     |  |__|   ");
+        display.drawText(1, 7, "___ _  _ ____    _ _ _ _ ____ ____ ");
+        display.drawText(2, 8, "|  |__| |___    | | | | |__/ |___ ");
+        display.drawText(2, 9, "|  |  | |___    |_|_| | |  \\ |___ ");
+
         this.renderTitleOptions(display);
     },
     renderTitleOptions: function(display) {
@@ -173,8 +179,8 @@ Game.UIMode.gameIntro = {
     },
     exit: function() {},
     render: function(display) {
-        display.drawText(1, 4, "here is some story introduction");
-        display.drawText(1, 5, "what will you call yourself?");
+        display.drawText(1, 4, "You remember dying in the year S+979 — nearly 1000 years after the rise of artificail intelegence. Your consciousness was recorded in the moments before your death and has now been downloaded into the Strategic Command Commputer of aeon-dead warship.");
+        display.drawText(1, 5, "What were you called in your past life?");
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
@@ -201,13 +207,16 @@ Game.UIMode.shipScreen = {
         playerName: null,
         _curOption: 0
     },
-    shipOptions: ["Navigate", "Outfit drones", "Outfit ship", "heist", "Save/Load"],
+    shipOptions: ["Navigate", "Outfit drones", "Outfit ship", "heist", "Operations Manual", "Save/Load"],
     shipFunctions: {
         Navigate: function() {
             Game.addUIMode(Game.UIMode.navigation);
         },
         heist: function() {
             Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
+        },
+        "Operations Manual": function() {
+            Game.addUIMode(Game.UIMode.helpScreen);
         },
         "Save/Load": function() {
             Game.addUIMode(Game.UIMode.persistence);
@@ -218,7 +227,7 @@ Game.UIMode.shipScreen = {
     },
     exit: function() {},
     render: function(display) {
-        display.drawText(0, 1, this.attr.playerName + " STATUS");
+        display.drawText(0, 1, "The GSV " + this.attr.playerName + ": STATUS");
         this.renderShipOptions(display);
     },
     handleInput: function(inputType, inputData) {
@@ -353,12 +362,12 @@ Game.UIMode.navigation = {
         this.attr._navMap = new Graph();
         var navMap = this.attr._navMap;
         navMap.addNode({
-            name: "Somewhere in Space",
-            starSystem: "system undefined",
+            name: "Somewhere Between Stars",
+            starSystem: "Interstellar Void",
             prefix: "",
             mapType: 'void'
         });
-        this.attr._curNode = navMap.getNode("Somewhere in Space");
+        this.attr._curNode = navMap.getNode("Somewhere Between Stars");
         this.attr._L = {
             '1': '1',
             '2': ' ',
@@ -394,7 +403,7 @@ Game.UIMode.navigation = {
                 name: Game.Util.randomShipName(),
                 starSystem: systemName,
                 mapType: 'ship_easy',
-                prefix: 'the SRV ',
+                prefix: 'the GSV ',
                 navNum: '' + (i + 1)
             };
             ships.push(ship);
@@ -486,7 +495,13 @@ Game.UIMode.helpScreen = {
             display.drawText(2, 9, "↙ ↓ ↘");
             display.drawText(1, 10, "z   x   c");
         } else if (page === 2) {
-
+            display.drawText(1, 5, "Ship Navigation:");
+            display.drawText(1, 7, "1   2   This map represents the locations of spacecraft");
+            display.drawText(1, 8, "** *    within a star system. The highlighted location");
+            display.drawText(1, 9, "* *     shows you where you are. In this case 4. The lines");
+            display.drawText(1, 10, "** *    of *s represent paths though hyperspace that your");
+            display.drawText(1, 11, "3***%b{#333}4%b{}   spacecraft can traverse. In this example you can");
+            display.drawText(9, 12,         "travel between 1 & 3, 1 & 4, 2 & 3, and 3 & 4.");
         } else if (page === 3) {
 
         } else if (page === 4) {
@@ -512,7 +527,7 @@ Game.UIMode.inventory = {
         this.attr._curOption = 0;
     },
     render: function(display) {
-        var str = (this.equip) ? "Equipment" : "Inventory";
+        var str = (this.equip) ? "Inventory %b{#333}Equipment%b{}" : "%b{#333}Inventory%b{} Equipment";
         display.drawText(2, 1, str);
         this.renderInventory(display);
     },
@@ -557,6 +572,9 @@ Game.UIMode.inventory = {
                 }
                 break;
             case 'CANCEL':
+                Game.removeUIMode();
+                break;
+            case 'INVENTORY':
                 Game.removeUIMode();
                 break;
         }
@@ -610,7 +628,7 @@ Game.UIMode.heistMenu = {
         _curOption: 0,
         _abort: false,
     },
-    menuOptions: ["Inventory", "Equipment", "Help", "Options", "Abort Heist", "Close Menu"],
+    menuOptions: ["Inventory", "Equipment", "Operations Manual", "Options", "Abort Heist", "Close Menu"],
     menuFunctions: {
         'Inventory': function() {
             Game.addUIMode(Game.UIMode.inventory);
@@ -618,7 +636,7 @@ Game.UIMode.heistMenu = {
         'Equipment': function() {
             Game.addUIMode(Game.UIMode.inventory, true);
         },
-        'Help': function() {
+        'Operations Manual': function() {
             Game.addUIMode(Game.UIMode.helpScreen);
         },
         'Options': function() {
