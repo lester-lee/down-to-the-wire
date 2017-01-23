@@ -21,7 +21,7 @@ Game.EntityGenerator.learn({
     fg: '#0bf',
     maxHP: 10,
     dodge: .1,
-    defaultEquipment: ["360 Camera", "Movement Apparatus", "Big Fist"],
+    defaultEquipment: ["360 Camera", "Movement Apparatus"],
     traits: [
       "Sight", "WanderChaserActor", "WalkerCorporeal", "StatHitPoints",
       "MeleeAttacker", "InventoryHolder", "EquipmentHolder"

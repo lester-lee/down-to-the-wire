@@ -445,7 +445,7 @@ Game.EntityTraits.StatHitPoints = {
                         damage: dmg
                     });
                     evtData.attacker.raiseSymbolActiveEvent('dealtDamage', {
-                        attacked: equipment.getName(),
+                        attacked: equipment,
                         damage: dmg
                     });
                 } else {
