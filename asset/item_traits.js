@@ -59,9 +59,6 @@ Game.ItemTraits.Equipable = {
             },
             'destroyed': function(evtData) {
                 Game.Message.send(this.getName() + " has been destroyed.");
-                this.raiseSymbolActiveEvent('unequip', {
-                    actor: evtData.equipper
-                });
                 var scrap = Game.ItemGenerator.create('Scrap Metal');
                 var actor = evtData.equipper;
                 actor.removeEquipment(this.getID());
@@ -194,6 +191,7 @@ Game.ItemTraits.StatModifierMovement = {
             },
             'unequip': function(evtData) {
                 var actor = evtData.actor;
+                console.dir(actor);
                 actor.toggleMove();
             }
         }
