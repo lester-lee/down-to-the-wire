@@ -12,7 +12,7 @@ Game.UIMode.heist = {
     enter: function(heistArgs) {
         if (heistArgs) {
             var mapType = heistArgs.map;
-            var droneID = heistArgs.drone;
+            var droneID = heistArgs.drone.getID();
             this.attr._avatarID = droneID;
             this.setupNewGame(mapType);
             this.getEngine().unlock();

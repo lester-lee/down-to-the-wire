@@ -235,10 +235,13 @@ Game.UIMode.shipScreen = {
     shipOptions: ["Navigate", "Drone Status", "Outfit ship", "heist", "Operations Manual", "Save/Load"],
     shipFunctions: {
         Navigate: function() {
-            Game.addUIMode(Game.UIMode.navigation, Game.UIMode.shipScreen.deployDroneID());
+            Game.addUIMode(Game.UIMode.navigation);
         },
         "Drone Status": function() {
-            Game.addUIMode(Game.UIMode.droneScreen, Game.UIMode.shipScreen.attr.drones);
+            Game.addUIMode(Game.UIMode.droneScreen, {
+                drones: Game.UIMode.shipScreen.attr.drones,
+                deploying: false
+            });
         },
         heist: function() {
             Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
@@ -327,8 +330,7 @@ Game.UIMode.navigation = {
             '41': ' ',
             '42': ' ',
             '43': ' '
-        },
-        _curDroneID: ''
+        }
     },
     navOptions: ['Begin docking procedure'],
     navFunctions: {
@@ -336,9 +338,8 @@ Game.UIMode.navigation = {
             Game.UIMode.navigation.dock();
         }
     },
-    enter: function(droneID) {
+    enter: function() {
         this.setupNavOptions();
-        this.attr._curDroneID = droneID;
     },
     exit: function() {},
     render: function(display) {
@@ -389,9 +390,9 @@ Game.UIMode.navigation = {
                 Game.Message.send('It would not be wise to dock here again.');
             } else {
                 curNode.visited = true;
-                Game.switchUIMode(Game.UIMode.heist, {
-                    map: Game.UIMode.navigation.attr._curNode.mapType,
-                    drone: this.attr._curDroneID
+                Game.addUIMode(Game.UIMode.droneScreen, {
+                    drones: Game.UIMode.shipScreen.attr.drones,
+                    deploying: true
                 });
             }
         } else {
@@ -802,14 +803,16 @@ Game.UIMode.droneScreen = {
     drones: [],
     curDrone: 0,
     deploying: false,
-    enter: function(drones) {
-        this.drones = drones;
+    enter: function(droneArgs) {
+        this.drones = droneArgs.drones;
+        this.deploying = droneArgs.deploying;
     },
     exit: function() {
         this.curDrone = 0;
     },
     render: function(display) {
-        display.drawText(2, 1, "Drones");
+        var str = (this.deploying) ? "Choose a drone to deploy: " : "Drones";
+        display.drawText(2, 1, str);
         this.renderDroneList(display);
     },
     renderDroneList: function(display) {
@@ -856,7 +859,8 @@ Game.UIMode.droneScreen = {
                 break;
             case 'CONFIRM':
                 Game.addUIMode(Game.UIMode.droneMenu, {
-                    drone: this.getCurDrone()
+                    drone: this.getCurDrone(),
+                    deploying: this.deploying
                 });
                 break;
             case 'CANCEL':
@@ -883,15 +887,25 @@ Game.UIMode.droneMenu = {
         },
         "Close Menu": function() {
             Game.removeUIMode();
+        },
+        "Deploy": function() {
+            Game.switchUIMode(Game.UIMode.heist, {
+                map: Game.UIMode.navigation.attr._curNode.mapType,
+                drone: Game.UIMode.droneMenu.drone
+            });
         }
     },
     drone: null,
     curOption: 0,
     enter: function(droneArgs) {
         this.drone = droneArgs.drone;
+        if (droneArgs.deploying) {
+            this.menuOptions = ["Deploy", "Inventory", "Equipment", "Close Menu"];
+        }
     },
     exit: function() {
         this.curOption = 0;
+        this.menuOptions = ["Inventory", "Equipment", "Close Menu"];
     },
     render: function(display) {
         Game.UIMode.droneScreen.render(display);
