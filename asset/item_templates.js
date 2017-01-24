@@ -74,3 +74,10 @@ Game.ItemGenerator.learn({
   equipCategory: "legs",
   traits: ['Equipable','StatModifierMovement']
 });
+
+Game.ItemGenerator.learn({
+  name: 'Fuel Rod',
+  description: "it is a Plutonium dowl to power your ship",
+  chr: "!",
+  fg: "#F80"
+});
