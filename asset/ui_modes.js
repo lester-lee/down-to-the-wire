@@ -227,7 +227,8 @@ Game.UIMode.shipScreen = {
     attr: {
         playerName: null,
         _curOption: 0,
-        drones: []
+        drones: [],
+        fuel: 1
     },
     shipOptions: ["Navigate", "Outfit drones", "Outfit ship", "heist", "Operations Manual", "Save/Load"],
     shipFunctions: {
@@ -277,6 +278,12 @@ Game.UIMode.shipScreen = {
     },
     deployDroneID: function() {
         return this.attr.drones[0];
+    },
+    hasFuel: function() {
+        return (this.attr.fuel > 0);
+    },
+    useFuel: function() {
+        this.attr.fuel--;
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
@@ -336,8 +343,11 @@ Game.UIMode.navigation = {
     },
     exit: function() {},
     render: function(display) {
-        display.drawText(0, 1, "NAVIGATION MODE " + this.attr._curNode.name);
-        display.drawText(0, 3, (this.attr._curNode.edge_list.length + 1) + " hyperspace KEYBOARDGUNK open");
+        var numGates = this.attr._curNode.edge_list.length;
+        var plural = '';
+        if (numGates > 1){plural = 's';}
+        display.drawText(0, 1, "NAVIGATION MODE ");
+        display.drawText(0, 3, ( + 1) + " hyperspace gates" + plural + " open");
         this.renderNavOptions(display);
     },
     renderNavOptions: function(display) {
@@ -346,6 +356,11 @@ Game.UIMode.navigation = {
             display.drawText(0, i + 5, '%b{' + bg + '}> ' + this.navOptions[i]);
         }
     },
+    renderShipLocation: function() {
+        Game.Message.clear();
+        Game.Message.send("Currently keeping station with the GSV " + this.attr._curNode.name);
+    },
+
     renderAvatarInfo: function(display) {
         var L = this.attr._L;
         var C = 'center';
@@ -365,7 +380,7 @@ Game.UIMode.navigation = {
         display.drawText(1, 5, "%c{" + dbg + "}|%c{}" + "%c{#999}" + L['31'] + " " + C + " " + L['42'] + "%c{}");
         display.drawText(1, 6, "%c{" + dbg + "}|%c{}" + "%c{#999}" + L['31'] + L['32'] + " " + L['41'] + L['42'] + "%c{}");
         display.drawText(1, 7, "%c{" + dbg + "}|%c{}%b{" + bg3 + "}" + L['3'] + "%b{}%c{#999}" + L['43'] + L['43'] + L['43'] + "%c{}%b{" + bg4 + "}" + L['4'] + "%b{}");
-
+        display.drawText(1, 9, "Fuel Rods Remaining: " + Game.UIMode.shipScreen.attr.fuel);
     },
     resetNavOptions: function() {
         this.navOptions = ['Begin docking procedure'];
@@ -404,12 +419,18 @@ Game.UIMode.navigation = {
         }
         this.navOptions.push('Warp to another star system');
         this.navFunctions['Warp to another star system'] = function() {
+          if(Game.UIMode.shipScreen.hasFuel()){
+            Game.UIMode.shipScreen.useFuel();
             Game.UIMode.navigation.createStarSystem();
+          }else{
+            Game.Message.send("Fuel rods depleted. Scavenge more to warp.");
+          }
         };
     },
     travelToTarget: function(targetNode) {
         this.attr._curNode = targetNode || this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption - 1]); //changes current location to target location
         this.setupNavOptions();
+        this.renderShipLocation();
     },
     setupNavMap: function() {
         this.attr._navMap = new Graph();
