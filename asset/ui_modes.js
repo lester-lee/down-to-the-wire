@@ -156,7 +156,6 @@ Game.UIMode.persistence = {
                 var itemAttr = JSON.parse(state_data.ITEM[itemId]);
                 var newI = Game.ItemGenerator.create(itemAttr._generator_key, itemAttr._ID);
                 Game.DATASTORE.ITEM[itemId] = newI;
-                Game.DATASTORE.ITEM[itemId].fromJSON(state_data.ITEM[itemId]);
             }
         }
 
@@ -574,8 +573,14 @@ Game.UIMode.inventory = {
     avatar: null,
     itemIDs: null,
     enter: function(invArgs) {
-        this.avatar = invArgs.drone || Game.UIMode.heist.getAvatar();
-        this.equip = invArgs.equip || false;
+        var drone = null,
+            equip = null;
+        if (invArgs) {
+            drone = invArgs.drone;
+            equip = invArgs.equip;
+        }
+        this.avatar = drone || Game.UIMode.heist.getAvatar();
+        this.equip = equip || false;
         this.refreshItemIDs();
     },
     exit: function() {
@@ -793,7 +798,9 @@ Game.UIMode.droneScreen = {
     enter: function(drones) {
         this.drones = drones;
     },
-    exit: function() {},
+    exit: function() {
+        this.curDrone = 0;
+    },
     render: function(display) {
         display.drawText(2, 1, "Drones");
         this.renderDroneList(display);
@@ -876,7 +883,9 @@ Game.UIMode.droneMenu = {
     enter: function(droneArgs) {
         this.drone = droneArgs.drone;
     },
-    exit: function() {},
+    exit: function() {
+        this.curOption = 0;
+    },
     render: function(display) {
         Game.UIMode.droneScreen.render(display);
     },

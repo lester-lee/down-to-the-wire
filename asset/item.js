@@ -10,7 +10,6 @@ Game.Item = function(template) {
     this.attr.itemFunctions['Cancel'] = function() {
         Game.removeUIMode();
     };
-
     Game.DATASTORE.ITEM[this.attr._ID] = this;
 };
 
