@@ -19,10 +19,11 @@ Game.ItemTraits.Equipable = {
             this.attr.itemOptions.push('Equip');
             this.attr.itemOptions.push('Unequip');
             this.attr.itemFunctions = this.attr.itemFunctions || {};
-            this.attr.itemFunctions['Equip'] = function(itemID) {
+            this.attr.itemFunctions['Equip'] = function(equipArgs) {
+                var itemID = equipArgs.itemID;
                 var item = Game.DATASTORE.ITEM[itemID];
                 var cat = item.getEquipCategory();
-                var actor = Game.UIMode.heist.getAvatar();
+                var actor = equipArgs.actor;
                 if (!item.isEquipped() && actor.checkEquipmentCategory(cat)) {
                     actor.addEquipment(itemID);
                     Game.removeUIMode();
@@ -33,10 +34,11 @@ Game.ItemTraits.Equipable = {
                     Game.Message.send("Yer already wearin that.");
                 }
             };
-            this.attr.itemFunctions['Unequip'] = function(itemID) {
+            this.attr.itemFunctions['Unequip'] = function(equipArgs) {
+                var itemID = equipArgs.itemID
                 var item = Game.DATASTORE.ITEM[itemID];
                 if (item.isEquipped()) {
-                    var actor = Game.UIMode.heist.getAvatar();
+                    var actor = equipArgs.actor;
                     actor.removeEquipment(itemID);
                     Game.UIMode.inventory.refreshItemIDs();
                     Game.removeUIMode();

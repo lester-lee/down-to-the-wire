@@ -675,7 +675,7 @@ Game.UIMode.itemMenu = {
                 this.curOption = (this.curOption < 0) ? this.itemOptions.length - 1 : this.curOption;
                 break;
             case 'CONFIRM':
-                this.itemFunctions[this.itemOptions[this.curOption]](this.curItem.getID());
+                this.itemFunctions[this.itemOptions[this.curOption]]({itemID:this.curItem.getID(),actor:Game.UIMode.inventory.avatar});
                 break;
             case 'CANCEL':
                 Game.removeUIMode();
