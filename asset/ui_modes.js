@@ -201,7 +201,7 @@ Game.UIMode.gameIntro = {
     exit: function() {},
     render: function(display) {
         display.drawText(1, 4, "You remember dying in the year S+979 — nearly 1000 years after the rise of artificail intelegence. Your consciousness was recorded in the moments before your death and has now been downloaded into the Strategic Command Commputer of aeon-dead warship.");
-        display.drawText(1, 5, "What were you called in your past life?");
+        display.drawText(1, 10, "What were you called in your past life?");
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
