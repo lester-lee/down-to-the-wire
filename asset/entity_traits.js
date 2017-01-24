@@ -148,6 +148,12 @@ Game.EntityTraits.SpeciesDrone = {
         init: function() {
             this.setName(Game.Util.randomDroneName());
         }
+    },
+    toJSON: function() {
+        return Game.UIMode.persistence.BASE_toJSON.call(this);
+    },
+    fromJSON: function(json) {
+        return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
     }
 };
 

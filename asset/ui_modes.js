@@ -140,6 +140,26 @@ Game.UIMode.persistence = {
         Game.UIMode.navigation.attr = state_data.NAV_MAP;
         Game.UIMode.navigation.attr._navMap = new Graph(state_data.NAV_MAP._navMap.node_list);
 
+        // Load entities
+        for (var entityId in state_data.ENTITY) {
+            if (state_data.ENTITY.hasOwnProperty(entityId)) {
+                var entAttr = JSON.parse(state_data.ENTITY[entityId]);
+                var newE = Game.EntityGenerator.create(entAttr._generator_key, entAttr._ID);
+                Game.DATASTORE.ENTITY[entityId] = newE;
+                Game.DATASTORE.ENTITY[entityId].fromJSON(state_data.ENTITY[entityId]);
+            }
+        }
+
+        // Load items
+        for (var itemId in state_data.ITEM) {
+            if (state_data.ITEM.hasOwnProperty(itemId)) {
+                var itemAttr = JSON.parse(state_data.ITEM[itemId]);
+                var newI = Game.ItemGenerator.create(itemAttr._generator_key, itemAttr._ID);
+                Game.DATASTORE.ITEM[itemId] = newI;
+                Game.DATASTORE.ITEM[itemId].fromJSON(state_data.ITEM[itemId]);
+            }
+        }
+
 
         Game.switchUIMode(Game.UIMode.shipScreen);
     },

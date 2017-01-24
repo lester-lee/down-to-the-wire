@@ -18,6 +18,7 @@ Game.UIMode.heist = {
             this.getEngine().unlock();
             Game.refresh();
         }else {
+            console.log('skip setup');
             this.getEngine().unlock();
             Game.refresh();
         }

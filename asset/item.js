@@ -22,3 +22,11 @@ Game.Item.prototype.getOptions = function() {
 Game.Item.prototype.getFunctions = function() {
     return this.attr.itemFunctions;
 }
+
+Game.Item.prototype.toJSON = function() {
+    return Game.UIMode.persistence.BASE_toJSON.call(this);
+};
+
+Game.Item.prototype.fromJSON = function(json) {
+    return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
+};
