@@ -156,6 +156,7 @@ Game.UIMode.persistence = {
                 var itemAttr = JSON.parse(state_data.ITEM[itemId]);
                 var newI = Game.ItemGenerator.create(itemAttr._generator_key, itemAttr._ID);
                 Game.DATASTORE.ITEM[itemId] = newI;
+                Game.DATASTORE.ITEM[itemId].fromJSON(state_data.ITEM[itemId]);
             }
         }
 

@@ -15,11 +15,11 @@ Game.ItemTraits.Equipable = {
             this.attr._Equipable_attr.equipCategory = template.equipCategory || "torso";
             this.attr._Equipable_attr.maxEquipHP = template.maxEquipHP || 2;
             this.attr._Equipable_attr.curEquipHP = template.curEquipHP || this.getMaxHP();
-            this.attr.itemOptions = this.attr.itemOptions || [];
-            this.attr.itemOptions.push('Equip');
-            this.attr.itemOptions.push('Unequip');
-            this.attr.itemFunctions = this.attr.itemFunctions || {};
-            this.attr.itemFunctions['Equip'] = function(equipArgs) {
+            this.itemOptions = this.itemOptions || [];
+            this.itemOptions.push('Equip');
+            this.itemOptions.push('Unequip');
+            this.itemFunctions = this.itemFunctions || {};
+            this.itemFunctions['Equip'] = function(equipArgs) {
                 var itemID = equipArgs.itemID;
                 var item = Game.DATASTORE.ITEM[itemID];
                 var cat = item.getEquipCategory();
@@ -34,7 +34,7 @@ Game.ItemTraits.Equipable = {
                     Game.Message.send("Yer already wearin that.");
                 }
             };
-            this.attr.itemFunctions['Unequip'] = function(equipArgs) {
+            this.itemFunctions['Unequip'] = function(equipArgs) {
                 var itemID = equipArgs.itemID
                 var item = Game.DATASTORE.ITEM[itemID];
                 if (item.isEquipped()) {
@@ -126,10 +126,10 @@ Game.ItemTraits.Repair = {
         },
         init: function(template) {
             this.attr._Repair_attr.repairValue = template.repairValue || 3;
-            this.attr.itemOptions = this.attr.itemOptions || [];
-            this.attr.itemOptions.push('Use');
-            this.attr.itemFunctions = this.attr.itemFunctions || {};
-            this.attr.itemFunctions['Use'] = function(itemID) {
+            this.itemOptions = this.itemOptions || [];
+            this.itemOptions.push('Use');
+            this.itemFunctions = this.itemFunctions || {};
+            this.itemFunctions['Use'] = function(itemID) {
                 var actor = Game.UIMode.heist.getAvatar();
                 var recoverAmt = Game.UIMode.itemMenu.curItem.getRepairValue();
                 actor.recover(recoverAmt);

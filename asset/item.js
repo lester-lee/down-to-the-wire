@@ -4,10 +4,10 @@ Game.Item = function(template) {
     this._traitSet = Game.ItemTraits;
     Game.SymbolActive.call(this, template);
     this.attr._generator_key = template._generator_key || '';
-    this.attr.itemOptions = this.attr.itemOptions || [];
-    this.attr.itemOptions.push('Cancel');
-    this.attr.itemFunctions = this.attr.itemFunctions || {};
-    this.attr.itemFunctions['Cancel'] = function() {
+    this.itemOptions = this.itemOptions || [];
+    this.itemOptions.push('Cancel');
+    this.itemFunctions = this.itemFunctions || {};
+    this.itemFunctions['Cancel'] = function() {
         Game.removeUIMode();
     };
     Game.DATASTORE.ITEM[this.attr._ID] = this;
@@ -16,10 +16,10 @@ Game.Item = function(template) {
 Game.Item.extend(Game.SymbolActive);
 
 Game.Item.prototype.getOptions = function() {
-    return this.attr.itemOptions;
+    return this.itemOptions;
 }
 Game.Item.prototype.getFunctions = function() {
-    return this.attr.itemFunctions;
+    return this.itemFunctions;
 }
 
 Game.Item.prototype.toJSON = function() {
