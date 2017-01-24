@@ -11,14 +11,17 @@ Game.UIMode.heist = {
     },
     enter: function(heistArgs) {
         if (heistArgs) {
-            var mapType = heistArgs.map;
             var droneID = heistArgs.drone.getID();
             this.attr._avatarID = droneID;
-            this.setupNewGame(mapType);
-            this.getEngine().unlock();
-            Game.refresh();
-        }else {
-            console.log('skip setup');
+            if (heistArgs.continue) {
+                this.getMap().addEntity(this.getAvatar(), heistArgs.airlockPos);
+            } else {
+                var mapType = heistArgs.map;
+                this.setupNewGame(mapType);
+                this.getEngine().unlock();
+                Game.refresh();
+            }
+        } else {
             this.getEngine().unlock();
             Game.refresh();
         }
@@ -235,7 +238,9 @@ Game.UIMode.heist = {
                 Game.addUIMode(Game.UIMode.inventory);
                 break;
             case 'EQUIPMENT':
-                Game.addUIMode(Game.UIMode.inventory, {equip:true});
+                Game.addUIMode(Game.UIMode.inventory, {
+                    equip: true
+                });
                 break;
             case 'NEXT_LEVEL':
                 this.nextLevel();

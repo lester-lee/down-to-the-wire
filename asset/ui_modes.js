@@ -773,27 +773,58 @@ Game.UIMode.heistMenu = {
 };
 
 Game.UIMode.continue = {
-    enter: function() {},
+    options: ["Yes", "No"],
+    functions: {
+        Yes: function() {
+            var heist = Game.UIMode.heist;
+            var airlockPos = heist.attr._airlockPos;
+            var airlockClear = !heist.getMap().getEntity(airlockPos);
+            if (airlockClear) {
+                Game.addUIMode(Game.UIMode.droneScreen, {
+                    drones: Game.UIMode.shipScreen.attr.drones,
+                    deploying: true,
+                    continue: true,
+                    airlockPos: airlockPos
+                });
+            } else {
+                Game.Message.send("The airlock is blocked.");
+                Game.switchUIMode(Game.UIMode.shipScreen);
+            }
+        },
+        No: function() {
+            Game.Message.send("Returned to ship.")
+            Game.switchUIMode(Game.UIMode.shipScreen);
+        }
+    },
+    curOption: 0,
+    enter: function() {
+        this.curOption = 0;
+    },
     exit: function() {},
     render: function(display) {
         display.drawText(1, 2, 'You have lost control of your drone.');
         display.drawText(1, 3, 'Do you want to send in another drone?');
+        this.renderOptions(display);
+    },
+    renderOptions: function(display) {
+        for (var i = 0; i < this.options.length; i++) {
+            var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 15, '%b{' + bg + '}> ' + this.options[i]);
+        }
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
         switch (action) {
+            case 'MOVE_DOWN':
+                this.curOption++;
+                this.curOption %= this.options.length;
+                break;
+            case 'MOVE_UP':
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.options.length - 1 : this.curOption;
+                break;
             case 'CONFIRM':
-                var heist = Game.UIMode.heist;
-                var airlockPos = heist.attr._airlockPos;
-                var airlockClear = !heist.getMap().getEntity(airlockPos);
-                if (airlockClear) {
-                    heist.attr._avatarID = Game.UIMode.shipScreen.deployDroneID();
-                    heist.getMap().addEntity(heist.getAvatar(), airlockPos);
-                    Game.switchUIMode(Game.UIMode.heist);
-                } else {
-                    Game.Message.send("The airlock is blocked.");
-                    Game.switchUIMode(Game.UIMode.shipScreen);
-                }
+                this.functions[this.options[this.curOption]]();
                 break;
         }
     }
@@ -803,9 +834,13 @@ Game.UIMode.droneScreen = {
     drones: [],
     curDrone: 0,
     deploying: false,
+    continue: false,
+    airlockPos: null,
     enter: function(droneArgs) {
         this.drones = droneArgs.drones;
         this.deploying = droneArgs.deploying;
+        this.continue = droneArgs.continue || false;
+        this.airlockPos = droneArgs.airlockPos || null;
     },
     exit: function() {
         this.curDrone = 0;
@@ -891,7 +926,9 @@ Game.UIMode.droneMenu = {
         "Deploy": function() {
             Game.switchUIMode(Game.UIMode.heist, {
                 map: Game.UIMode.navigation.attr._curNode.mapType,
-                drone: Game.UIMode.droneMenu.drone
+                drone: Game.UIMode.droneMenu.drone,
+                continue: Game.UIMode.droneScreen.continue,
+                airlockPos: Game.UIMode.droneScreen.airlockPos
             });
         }
     },
