@@ -275,6 +275,16 @@ Game.EntityTraits.EquipmentHolder = {
                 item = Game.ItemGenerator.create(defaultEquipment[i]);
                 this.addEquipment(item.getID());
             }
+        },
+        listeners: {
+          'refresh': function(){
+              var equips = this.getEquipmentItemIDs();
+              var item, i;
+              for (i = 0; i < equips.length; i++){
+                  item = Game.DATASTORE.ITEM[equips[i]];
+                  item.raiseSymbolActiveEvent('ensureEquip');
+              }
+          }
         }
     },
     addEquipment: function(equipID) {

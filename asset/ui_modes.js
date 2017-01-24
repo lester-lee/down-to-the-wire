@@ -140,6 +140,7 @@ Game.UIMode.persistence = {
         Game.UIMode.navigation.attr = state_data.NAV_MAP;
         Game.UIMode.navigation.attr._navMap = new Graph(state_data.NAV_MAP._navMap.node_list);
 
+
         // Load entities
         for (var entityId in state_data.ENTITY) {
             if (state_data.ENTITY.hasOwnProperty(entityId)) {
@@ -149,7 +150,6 @@ Game.UIMode.persistence = {
                 Game.DATASTORE.ENTITY[entityId].fromJSON(state_data.ENTITY[entityId]);
             }
         }
-
         // Load items
         for (var itemId in state_data.ITEM) {
             if (state_data.ITEM.hasOwnProperty(itemId)) {
@@ -159,6 +159,9 @@ Game.UIMode.persistence = {
             }
         }
 
+        for (var entID in Game.DATASTORE.ENTITY) {
+            Game.DATASTORE.ENTITY[entID].raiseSymbolActiveEvent('refresh');
+        }
 
         Game.switchUIMode(Game.UIMode.shipScreen);
     },
@@ -675,7 +678,10 @@ Game.UIMode.itemMenu = {
                 this.curOption = (this.curOption < 0) ? this.itemOptions.length - 1 : this.curOption;
                 break;
             case 'CONFIRM':
-                this.itemFunctions[this.itemOptions[this.curOption]]({itemID:this.curItem.getID(),actor:Game.UIMode.inventory.avatar});
+                this.itemFunctions[this.itemOptions[this.curOption]]({
+                    itemID: this.curItem.getID(),
+                    actor: Game.UIMode.inventory.avatar
+                });
                 break;
             case 'CANCEL':
                 Game.removeUIMode();

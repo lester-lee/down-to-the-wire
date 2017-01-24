@@ -65,6 +65,9 @@ Game.ItemTraits.Equipable = {
                 var actor = evtData.equipper;
                 actor.removeEquipment(this.getID());
                 Game.DATASTORE.ITEM[this.getID()] = scrap;
+            },
+            'ensureEquip': function() {
+                this.attr._Equipable_attr.equipped = true;
             }
         }
     },
