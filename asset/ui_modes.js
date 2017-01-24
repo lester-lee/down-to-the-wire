@@ -234,7 +234,7 @@ Game.UIMode.shipScreen = {
         Navigate: function() {
             Game.addUIMode(Game.UIMode.navigation, Game.UIMode.shipScreen.deployDroneID());
         },
-        "Drone Status": function(){
+        "Drone Status": function() {
             Game.addUIMode(Game.UIMode.droneScreen, Game.UIMode.shipScreen.attr.drones);
         },
         heist: function() {
@@ -803,10 +803,45 @@ Game.UIMode.droneScreen = {
             display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.getDrone(this.drones[i]).getName());
         }
     },
+    renderAvatarInfo: function(display) {
+        var drone = this.getDrone(this.drones[this.curDrone]);
+        display.drawText(1, 1, drone.getName());
+        var status = drone.getCoreStatus();
+        var fg = Game.Util.getStatusColor(status);
+        display.drawText(1, 3, "%c{" + fg + "}Core: " + drone.getCoreStatus());
+        display.drawText(1, 5, "Equipment:");
+        this.renderDroneEquip(display, drone);
+    },
+    renderDroneEquip: function(display, drone) {
+        var equips = drone.getEquipmentItemIDs();
+        var item, status, fg;
+        for (var i = 0; i < equips.length; i++) {
+            item = Game.DATASTORE.ITEM[equips[i]];
+            status = item.getStatus();
+            fg = Game.Util.getStatusColor(status);
+            display.drawText(1,i+6,"%c{" + fg + "}" + item.getName());
+        }
+    },
     getDrone: function(droneID) {
         return Game.DATASTORE.ENTITY[droneID];
     },
     handleInput: function(inputType, inputData) {
-
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'MOVE_DOWN':
+                this.curDrone++;
+                this.curDrone %= this.drones.length;
+                break;
+            case 'MOVE_UP':
+                this.curDrone--;
+                this.curDrone = (this.curDrone < 0) ? this.drones.length - 1 : this.curDrone;
+                break;
+            case 'CONFIRM':
+                this.shipFunctions[this.drones[this.curDrone]]();
+                break;
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+        }
     }
-}
+};

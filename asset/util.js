@@ -64,6 +64,16 @@ Game.Util = {
         var mod = ROT.RNG.getUniform()*.5 + 0.5;
         var dmg = (attack/defense);
         return Math.floor(dmg*mod);
+    },
+    getStatusColor: function(status) {
+        switch (status) {
+            case "Damaged":
+                return '#f80';
+            case "Broken":
+                return '#f20';
+            default:
+                return Game.UIMode.DEFAULT_FG;
+        }
     }
 };
 

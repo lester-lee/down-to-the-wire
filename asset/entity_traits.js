@@ -515,6 +515,16 @@ Game.EntityTraits.StatHitPoints = {
     setCurHP: function(n) {
         this.attr._HP_attr.curHP = n;
     },
+    getCoreStatus: function() {
+        var curPercent = this.getCurHP() / this.getMaxHP();
+        if (curPercent > .5) {
+            return "Nominal";
+        } else if (curPercent > .25) {
+            return "Damaged";
+        } else {
+            return "Broken"
+        }
+    },
     takeDamage: function(amt) {
         this.attr._HP_attr.curHP -= amt;
     },

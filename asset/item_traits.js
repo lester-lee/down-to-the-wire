@@ -84,6 +84,16 @@ Game.ItemTraits.Equipable = {
     repair: function(amt) {
         this.attr._Equipable_attr.curEquipHP = Math.min(this.attr._Equipable_attr.curEquipHP + amt, this.attr._Equipable_attr.maxEquipHP);
     },
+    getStatus: function() {
+        var curPercent = this.getCurHP() / this.getMaxHP();
+        if (curPercent > .5) {
+            return "Nominal";
+        } else if (curPercent > .25) {
+            return "Damaged";
+        } else {
+            return "Broken"
+        }
+    },
     getEquipCategory: function() {
         return this.attr._Equipable_attr.equipCategory;
     },
