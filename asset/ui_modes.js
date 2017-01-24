@@ -573,9 +573,9 @@ Game.UIMode.inventory = {
     equip: false,
     avatar: null,
     itemIDs: null,
-    enter: function(equip) {
-        this.avatar = Game.UIMode.heist.getAvatar();
-        this.equip = equip || false;
+    enter: function(invArgs) {
+        this.avatar = invArgs.drone || Game.UIMode.heist.getAvatar();
+        this.equip = invArgs.equip || false;
         this.refreshItemIDs();
     },
     exit: function() {
@@ -789,12 +789,13 @@ Game.UIMode.continue = {
 Game.UIMode.droneScreen = {
     drones: [],
     curDrone: 0,
+    deploying: false,
     enter: function(drones) {
         this.drones = drones;
     },
     exit: function() {},
     render: function(display) {
-        display.drawText(0, 1, "Drones");
+        display.drawText(2, 1, "Drones");
         this.renderDroneList(display);
     },
     renderDroneList: function(display) {
@@ -804,7 +805,7 @@ Game.UIMode.droneScreen = {
         }
     },
     renderAvatarInfo: function(display) {
-        var drone = this.getDrone(this.drones[this.curDrone]);
+        var drone = this.getCurDrone();
         display.drawText(1, 1, drone.getName());
         var status = drone.getCoreStatus();
         var fg = Game.Util.getStatusColor(status);
@@ -819,11 +820,14 @@ Game.UIMode.droneScreen = {
             item = Game.DATASTORE.ITEM[equips[i]];
             status = item.getStatus();
             fg = Game.Util.getStatusColor(status);
-            display.drawText(1,i+6,"%c{" + fg + "}" + item.getName());
+            display.drawText(1, i + 6, "%c{" + fg + "}" + item.getName());
         }
     },
     getDrone: function(droneID) {
         return Game.DATASTORE.ENTITY[droneID];
+    },
+    getCurDrone: function() {
+        return Game.DATASTORE.ENTITY[this.drones[this.curDrone]];
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
@@ -837,11 +841,68 @@ Game.UIMode.droneScreen = {
                 this.curDrone = (this.curDrone < 0) ? this.drones.length - 1 : this.curDrone;
                 break;
             case 'CONFIRM':
-                this.shipFunctions[this.drones[this.curDrone]]();
+                Game.addUIMode(Game.UIMode.droneMenu, {
+                    drone: this.getCurDrone()
+                });
                 break;
             case 'CANCEL':
                 Game.removeUIMode();
                 break;
         }
     }
+};
+
+Game.UIMode.droneMenu = {
+    menuOptions: ["Inventory", "Equipment", "Close Menu"],
+    menuFunctions: {
+        Inventory: function() {
+            Game.addUIMode(Game.UIMode.inventory, {
+                drone: Game.UIMode.droneMenu.drone,
+                equip: false
+            });
+        },
+        Equipment: function() {
+            Game.addUIMode(Game.UIMode.inventory, {
+                drone: Game.UIMode.droneMenu.drone,
+                equip: true
+            });
+        },
+        "Close Menu": function() {
+            Game.removeUIMode();
+        }
+    },
+    drone: null,
+    curOption: 0,
+    enter: function(droneArgs) {
+        this.drone = droneArgs.drone;
+    },
+    exit: function() {},
+    render: function(display) {
+        Game.UIMode.droneScreen.render(display);
+    },
+    renderAvatarInfo: function(display) {
+        for (var i = 0; i < this.menuOptions.length; i++) {
+            var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.menuOptions[i]);
+        }
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'MOVE_DOWN':
+                this.curOption++;
+                this.curOption %= this.menuOptions.length;
+                break;
+            case 'MOVE_UP':
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.menuOptions.length - 1 : this.curOption;
+                break;
+            case 'CONFIRM':
+                this.menuFunctions[this.menuOptions[this.curOption]]();
+                break;
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+        }
+    },
 };
