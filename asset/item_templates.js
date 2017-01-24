@@ -31,7 +31,7 @@ Game.ItemGenerator.learn({
   chr: "C",
   fg: "#2f2",
   equipCategory: "head",
-  newSightRadius: 10,
+  newSightRadius: 4,
   newSightAngle: 180,
   traits: ['Equipable','StatModifierSight']
 });
@@ -42,7 +42,7 @@ Game.ItemGenerator.learn({
   chr: "C",
   fg: "#22f",
   equipCategory: "head",
-  newSightRadius: 10,
+  newSightRadius: 4,
   newSightAngle: 360,
   traits: ['Equipable','StatModifierSight']
 });

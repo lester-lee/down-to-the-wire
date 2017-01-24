@@ -229,10 +229,13 @@ Game.UIMode.shipScreen = {
         _curOption: 0,
         drones: []
     },
-    shipOptions: ["Navigate", "Outfit drones", "Outfit ship", "heist", "Operations Manual", "Save/Load"],
+    shipOptions: ["Navigate", "Drone Status", "Outfit ship", "heist", "Operations Manual", "Save/Load"],
     shipFunctions: {
         Navigate: function() {
             Game.addUIMode(Game.UIMode.navigation, Game.UIMode.shipScreen.deployDroneID());
+        },
+        "Drone Status": function(){
+            Game.addUIMode(Game.UIMode.droneScreen, Game.UIMode.shipScreen.attr.drones);
         },
         heist: function() {
             Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
@@ -760,7 +763,8 @@ Game.UIMode.continue = {
     enter: function() {},
     exit: function() {},
     render: function(display) {
-        display.drawText(1, 2, 'Do you want to send in the next drone?');
+        display.drawText(1, 2, 'You have lost control of your drone.');
+        display.drawText(1, 3, 'Do you want to send in another drone?');
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
@@ -781,3 +785,28 @@ Game.UIMode.continue = {
         }
     }
 };
+
+Game.UIMode.droneScreen = {
+    drones: [],
+    curDrone: 0,
+    enter: function(drones) {
+        this.drones = drones;
+    },
+    exit: function() {},
+    render: function(display) {
+        display.drawText(0, 1, "Drones");
+        this.renderDroneList(display);
+    },
+    renderDroneList: function(display) {
+        for (var i = 0; i < this.drones.length; i++) {
+            var bg = (this.curDrone == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.getDrone(this.drones[i]).getName());
+        }
+    },
+    getDrone: function(droneID) {
+        return Game.DATASTORE.ENTITY[droneID];
+    },
+    handleInput: function(inputType, inputData) {
+
+    }
+}
