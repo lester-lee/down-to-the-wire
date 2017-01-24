@@ -238,14 +238,24 @@ Game.UIMode.shipScreen = {
             display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.shipOptions[i]);
         }
     },
-    setupShipStatus: function(){
+    setupShipStatus: function() {
         var firstDrone = Game.EntityGenerator.create('initial_drone');
         this.addDrone(firstDrone);
+        this.addDrone(Game.EntityGenerator.create('initial_drone'));
     },
-    addDrone: function(drone){
+    addDrone: function(drone) {
         this.attr.drones.push(drone.getID());
     },
-    deployDroneID: function(){
+    removeDrone: function(drone) {
+        var id = drone.getID();
+        var idx = this.attr.drones.indexOf(id);
+        this.attr.drones.splice(idx, 1);
+        if (this.attr.drones.length == 0) {
+            return false;
+        }
+        return true;
+    },
+    deployDroneID: function() {
         return this.attr.drones[0];
     },
     handleInput: function(inputType, inputData) {
@@ -347,8 +357,17 @@ Game.UIMode.navigation = {
         this.attr._curOption = 0;
     },
     dock: function() {
-        if (Game.UIMode.navigation.attr._curNode.mapType.localeCompare('void') != 0) {
-            Game.switchUIMode(Game.UIMode.heist, {map:Game.UIMode.navigation.attr._curNode.mapType,drone:this.attr._curDroneID});
+        var curNode = Game.UIMode.navigation.attr._curNode;
+        if (curNode.mapType.localeCompare('void') != 0) {
+            if (curNode.visited) {
+                Game.Message.send('It would not be wise to dock here again.');
+            } else {
+                curNode.visited = true;
+                Game.switchUIMode(Game.UIMode.heist, {
+                    map: Game.UIMode.navigation.attr._curNode.mapType,
+                    drone: this.attr._curDroneID
+                });
+            }
         } else {
             Game.Message.send('There is nothing to dock with here.');
         }
@@ -515,7 +534,7 @@ Game.UIMode.helpScreen = {
             display.drawText(1, 9, "* *     shows you where you are. In this case 4. The lines");
             display.drawText(1, 10, "** *    of *s represent paths though hyperspace that your");
             display.drawText(1, 11, "3***%b{#333}4%b{}   spacecraft can traverse. In this example you can");
-            display.drawText(9, 12,         "travel between 1 & 3, 1 & 4, 2 & 3, and 3 & 4.");
+            display.drawText(9, 12, "travel between 1 & 3, 1 & 4, 2 & 3, and 3 & 4.");
         } else if (page === 3) {
 
         } else if (page === 4) {
@@ -659,8 +678,14 @@ Game.UIMode.heistMenu = {
         'Abort Heist': function() {
             if (Game.UIMode.heistMenu.attr._abort) {
                 Game.UIMode.heistMenu.attr._abort = false;
-                Game.switchUIMode(Game.UIMode.shipScreen);
-                Game.Message.clear();
+                var curDrone = Game.UIMode.heist.getAvatar();
+                if (Game.UIMode.shipScreen.removeDrone(curDrone)) {
+                    Game.Message.clear();
+                    Game.switchUIMode(Game.UIMode.continue);
+                } else {
+                    Game.Message.send("You are out of drones. You are destined to drift through space for eternity.");
+                    Game.switchUIMode(Game.UIMode.titleScreen);
+                }
             } else {
                 Game.UIMode.heistMenu.attr._abort = true;
                 Game.Message.send("Press [Abort Heist] again to leave.");
@@ -706,6 +731,32 @@ Game.UIMode.heistMenu = {
                 break;
             case 'CANCEL':
                 Game.removeUIMode();
+                break;
+        }
+    }
+};
+
+Game.UIMode.continue = {
+    enter: function() {},
+    exit: function() {},
+    render: function(display) {
+        display.drawText(1, 2, 'Do you want to send in the next drone?');
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'CONFIRM':
+                var heist = Game.UIMode.heist;
+                var airlockPos = heist.attr._airlockPos;
+                var airlockClear = !heist.getMap().getEntity(airlockPos);
+                if (airlockClear) {
+                    heist.attr._avatarID = Game.UIMode.shipScreen.deployDroneID();
+                    heist.getMap().addEntity(heist.getAvatar(), airlockPos);
+                    Game.switchUIMode(Game.UIMode.heist);
+                } else {
+                    Game.Message.send("The airlock is blocked.");
+                    Game.switchUIMode(Game.UIMode.shipScreen);
+                }
                 break;
         }
     }

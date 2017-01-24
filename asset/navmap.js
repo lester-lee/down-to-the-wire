@@ -17,6 +17,7 @@ function Node(attr) {
   this.starSystem = attr.starSystem;
   this.prefix = attr.prefix;
   this.navNum = attr.navNum;
+  this.visited = false;
 };
 
 Node.prototype.addEdge = function(end) {

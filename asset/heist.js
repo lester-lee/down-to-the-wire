@@ -6,15 +6,21 @@ Game.UIMode.heist = {
         _cameraY: 50,
         _avDispX: 50,
         _avDispY: 50,
-        _engine: null
+        _engine: null,
+        _airlockPos: null
     },
     enter: function(heistArgs) {
-        var mapType = heistArgs.map;
-        var droneID = heistArgs.drone;
-        this.attr._avatarID = droneID;
-        this.setupNewGame(mapType);
-        this.getEngine().unlock();
-        Game.refresh();
+        if (heistArgs) {
+            var mapType = heistArgs.map;
+            var droneID = heistArgs.drone;
+            this.attr._avatarID = droneID;
+            this.setupNewGame(mapType);
+            this.getEngine().unlock();
+            Game.refresh();
+        }else {
+            this.getEngine().unlock();
+            Game.refresh();
+        }
     },
     exit: function() {
         // console.log("gamePlay exit");
@@ -114,10 +120,14 @@ Game.UIMode.heist = {
     setupNewGame: function(heistType) {
         this.setMap(new Game.Map(heistType));
         this.setEngine(this.getMap().getScheduler());
-        var startTile = this.getMap().getRandomTileWalkable();
-        var airlockTile = {x:startTile.x, y:startTile.y-1};
-        this.getMap().addEntity(this.getAvatar(), startTile);
-        this.getMap().setTile(airlockTile, Game.Tile.airlockTile);
+        var startPos = this.getMap().getRandomTileWalkable();
+        var airlockPos = {
+            x: startPos.x,
+            y: startPos.y - 1
+        };
+        this.attr._airlockPos = airlockPos;
+        this.getMap().addEntity(this.getAvatar(), startPos);
+        this.getMap().setTile(airlockPos, Game.Tile.airlockTile);
         this.setCameraToAvatar();
     },
     placeAvatar: function() {
@@ -233,10 +243,18 @@ Game.UIMode.heist = {
                 this.prevLevel();
                 break;
             case 'CONFIRM':
-                var itemList = Game.Util.arrayObjectToID(avatar.getMap().getItems(avatar.getPos()));
-                if (itemList.length <= 1) {
-                    var itemRes = avatar.pickupItems(itemList);
-                    tookTurn = itemRes.numItemsPickedUp > 0;
+                var pos = avatar.getPos();
+                var tile = this.getMap().getTile(pos);
+                if (tile.getName() == 'airlock') {
+                    Game.Message.clear();
+                    Game.Message.send("Successfully returned to ship.");
+                    Game.switchUIMode(Game.UIMode.shipScreen);
+                } else {
+                    var itemList = Game.Util.arrayObjectToID(avatar.getMap().getItems(avatar.getPos()));
+                    if (itemList.length <= 1) {
+                        var itemRes = avatar.pickupItems(itemList);
+                        tookTurn = itemRes.numItemsPickedUp > 0;
+                    }
                 }
                 break;
         }

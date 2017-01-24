@@ -191,7 +191,6 @@ Game.ItemTraits.StatModifierMovement = {
             },
             'unequip': function(evtData) {
                 var actor = evtData.actor;
-                console.dir(actor);
                 actor.toggleMove();
             }
         }

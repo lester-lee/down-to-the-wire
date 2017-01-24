@@ -14,7 +14,7 @@ Game.EntityTraits.PlayerMessager = {
         traitGroup: 'PlayerMessager',
         listeners: {
             'walkForbidden': function(evtData) {
-                Game.Message.send("it'd be mighty impolite to walk into " + evtData.target.getName());
+                Game.Message.send("Unable to move there.");
             },
             // Combat messages
             'attackAvoided': function(evtData) {
@@ -42,7 +42,9 @@ Game.EntityTraits.PlayerMessager = {
                 Game.Message.send("You were destroyed by " + evtData.killer.getName());
                 Game.renderMessage();
             },
-
+            'passAirlock': function() {
+                Game.Message.send("Airlock entered. Press [Enter] to cycle.")
+            },
             // Inventory messages
             'noItemsToPickup': function(evtData) {
                 Game.Message.send('there is nothing to pickup');
@@ -96,7 +98,14 @@ Game.EntityTraits.PlayerActor = {
                 Game.renderMessage();
             },
             'killed': function(evtData) {
-                Game.switchUIMode(Game.UIMode.titleScreen);
+                var curDrone = Game.UIMode.heist.getAvatar();
+                if (Game.UIMode.shipScreen.removeDrone(curDrone)) {
+                    Game.Message.clear();
+                    Game.switchUIMode(Game.UIMode.continue);
+                } else {
+                    Game.Message.send("You are out of drones. You are destined to drift through space for eternity.");
+                    Game.switchUIMode(Game.UIMode.titleScreen);
+                }
             },
             'injured': function(evtData) {
                 this.raiseSymbolActiveEvent('forget');
@@ -179,6 +188,9 @@ Game.EntityTraits.WalkerCorporeal = {
         }
         var nextTile = map.getTile(newPos);
         if (nextTile.isWalkable() && this.canMove()) {
+            if (nextTile.getName() == 'airlock') {
+                this.raiseSymbolActiveEvent('passAirlock');
+            }
             this.setPos(newPos);
             map.updateEntityLocation(this);
             this.raiseSymbolActiveEvent('actionDone');

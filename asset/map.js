@@ -176,7 +176,7 @@ Game.Map.prototype.getRandomTile = function(filter) {
 Game.Map.prototype.getRandomTileWalkable = function() {
     var map = this;
     return this.getRandomTile(function(t, tX, tY) {
-        return t.isWalkable() && !map.getEntity(tX, tY);
+        return t.isWalkable() && !map.getEntity(tX, tY) && t.getName() != 'airlock';
     });
 };
 
