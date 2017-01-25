@@ -82,10 +82,19 @@ Game.Map.prototype.addEntity = function(ent, pos) {
 
 Game.Map.prototype.addItem = function(item, pos) {
     var loc = pos.x + "," + pos.y;
+    var prevItemID = this.attr._itemsByLocation[loc];
+    if (prevItemID){
+        var prevItem = Game.DATASTORE.ITEM[prevItemID]
+        Game.Message.send(prevItem.getName() + " has been crushed.");
+        delete Game.DATASTORE.ITEM[prevItemID];
+    }
+    this.attr._itemsByLocation[loc] = [item.getID()];
+    /*
     if (!this.attr._itemsByLocation[loc]) {
         this.attr._itemsByLocation[loc] = [];
     }
     this.attr._itemsByLocation[loc].push(item.getID());
+    */
 };
 
 Game.Map.prototype.updateEntityLocation = function(ent) {
