@@ -269,6 +269,7 @@ Game.UIMode.shipScreen = {
         }
     },
     setupShipStatus: function() {
+        var this.attr.fuel = 1;
         var firstDrone = Game.EntityGenerator.create('initial_drone');
         this.addDrone(firstDrone);
         this.addDrone(Game.EntityGenerator.create('initial_drone'));
