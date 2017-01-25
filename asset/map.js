@@ -270,7 +270,9 @@ Game.Map.prototype.renderOn = function(display, camX, camY, renderOptions) {
             if (ent) {
                 if (showVisibleEntities && visibleCells[coord]) {
                     ent.draw(display, x, y);
-                } else if (showMaskedEntities && maskedCells[coord]) {
+                } else if (ent.getFriendly()) {
+                    ent.draw(display, x, y);
+                }else if (showMaskedEntities && maskedCells[coord]) {
                     ent.draw(display, x, y, true);
                 }
             }

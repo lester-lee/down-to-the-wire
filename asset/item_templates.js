@@ -51,7 +51,7 @@ Game.ItemGenerator.learn({
 Game.ItemGenerator.learn({
   name: 'Scrap Metal',
   description: "maybe you'll be able to use it",
-  chr: "F",
+  chr: "S",
   fg: "#333"
 });
 
@@ -91,4 +91,13 @@ Game.ItemGenerator.learn({
   description: "it is a Plutonium dowl to power your ship",
   chr: "!",
   fg: "#F80"
+});
+
+Game.ItemGenerator.learn({
+  name: 'Tow Hook',
+  description: "it allows you to tow friendly and enemy drones",
+  chr: "H",
+  fg: "#eee",
+  equipCategory: "arms",
+  traits: ['Equipable','StatModifierTow']
 });

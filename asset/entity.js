@@ -7,6 +7,7 @@ Game.Entity = function(template) {
     this.attr._dispPos = {x:0,y:0};
     this.attr._mapID = null;
     this.attr._generator_key = template._generator_key || '';
+    this.attr.friendly = template.friendly || false;
     Game.DATASTORE.ENTITY[this.attr._ID] = this;
 };
 
@@ -49,4 +50,10 @@ Game.Entity.prototype.setDispPos = function(pos) {
 };
 Game.Entity.prototype.getDispPos = function() {
     return this.attr._dispPos;
+};
+Game.Entity.prototype.getFriendly = function() {
+    return this.attr.friendly;
+};
+Game.Entity.prototype.setFriendly = function(bool) {
+    this.attr.friendly = bool;
 };

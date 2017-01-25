@@ -451,6 +451,14 @@ Game.KeyBinding = {
               inputCtrl: false
           }
         },
+        INTERACT: {
+          all: {
+              inputMatch: ROT.VK_SPACE,
+              inputType: 'keypress',
+              inputShift: false,
+              inputCtrl: false
+          }
+        },
 
         CHANGE_BINDINGS: {
             all: {

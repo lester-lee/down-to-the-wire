@@ -252,7 +252,27 @@ Game.ItemTraits.StatModifierAttack = {
             acc: this.attr._StatModifier_Attack_attr.accuracy
         };
     }
-}
+};
+
+Game.ItemTraits.StatModifierTow = {
+    META: {
+        traitName: 'StatModifierTow',
+        traitGroup: 'StatModifier',
+        stateNamespace: '_StatModifier_Tow_attr',
+        stateModel: {},
+        init: function(template) {},
+        listeners: {
+            'equip': function(evtData) {
+                var actor = evtData.actor;
+                actor.toggleTow();
+            },
+            'unequip': function(evtData) {
+                var actor = evtData.actor;
+                actor.toggleTow();
+            }
+        }
+    }
+};
 
 /* =============================================== */
 
