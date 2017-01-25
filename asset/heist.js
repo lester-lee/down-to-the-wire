@@ -270,14 +270,16 @@ Game.UIMode.heist = {
                         Game.UIMode.shipScreen.attr.fuel++;
                       }
                     }
-                    var inventory2 = avatar.entTowed().getInventoryItemIDs();
-                    for (var i=0; i < inventory2.length; i++){
-                      var item = Game.DATASTORE.ITEM[inventory2[i]];
-                      if (item.getName() === 'Fuel Rod'){
-                        avatar.extractInventoryItems([inventory2[i]]);
-                        Game.UIMode.shipScreen.attr.fuel++;
-                      }
-                    }
+                    if(avatar.entTowed() != null){
+                        var inventory2 = avatar.entTowed().getInventoryItemIDs();
+                        for (var i=0; i < inventory2.length; i++){
+                          var item = Game.DATASTORE.ITEM[inventory2[i]];
+                          if (item.getName() === 'Fuel Rod'){
+                            avatar.extractInventoryItems([inventory2[i]]);
+                            Game.UIMode.shipScreen.attr.fuel++;
+                          }
+                        }
+                  }
                     Game.UIMode.shipScreen.addDrone(avatar.entTowed());
                     Game.switchUIMode(Game.UIMode.shipScreen);
                 } else {
