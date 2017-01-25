@@ -71,7 +71,7 @@ Game.ItemTraits.Equipable = {
                 this.attr._Equipable_attr.equipped = true;
             },
             'getStatus': function(){
-                return this.getStatus();
+                return {st:this.getStatus()};
             }
         }
     },

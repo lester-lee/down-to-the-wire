@@ -190,9 +190,14 @@ Game.EntityTraits.WalkerCorporeal = {
             var oldPos = this.getPos();
             this.setPos(newPos);
             map.updateEntityLocation(this);
-            this.raiseSymbolActiveEvent('successfulWalk', {'oldPos': oldPos, 'posWalked': newPos});
+            this.raiseSymbolActiveEvent('successfulWalk', {
+                'oldPos': oldPos,
+                'posWalked': newPos
+            });
             var self = this;
-            setTimeout(function(){self.raiseSymbolActiveEvent('actionDone');},1);
+            setTimeout(function() {
+                self.raiseSymbolActiveEvent('actionDone');
+            }, 1);
             return true;
         } else if (nextTile.getName() === 'doorClosed') {
             this.raiseSymbolActiveEvent('doorOpenAttempt', {
@@ -554,26 +559,30 @@ Game.EntityTraits.MeleeAttacker = {
         },
         listeners: {
             'bumpEntity': function(evtData) {
-                if (this.canAttack()) {
-                    var hit = this.getAttackAccuracy();
-                    var dodge = evtData.target.raiseSymbolActiveEvent('getDodge').dodge || 0;
-                    if (ROT.RNG.getUniform() <= Math.max(0, hit - dodge)) {
-                        evtData.target.raiseSymbolActiveEvent('attacked', {
-                            attacker: evtData.actor,
-                            attack: this.getAttack()
-                        });
-                    } else {
-                        this.raiseSymbolActiveEvent('attackMiss', {
-                            attacker: evtData.actor,
-                            target: evtData.target
-                        });
-                        evtData.target.raiseSymbolActiveEvent('attackAvoided', {
-                            attacker: evtData.actor,
-                            target: evtData.target
-                        });
-                    }
+                if (this.getFriendly() && evtData.target.getFriendly()) {
+                    Game.Message.send("Friendly fire disabled.");
                 } else {
-                    Game.Message.send(this.getName() + " has nothing to attack with.");
+                    if (this.canAttack()) {
+                        var hit = this.getAttackAccuracy();
+                        var dodge = evtData.target.raiseSymbolActiveEvent('getDodge').dodge || 0;
+                        if (ROT.RNG.getUniform() <= Math.max(0, hit - dodge)) {
+                            evtData.target.raiseSymbolActiveEvent('attacked', {
+                                attacker: evtData.actor,
+                                attack: this.getAttack()
+                            });
+                        } else {
+                            this.raiseSymbolActiveEvent('attackMiss', {
+                                attacker: evtData.actor,
+                                target: evtData.target
+                            });
+                            evtData.target.raiseSymbolActiveEvent('attackAvoided', {
+                                attacker: evtData.actor,
+                                target: evtData.target
+                            });
+                        }
+                    } else {
+                        Game.Message.send(this.getName() + " has nothing to attack with.");
+                    }
                 }
             }
         }
@@ -609,10 +618,10 @@ Game.EntityTraits.Tower = {
         },
         init: function(template) {},
         listeners: {
-            'successfulWalk': function(evtData){
-                if(this.canTow() && !(this.entTowed() == null)){
-                  this.entTowed().setPos(evtData.oldPos);
-                  this.getMap().updateEntityLocation(this.entTowed());
+            'successfulWalk': function(evtData) {
+                if (this.canTow() && !(this.entTowed() == null)) {
+                    this.entTowed().setPos(evtData.oldPos);
+                    this.getMap().updateEntityLocation(this.entTowed());
                 }
             }
         }
