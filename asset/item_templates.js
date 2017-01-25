@@ -52,7 +52,9 @@ Game.ItemGenerator.learn({
   name: 'Scrap Metal',
   description: "maybe you'll be able to use it",
   chr: "F",
-  fg: "#333"
+  fg: "#333",
+  fabrications: ["Repair Kit","90 Camera","Movement Apparatus","Big Fist"],
+  traits: ['Fabricator']
 });
 
 Game.ItemGenerator.learn({
