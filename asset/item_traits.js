@@ -116,6 +116,12 @@ Game.ItemTraits.Equipable = {
     }
 };
 
+/* ============== Uses ================== */
+
+Game.ItemTraits.Assemble = {
+  
+};
+
 Game.ItemTraits.Repair = {
     META: {
         traitName: 'Repair',
