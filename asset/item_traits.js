@@ -342,7 +342,7 @@ Game.ItemTraits.Container = {
             if (IDidx > -1) {
                 this.attr._Container_attr.itemIDs.splice(IDidx, 1);
                 return true;
-            }else {
+            } else {
                 return false;
             }
         }
