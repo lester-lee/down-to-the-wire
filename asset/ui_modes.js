@@ -107,6 +107,7 @@ Game.UIMode.persistence = {
     newGame: function() {
         Game.clearDatastore();
         Game.setRandomSeed(5 + Math.floor(ROT.RNG.getUniform() * 100000));
+        Game.UIMode.shipScreen.resetDrones();
         Game.UIMode.shipScreen.setupShipStatus();
         Game.UIMode.navigation.setupNavMap();
         Game.switchUIMode(Game.UIMode.gameIntro);
@@ -285,6 +286,9 @@ Game.UIMode.shipScreen = {
             return false;
         }
         return true;
+    },
+    resetDrones: function(){
+        this.attr.drones = [];
     },
     deployDroneID: function() {
         return this.attr.drones[0];
