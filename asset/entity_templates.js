@@ -22,10 +22,11 @@ Game.EntityGenerator.learn({
     fg: '#fff',
     maxHP: 10,
     dodge: .1,
-    defaultEquipment: ["90 Camera", "Movement Apparatus", "Big Fist"],
+    friendly: true,
+    defaultEquipment: ["90 Camera", "Movement Apparatus", "Big Fist", "Tow Hook"],
     traits: [
         "PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
-        "PlayerActor", "StatHitPoints", "MeleeAttacker", "DoorOpener",
+        "PlayerActor", "StatHitPoints", "MeleeAttacker", "Tower", "DoorOpener",
         "InventoryHolder", "EquipmentHolder", "SpeciesDrone"
     ]
 }, "initial_drone");

@@ -187,9 +187,12 @@ Game.EntityTraits.WalkerCorporeal = {
             if (nextTile.getName() == 'airlock') {
                 this.raiseSymbolActiveEvent('passAirlock');
             }
+            var oldPos = this.getPos();
             this.setPos(newPos);
             map.updateEntityLocation(this);
-            this.raiseSymbolActiveEvent('actionDone');
+            this.raiseSymbolActiveEvent('successfulWalk', {'oldPos': oldPos, 'posWalked': newPos});
+            var self = this;
+            setTimeout(function(){self.raiseSymbolActiveEvent('actionDone');},1);
             return true;
         } else if (nextTile.getName() === 'doorClosed') {
             this.raiseSymbolActiveEvent('doorOpenAttempt', {
@@ -592,6 +595,39 @@ Game.EntityTraits.MeleeAttacker = {
     },
     canAttack: function() {
         return this.attr._MeleeAttacker_attr.canAttack;
+    }
+};
+
+Game.EntityTraits.Tower = {
+    META: {
+        traitName: 'Tower',
+        traitGroup: 'Tower',
+        stateNamespace: '_Tower_attr',
+        stateModel: {
+            canTow: false,
+            entTowed: null
+        },
+        init: function(template) {},
+        listeners: {
+            'successfulWalk': function(evtData){
+                if(this.canTow() && !(this.entTowed() == null)){
+                  this.entTowed().setPos(evtData.oldPos);
+                  this.getMap().updateEntityLocation(this.entTowed());
+                }
+            }
+        }
+    },
+    toggleTow: function() {
+        this.attr._Tower_attr.canTow = !this.attr._Tower_attr.canTow;
+    },
+    canTow: function() {
+        return this.attr._Tower_attr.canTow;
+    },
+    setEntTowed: function(ent) {
+        this.attr._Tower_attr.entTowed = ent;
+    },
+    entTowed: function() {
+        return this.attr._Tower_attr.entTowed;
     }
 };
 

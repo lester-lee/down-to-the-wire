@@ -248,6 +248,17 @@ Game.UIMode.heist = {
             case 'PREVIOUS_LEVEL':
                 this.prevLevel();
                 break;
+            case 'INTERACT':
+                var dir = ROT.DIRS[8][avatar.getDirection()];
+                var mapPos = avatar.getPos();
+                var targetPos = {x: mapPos.x + dir[0], y: mapPos.y + dir[1]}
+                console.log(targetPos);
+                var ent = this.getMap().getEntity(targetPos);
+                if (ent){
+                  avatar.setEntTowed(ent);
+                  Game.Message.send("Towing "+ ent.getName());
+                }
+                break;
             case 'CONFIRM':
                 var pos = avatar.getPos();
                 var tile = this.getMap().getTile(pos);
