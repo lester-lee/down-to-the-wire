@@ -265,14 +265,23 @@ Game.UIMode.heist = {
                 if (tile.getName() == 'airlock') {
                     Game.Message.clear();
                     Game.Message.send("Successfully returned to ship.");
-                    var inventory = avatar.getInventoryItemIDs();
-                    for (var i=0; i < inventory.length; i++){
-                      var item = Game.DATASTORE.ITEM[inventory[i]];
+                    var inventory1 = avatar.getInventoryItemIDs();
+                    for (var i=0; i < inventory1.length; i++){
+                      var item = Game.DATASTORE.ITEM[inventory1[i]];
                       if (item.getName() === 'Fuel Rod'){
-                        avatar.extractInventoryItems([inventory[i]]);
+                        avatar.extractInventoryItems([inventory1[i]]);
                         Game.UIMode.shipScreen.attr.fuel++;
                       }
                     }
+                    var inventory2 = avatar.entTowed().getInventoryItemIDs();
+                    for (var i=0; i < inventory2.length; i++){
+                      var item = Game.DATASTORE.ITEM[inventory2[i]];
+                      if (item.getName() === 'Fuel Rod'){
+                        avatar.extractInventoryItems([inventory2[i]]);
+                        Game.UIMode.shipScreen.attr.fuel++;
+                      }
+                    }
+                    Game.UIMode.shipScreen.addDrone(avatar.entTowed());
                     Game.switchUIMode(Game.UIMode.shipScreen);
                 } else {
                     var itemList = Game.Util.arrayObjectToID(avatar.getMap().getItems(avatar.getPos()));
