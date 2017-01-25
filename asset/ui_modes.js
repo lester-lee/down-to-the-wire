@@ -752,9 +752,9 @@ Game.UIMode.fabricateMenu = {
         this.avatar = itemArgs.actor;
         this.curItem = Game.DATASTORE.ITEM[itemArgs.itemID];
         var opt = this.curItem.getFabrications().slice();
-        opt.push('Cancel');
         this.options = opt;
         this.setupFunctions();
+        opt.push('Cancel');
     },
     setupFunctions: function() {
         for (var i = 0; i < this.options.length; i++) {
