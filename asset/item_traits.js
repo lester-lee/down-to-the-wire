@@ -61,13 +61,17 @@ Game.ItemTraits.Equipable = {
             },
             'destroyed': function(evtData) {
                 Game.Message.send(this.getName() + " has been destroyed.");
-                var scrap = Game.ItemGenerator.create('Scrap Metal');
+                var id = this.getID();
                 var actor = evtData.equipper;
-                actor.removeEquipment(this.getID());
-                Game.DATASTORE.ITEM[this.getID()] = scrap;
+                actor.removeEquipment(id);
+                var scrap = Game.ItemGenerator.create('Scrap Metal', id);
+                Game.DATASTORE.ITEM[id] = scrap;
             },
             'ensureEquip': function() {
                 this.attr._Equipable_attr.equipped = true;
+            },
+            'getStatus': function(){
+                return this.getStatus();
             }
         }
     },
@@ -103,7 +107,6 @@ Game.ItemTraits.Equipable = {
         return this.attr._Equipable_attr.equipCategory;
     },
     toggleEquipped: function() {
-      console.log('toggle');
         this.attr._Equipable_attr.equipped = !this.attr._Equipable_attr.equipped;
     },
     isEquipped: function() {
@@ -111,16 +114,32 @@ Game.ItemTraits.Equipable = {
     },
     isFunctional: function() {
         return this.attr._Equipable_attr.functional;
-    },
-    destroy: function() {
-
     }
 };
 
-/* ============== Uses ================== */
+/* =============== Uses ================== */
 
-Game.ItemTraits.Assemble = {
-
+Game.ItemTraits.Fabricator = {
+  META: {
+      traitName: 'Fabricator',
+      traitGroup: 'Fabricator',
+      stateNamespace: '_Fabricator_attr',
+      stateModel: {
+          fabrications: [],
+      },
+      init: function(template) {
+          this.attr._Fabricator_attr.fabrications = template.fabrications || [];
+          this.itemOptions = this.itemOptions || [];
+          this.itemOptions.push('Fabricate');
+          this.itemFunctions = this.itemFunctions || {};
+          this.itemFunctions['Fabricate'] = function(itemArgs) {
+              Game.addUIMode(Game.UIMode.fabricateMenu, itemArgs);
+          };
+      }
+  },
+  getFabrications: function(){
+      return this.attr._Fabricator_attr.fabrications;
+  }
 };
 
 Game.ItemTraits.Repair = {
@@ -343,7 +362,7 @@ Game.ItemTraits.Container = {
             if (IDidx > -1) {
                 this.attr._Container_attr.itemIDs.splice(IDidx, 1);
                 return true;
-            }else {
+            } else {
                 return false;
             }
         }

@@ -353,9 +353,11 @@ Game.UIMode.navigation = {
     render: function(display) {
         var numGates = this.attr._curNode.edge_list.length;
         var plural = '';
-        if (numGates > 1){plural = 's';}
+        if (numGates > 1) {
+            plural = 's';
+        }
         display.drawText(0, 1, "NAVIGATION MODE ");
-        display.drawText(0, 3, ( + 1) + " hyperspace gates" + plural + " open");
+        display.drawText(0, 3, (+1) + " hyperspace gates" + plural + " open");
         this.renderNavOptions(display);
     },
     renderNavOptions: function(display) {
@@ -427,12 +429,12 @@ Game.UIMode.navigation = {
         }
         this.navOptions.push('Warp to another star system');
         this.navFunctions['Warp to another star system'] = function() {
-          if(Game.UIMode.shipScreen.hasFuel()){
-            Game.UIMode.shipScreen.useFuel();
-            Game.UIMode.navigation.createStarSystem();
-          }else{
-            Game.Message.send("Fuel rods depleted. Scavenge more to warp.");
-          }
+            if (Game.UIMode.shipScreen.hasFuel()) {
+                Game.UIMode.shipScreen.useFuel();
+                Game.UIMode.navigation.createStarSystem();
+            } else {
+                Game.Message.send("Fuel rods depleted. Scavenge more to warp.");
+            }
         };
     },
     travelToTarget: function(targetNode) {
@@ -624,7 +626,9 @@ Game.UIMode.inventory = {
             for (var i = 0; i < this.itemIDs.length; i++) {
                 var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
                 var item = Game.DATASTORE.ITEM[this.itemIDs[i]];
-                display.drawText(0, i + 3, '%b{' + bg + '}> ' + item.getName() + ' - ' + item.getDescription());
+                var status = item.raiseSymbolActiveEvent('getStatus');
+                var fg = Game.Util.getStatusColor(status);
+                display.drawText(0, i + 3, '%c{'+fg+'}%b{' + bg + '}> ' + item.getName() + ' - ' + item.getDescription());
             }
         } else {
             var str = (this.equip) ? "anything equipped." : "any items.";
@@ -679,25 +683,24 @@ Game.UIMode.itemMenu = {
         this.itemOptions = this.curItem.getOptions();
         this.itemFunctions = this.curItem.getFunctions();
         this.curOption = 0;
-        if (Game._UIStack[Game._UIStack.length-1] == Game.UIMode.heist){
-          this.setupDrop();
+        if (Game._UIStack[Game._UIStack.length - 1] == Game.UIMode.heist) {
+            this.setupDrop();
         }
     },
-    setupDrop: function(){
-          var opt = this.itemOptions.slice();
-          opt.pop(); // remove CANCEL
-          opt.push('Drop');
-          opt.push('Cancel');
-          this.itemOptions = opt;
-          this.itemFunctions['Drop'] = function(){
-              var avatar = Game.UIMode.heist.getAvatar();
-              avatar.dropItems(Game.UIMode.itemMenu.curItem.getID());
-              Game.removeUIMode();
-              Game.UIMode.inventory.refreshItemIDs();
-          };
+    setupDrop: function() {
+        var opt = this.itemOptions.slice();
+        opt.pop(); // remove CANCEL
+        opt.push('Drop');
+        opt.push('Cancel');
+        this.itemOptions = opt;
+        this.itemFunctions['Drop'] = function() {
+            var avatar = Game.UIMode.heist.getAvatar();
+            avatar.dropItems(Game.UIMode.itemMenu.curItem.getID());
+            Game.removeUIMode();
+            Game.UIMode.inventory.refreshItemIDs();
+        };
     },
-    exit: function() {
-    },
+    exit: function() {},
     render: function(display) {
         Game.UIMode.inventory.render(display);
     },
@@ -723,6 +726,70 @@ Game.UIMode.itemMenu = {
                     itemID: this.curItem.getID(),
                     actor: Game.UIMode.inventory.avatar
                 });
+                break;
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+        }
+    }
+};
+
+Game.UIMode.fabricateMenu = {
+    avatar: null,
+    curItem: null,
+    options: [],
+    functions: {
+        'Cancel': function() {
+            Game.removeUIMode();
+        }
+    },
+    curOption: 0,
+    enter: function(itemArgs) {
+        this.avatar = itemArgs.actor;
+        this.curItem = Game.DATASTORE.ITEM[itemArgs.itemID];
+        var opt = this.curItem.getFabrications().slice();
+        opt.push('Cancel');
+        this.options = opt;
+        this.setupFunctions();
+    },
+    setupFunctions: function() {
+        for (var i = 0; i < this.options.length; i++) {
+            this.functions[this.options[i]] = function(itemKey) {
+                var curID = Game.UIMode.fabricateMenu.curItem.getID();
+                Game.DATASTORE.ITEM[curID] = Game.ItemGenerator.create(itemKey, curID);
+                Game.UIMode.fabricateMenu.curItem = Game.DATASTORE.ITEM[curID];
+                Game.removeUIMode();
+                Game.removeUIMode();
+                Game.UIMode.inventory.refreshItemIDs();
+            };
+        }
+    },
+    exit: function() {
+        this.curOption = 0;
+    },
+    render: function(display) {
+        Game.UIMode.inventory.render(display);
+    },
+    renderAvatarInfo: function(display) {
+        for (var i = 0; i < this.options.length; i++) {
+            var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.options[i]);
+        }
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'MOVE_DOWN':
+                this.curOption++;
+                this.curOption %= this.options.length;
+                break;
+            case 'MOVE_UP':
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.options.length - 1 : this.curOption;
+                break;
+            case 'CONFIRM':
+                var name = this.options[this.curOption];
+                this.functions[name](name);
                 break;
             case 'CANCEL':
                 Game.removeUIMode();

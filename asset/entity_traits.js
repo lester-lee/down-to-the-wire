@@ -292,7 +292,14 @@ Game.EntityTraits.EquipmentHolder = {
     },
     removeEquipment: function(equipID) {
         var equipment = this.extractEquipment(equipID);
-        this.addInventoryItems([equipment]);
+        if (this.hasInventorySpace()) {
+            this.addInventoryItems([equipment]);
+        } else {
+            dropResult = {};
+            this.getMap().addItem(equipment, this.getPos());
+            dropResult.lastItemDroppedName = equipment.getName();
+            this.raiseSymbolActiveEvent('itemsDropped', dropResult);
+        }
     },
     extractEquipment: function(equipID) {
         var equipment = Game.DATASTORE.ITEM[equipID];
@@ -346,10 +353,10 @@ Game.EntityTraits.InventoryHolder = {
         stateNamespace: '_InventoryHolder_attr',
         stateModel: {
             containerID: '',
-            inventoryCapacity: 5
+            inventoryCapacity: 10
         },
         init: function(template) {
-            this.attr._InventoryHolder_attr.inventoryCapacity = template.inventoryCapacity || 5;
+            this.attr._InventoryHolder_attr.inventoryCapacity = template.inventoryCapacity || 2;
             var container = Game.ItemGenerator.create('_inventoryContainer');
             container.setCapacity(this.attr._InventoryHolder_attr.inventoryCapacity);
             this.attr._InventoryHolder_attr.containerID = container.getID();
@@ -426,7 +433,8 @@ Game.EntityTraits.InventoryHolder = {
         return pickupResult;
     },
     dropItems: function(itemID) {
-        if (!this._getContainer().extractItems(itemID)){
+        console.dir(itemID);
+        if (!this._getContainer().extractItems(itemID)) {
             this.extractEquipment(itemID);
         }
         var item = Game.DATASTORE.ITEM[itemID];

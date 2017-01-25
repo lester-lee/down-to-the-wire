@@ -3,7 +3,7 @@ Game.SymbolActive = function(template) {
     Game.Symbol.call(this, template);
     this.attr._name = template.name || '';
     this.attr._description = template.description || '';
-    this.attr._ID = Game.Util.randomString(16);
+    this.attr._ID = template.presetID || Game.Util.randomString(16);
     // mixins/traits
     this._traitNames = template.traits || {};
     this._traits = [];
