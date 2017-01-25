@@ -350,10 +350,10 @@ Game.EntityTraits.InventoryHolder = {
         stateNamespace: '_InventoryHolder_attr',
         stateModel: {
             containerID: '',
-            inventoryCapacity: 10
+            inventoryCapacity: 0
         },
         init: function(template) {
-            this.attr._InventoryHolder_attr.inventoryCapacity = template.inventoryCapacity || 2;
+            this.attr._InventoryHolder_attr.inventoryCapacity = template.inventoryCapacity || 6;
             var container = Game.ItemGenerator.create('_inventoryContainer');
             container.setCapacity(this.attr._InventoryHolder_attr.inventoryCapacity);
             this.attr._InventoryHolder_attr.containerID = container.getID();
