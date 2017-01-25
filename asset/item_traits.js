@@ -13,7 +13,7 @@ Game.ItemTraits.Equipable = {
         },
         init: function(template) {
             this.attr._Equipable_attr.equipCategory = template.equipCategory || "torso";
-            this.attr._Equipable_attr.maxEquipHP = template.maxEquipHP || 2;
+            this.attr._Equipable_attr.maxEquipHP = template.maxEquipHP || 3;
             this.attr._Equipable_attr.curEquipHP = template.curEquipHP || this.getMaxHP();
             this.itemOptions = this.itemOptions || [];
             this.itemOptions.push('Equip');
@@ -70,8 +70,13 @@ Game.ItemTraits.Equipable = {
             'ensureEquip': function() {
                 this.attr._Equipable_attr.equipped = true;
             },
-            'getStatus': function(){
-                return {st:this.getStatus()};
+            'getStatus': function() {
+                return {
+                    st: this.getStatus()
+                };
+            },
+            'isDamaged': function() {
+                if (this.isDamaged()) return {dmg:true};
             }
         }
     },
@@ -103,6 +108,9 @@ Game.ItemTraits.Equipable = {
             return "Broken"
         }
     },
+    isDamaged: function() {
+        return this.getCurHP() < this.getMaxHP();
+    }
     getEquipCategory: function() {
         return this.attr._Equipable_attr.equipCategory;
     },
@@ -120,26 +128,26 @@ Game.ItemTraits.Equipable = {
 /* =============== Uses ================== */
 
 Game.ItemTraits.Fabricator = {
-  META: {
-      traitName: 'Fabricator',
-      traitGroup: 'Fabricator',
-      stateNamespace: '_Fabricator_attr',
-      stateModel: {
-          fabrications: [],
-      },
-      init: function(template) {
-          this.attr._Fabricator_attr.fabrications = template.fabrications || [];
-          this.itemOptions = this.itemOptions || [];
-          this.itemOptions.push('Fabricate');
-          this.itemFunctions = this.itemFunctions || {};
-          this.itemFunctions['Fabricate'] = function(itemArgs) {
-              Game.addUIMode(Game.UIMode.fabricateMenu, itemArgs);
-          };
-      }
-  },
-  getFabrications: function(){
-      return this.attr._Fabricator_attr.fabrications;
-  }
+    META: {
+        traitName: 'Fabricator',
+        traitGroup: 'Fabricator',
+        stateNamespace: '_Fabricator_attr',
+        stateModel: {
+            fabrications: [],
+        },
+        init: function(template) {
+            this.attr._Fabricator_attr.fabrications = template.fabrications || [];
+            this.itemOptions = this.itemOptions || [];
+            this.itemOptions.push('Fabricate');
+            this.itemFunctions = this.itemFunctions || {};
+            this.itemFunctions['Fabricate'] = function(itemArgs) {
+                Game.addUIMode(Game.UIMode.fabricateMenu, itemArgs);
+            };
+        }
+    },
+    getFabrications: function() {
+        return this.attr._Fabricator_attr.fabrications;
+    }
 };
 
 Game.ItemTraits.Repair = {
@@ -155,17 +163,8 @@ Game.ItemTraits.Repair = {
             this.itemOptions = this.itemOptions || [];
             this.itemOptions.push('Use');
             this.itemFunctions = this.itemFunctions || {};
-            this.itemFunctions['Use'] = function(itemID) {
-                var actor = Game.UIMode.heist.getAvatar();
-                var recoverAmt = Game.UIMode.itemMenu.curItem.getRepairValue();
-                actor.recover(recoverAmt);
-                actor.extractInventoryItems(itemID);
-                // return to heist screen
-                Game.goBaseUIMode();
-                actor.raiseSymbolActiveEvent('recoverHP', {
-                    hp: recoverAmt
-                });
-                actor.raiseSymbolActiveEvent('actionDone');
+            this.itemFunctions['Use'] = function(itemArgs) {
+                Game.addUIMode(Game.UIMode.repairMenu, itemArgs);
             };
         }
     },

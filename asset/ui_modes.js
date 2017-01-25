@@ -802,6 +802,93 @@ Game.UIMode.fabricateMenu = {
     }
 };
 
+Game.UIMode.repairMenu = {
+  avatar: null,
+  repairVal: 0,
+  items: [],
+  options: [],
+  functions: {
+      'Cancel': function() {
+          Game.removeUIMode();
+      }
+  },
+  curOption: 0,
+  enter: function(itemArgs) {
+      this.avatar = itemArgs.actor;
+      this.repairVal = Game.DATASTORE.ITEM[itemArgs.itemID].getRepairValue();
+      this.setupItems();
+      this.setupFunctions();
+      opt.push('Cancel');
+  },
+  setupItems: function(){
+      var invItems = this.avatar.getInventoryItemIDs();
+      var eqItems = this.avatar.getEquipmentItemIDs();
+      var i, item;
+      for (i=0; i < invItems.length; i++){
+        item = Game.DATASTORE.ITEM[invItems[i]];
+        var status = item.raiseSymbolActiveEvent('isDamaged');
+        if (status) {
+          this.items.push(invItems[i]);
+        }
+      }
+      for (i=0; i < eqItems.length; i++){
+        item = Game.DATASTORE.ITEM[eqItems[i]];
+        var status = item.raiseSymbolActiveEvent('isDamaged');
+        if (status) {
+          this.items.push(eqItems[i]);
+        }
+      }
+      for (i=0; i < this.items.length; i++){
+        item = Game.DATASTORE.ITEM[this.items[i]];
+        this.options.push();
+      }
+  },
+  setupFunctions: function() {
+      for (var i = 0; i < this.options.length; i++) {
+          this.functions[this.options[i]] = function(itemKey) {
+              var curID = Game.UIMode.fabricateMenu.curItem.getID();
+              Game.DATASTORE.ITEM[curID] = Game.ItemGenerator.create(itemKey, curID);
+              Game.UIMode.fabricateMenu.curItem = Game.DATASTORE.ITEM[curID];
+              Game.removeUIMode();
+              Game.removeUIMode();
+              Game.UIMode.inventory.refreshItemIDs();
+          };
+      }
+  },
+  exit: function() {
+      this.curOption = 0;
+  },
+  render: function(display) {
+      Game.UIMode.inventory.render(display);
+  },
+  renderAvatarInfo: function(display) {
+      for (var i = 0; i < this.options.length; i++) {
+          var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+          display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.options[i]);
+      }
+  },
+  handleInput: function(inputType, inputData) {
+      var action = Game.KeyBinding.getInput(inputType, inputData).key;
+      switch (action) {
+          case 'MOVE_DOWN':
+              this.curOption++;
+              this.curOption %= this.options.length;
+              break;
+          case 'MOVE_UP':
+              this.curOption--;
+              this.curOption = (this.curOption < 0) ? this.options.length - 1 : this.curOption;
+              break;
+          case 'CONFIRM':
+              var name = this.options[this.curOption];
+              this.functions[name](name);
+              break;
+          case 'CANCEL':
+              Game.removeUIMode();
+              break;
+      }
+  }
+};
+
 Game.UIMode.heistMenu = {
     attr: {
         _curOption: 0,
