@@ -103,6 +103,7 @@ Game.ItemTraits.Equipable = {
         return this.attr._Equipable_attr.equipCategory;
     },
     toggleEquipped: function() {
+      console.log('toggle');
         this.attr._Equipable_attr.equipped = !this.attr._Equipable_attr.equipped;
     },
     isEquipped: function() {
@@ -119,7 +120,7 @@ Game.ItemTraits.Equipable = {
 /* ============== Uses ================== */
 
 Game.ItemTraits.Assemble = {
-  
+
 };
 
 Game.ItemTraits.Repair = {
@@ -321,6 +322,9 @@ Game.ItemTraits.Container = {
             var IDidx = this.attr._Container_attr.itemIDs.indexOf(curID);
             if (IDidx > -1) {
                 this.attr._Container_attr.itemIDs.splice(IDidx, 1);
+                return true;
+            }else {
+                return false;
             }
         }
     }

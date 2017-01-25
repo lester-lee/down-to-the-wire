@@ -269,7 +269,7 @@ Game.UIMode.shipScreen = {
         }
     },
     setupShipStatus: function() {
-        var this.attr.fuel = 1;
+        this.attr.fuel = 1;
         var firstDrone = Game.EntityGenerator.create('initial_drone');
         this.addDrone(firstDrone);
         this.addDrone(Game.EntityGenerator.create('initial_drone'));
@@ -684,21 +684,19 @@ Game.UIMode.itemMenu = {
         }
     },
     setupDrop: function(){
-          var opt = this.itemOptions;
+          var opt = this.itemOptions.slice();
           opt.pop(); // remove CANCEL
           opt.push('Drop');
           opt.push('Cancel');
+          this.itemOptions = opt;
           this.itemFunctions['Drop'] = function(){
               var avatar = Game.UIMode.heist.getAvatar();
               avatar.dropItems(Game.UIMode.itemMenu.curItem.getID());
+              Game.removeUIMode();
+              Game.UIMode.inventory.refreshItemIDs();
           };
     },
     exit: function() {
-      this.resetOptions();
-    },
-    resetOptions: function(){
-      this.itemOptions = null;
-      this.itemFunctions = null;
     },
     render: function(display) {
         Game.UIMode.inventory.render(display);
