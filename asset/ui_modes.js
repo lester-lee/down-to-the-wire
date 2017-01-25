@@ -626,7 +626,7 @@ Game.UIMode.inventory = {
             for (var i = 0; i < this.itemIDs.length; i++) {
                 var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
                 var item = Game.DATASTORE.ITEM[this.itemIDs[i]];
-                var status = item.getStatus();
+                var status = item.raiseSymbolActiveEvent('getStatus');
                 var fg = Game.Util.getStatusColor(status);
                 display.drawText(0, i + 3, '%c{'+fg+'}%b{' + bg + '}> ' + item.getName() + ' - ' + item.getDescription());
             }
