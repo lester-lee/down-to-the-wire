@@ -20,6 +20,10 @@ Game.Tile.prototype.isWalkable = function() {
     return this.attr._walkable;
 };
 
+Game.Tile.prototype.isAirlock = function(){
+    return this.attr._name.localeCompare('airlock') == 0;
+};
+
 Game.Tile.prototype.isOpaque = function() {
     return this.attr._opaque;
 };

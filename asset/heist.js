@@ -190,7 +190,7 @@ Game.UIMode.heist = {
                 tookTurn = this.moveAvatar(-1, 0, 6);
                 break;
             case 'MOVE_STILL':
-                avatar.raiseSymbolActiveEvent('actionDone');
+                tookTurn = true;
                 break;
             case 'MOVE_RIGHT':
                 tookTurn = this.moveAvatar(1, 0, 2);
@@ -215,9 +215,6 @@ Game.UIMode.heist = {
                 break;
             case 'TURN_LEFT':
                 this.turnAvatar(6);
-                break;
-            case 'TURN_STILL':
-                tookTurn = true;
                 break;
             case 'TURN_RIGHT':
                 this.turnAvatar(2);
