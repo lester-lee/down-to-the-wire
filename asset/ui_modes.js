@@ -203,7 +203,7 @@ Game.UIMode.gameIntro = {
     },
     exit: function() {},
     render: function(display) {
-        display.drawText(1, 4, "You remember dying in the year S+979 — nearly 1000 years after the rise of artificail intelegence. Your consciousness was recorded in the moments before your death and has now been downloaded into the Strategic Command Commputer of aeon-dead warship.");
+        display.drawText(1, 4, "You remember dying in the year S+979 — nearly 1000 years after the rise of artificial intelligence. Your consciousness was recorded in the moments before your death and has now been downloaded onto the Strategic Command Computer of an aeon-dead warship.");
         display.drawText(1, 10, "What were you called in your past life?");
     },
     handleInput: function(inputType, inputData) {
@@ -679,8 +679,25 @@ Game.UIMode.itemMenu = {
         this.itemOptions = this.curItem.getOptions();
         this.itemFunctions = this.curItem.getFunctions();
         this.curOption = 0;
+        if (Game._UIStack[Game._UIStack.length-1] == Game.UIMode.heist){
+          this.setupDrop();
+        }
     },
-    exit: function() {},
+    setupDrop: function(){
+          var opt = this.itemOptions.slice();
+          opt.pop(); // remove CANCEL
+          opt.push('Drop');
+          opt.push('Cancel');
+          this.itemOptions = opt;
+          this.itemFunctions['Drop'] = function(){
+              var avatar = Game.UIMode.heist.getAvatar();
+              avatar.dropItems(Game.UIMode.itemMenu.curItem.getID());
+              Game.removeUIMode();
+              Game.UIMode.inventory.refreshItemIDs();
+          };
+    },
+    exit: function() {
+    },
     render: function(display) {
         Game.UIMode.inventory.render(display);
     },

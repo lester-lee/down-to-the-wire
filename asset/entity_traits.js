@@ -267,14 +267,14 @@ Game.EntityTraits.EquipmentHolder = {
             }
         },
         listeners: {
-          'refresh': function(){
-              var equips = this.getEquipmentItemIDs();
-              var item, i;
-              for (i = 0; i < equips.length; i++){
-                  item = Game.DATASTORE.ITEM[equips[i]];
-                  item.raiseSymbolActiveEvent('ensureEquip');
-              }
-          }
+            'refresh': function() {
+                var equips = this.getEquipmentItemIDs();
+                var item, i;
+                for (i = 0; i < equips.length; i++) {
+                    item = Game.DATASTORE.ITEM[equips[i]];
+                    item.raiseSymbolActiveEvent('ensureEquip');
+                }
+            }
         }
     },
     addEquipment: function(equipID) {
@@ -288,6 +288,10 @@ Game.EntityTraits.EquipmentHolder = {
         this.extractInventoryItems(equipID);
     },
     removeEquipment: function(equipID) {
+        var equipment = this.extractEquipment(equipID);
+        this.addInventoryItems([equipment]);
+    },
+    extractEquipment: function(equipID) {
         var equipment = Game.DATASTORE.ITEM[equipID];
         var cat = equipment.getEquipCategory();
         equipment.toggleEquipped();
@@ -295,7 +299,7 @@ Game.EntityTraits.EquipmentHolder = {
             actor: this
         });
         this.attr._EquipmentHolder_attr.equipped[cat] = null;
-        this.addInventoryItems([equipment]);
+        return equipment;
     },
     removeEquipmentCategory: function(cat) {
         var equipID = this.attr._EquipmentHolder_attr.equipped[cat];
@@ -418,24 +422,14 @@ Game.EntityTraits.InventoryHolder = {
 
         return pickupResult;
     },
-    dropItems: function(ids_or_idxs) {
-        var itemsToDrop = this._getContainer().extractItems(ids_or_idxs);
-        var dropResult = {
-            numItemsDropped: 0
-        };
-        if (itemsToDrop.length < 1) {
-            this.raiseSymbolActiveEvent('inventoryEmpty');
-            return dropResult;
+    dropItems: function(itemID) {
+        if (!this._getContainer().extractItems(itemID)){
+            this.extractEquipment(itemID);
         }
-        var lastItemDropped = "";
-        for (var i = 0; i < itemsToDrop.length; i++) {
-            if (itemsToDrop[i]) {
-                lastItemDropped = itemsToDrop[i];
-                this.getMap().addItem(itemsToDrop[i], this.getPos());
-                dropResult.numItemsDropped++;
-            }
-        }
-        dropResult.lastItemDroppedName = lastItemDropped.getName();
+        var item = Game.DATASTORE.ITEM[itemID];
+        dropResult = {};
+        this.getMap().addItem(item, this.getPos());
+        dropResult.lastItemDroppedName = item.getName();
         this.raiseSymbolActiveEvent('itemsDropped', dropResult);
         return dropResult;
     }
