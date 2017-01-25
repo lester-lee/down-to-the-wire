@@ -69,6 +69,9 @@ Game.ItemTraits.Equipable = {
             },
             'ensureEquip': function() {
                 this.attr._Equipable_attr.equipped = true;
+            },
+            'getStatus': function(){
+                return this.getStatus();
             }
         }
     },
@@ -111,9 +114,6 @@ Game.ItemTraits.Equipable = {
     },
     isFunctional: function() {
         return this.attr._Equipable_attr.functional;
-    },
-    destroy: function() {
-
     }
 };
 

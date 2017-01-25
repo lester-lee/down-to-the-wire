@@ -679,7 +679,6 @@ Game.UIMode.itemMenu = {
     itemOptions: null,
     itemFunctions: null,
     enter: function(itemID) {
-      console.log('enteritemmenu',itemID);
         this.curItem = Game.DATASTORE.ITEM[itemID];
         this.itemOptions = this.curItem.getOptions();
         this.itemFunctions = this.curItem.getFunctions();
@@ -748,7 +747,6 @@ Game.UIMode.fabricateMenu = {
     enter: function(itemArgs) {
         this.avatar = itemArgs.actor;
         this.curItem = Game.DATASTORE.ITEM[itemArgs.itemID];
-        console.log('enterfabricate',itemArgs.itemID);
         var opt = this.curItem.getFabrications().slice();
         opt.push('Cancel');
         this.options = opt;
@@ -758,7 +756,6 @@ Game.UIMode.fabricateMenu = {
         for (var i = 0; i < this.options.length; i++) {
             this.functions[this.options[i]] = function(itemKey) {
                 var curID = Game.UIMode.fabricateMenu.curItem.getID();
-                console.log(curID);
                 Game.DATASTORE.ITEM[curID] = Game.ItemGenerator.create(itemKey, curID);
                 Game.UIMode.fabricateMenu.curItem = Game.DATASTORE.ITEM[curID];
                 Game.removeUIMode();

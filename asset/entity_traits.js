@@ -343,10 +343,10 @@ Game.EntityTraits.InventoryHolder = {
         stateNamespace: '_InventoryHolder_attr',
         stateModel: {
             containerID: '',
-            inventoryCapacity: 5
+            inventoryCapacity: 10
         },
         init: function(template) {
-            this.attr._InventoryHolder_attr.inventoryCapacity = template.inventoryCapacity || 5;
+            this.attr._InventoryHolder_attr.inventoryCapacity = template.inventoryCapacity || 10;
             var container = Game.ItemGenerator.create('_inventoryContainer');
             container.setCapacity(this.attr._InventoryHolder_attr.inventoryCapacity);
             this.attr._InventoryHolder_attr.containerID = container.getID();
@@ -371,7 +371,11 @@ Game.EntityTraits.InventoryHolder = {
         return this._getContainer().hasSpace();
     },
     addInventoryItems: function(items_or_ids) {
-        return this._getContainer().addItems(items_or_ids);
+        if (this.hasInventorySpace()) {
+            return this._getContainer().addItems(items_or_ids);
+        } else {
+            return this.dropItems(items_or_ids[0]);
+        }
     },
     getInventoryItemIDs: function() {
         return this._getContainer().getItemIDs();
@@ -423,7 +427,7 @@ Game.EntityTraits.InventoryHolder = {
         return pickupResult;
     },
     dropItems: function(itemID) {
-        if (!this._getContainer().extractItems(itemID)){
+        if (!this._getContainer().extractItems(itemID)) {
             this.extractEquipment(itemID);
         }
         var item = Game.DATASTORE.ITEM[itemID];
