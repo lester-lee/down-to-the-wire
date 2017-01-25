@@ -42,3 +42,16 @@ Game.EntityGenerator.learn({
         "MeleeAttacker", "InventoryHolder", "EquipmentHolder"
     ]
 });
+
+Game.EntityGenerator.learn({
+    name: 'Ancient Security Drone',
+    chr: 'a',
+    fg: '#0bf',
+    maxHP: 3,
+    dodge: 0,
+    defaultEquipment: ["180 Camera", "Movement Apparatus", "Small Fist"],
+    traits: [
+        "Sight", "WanderChaserActor", "WalkerCorporeal", "StatHitPoints",
+        "MeleeAttacker", "InventoryHolder", "EquipmentHolder"
+    ]
+});

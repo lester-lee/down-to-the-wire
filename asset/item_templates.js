@@ -67,6 +67,17 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
+  name: 'Small Fist',
+  description: "you can kinda punch now",
+  chr: "f",
+  fg: "#333",
+  equipCategory: "weapon",
+  attack: 1,
+  accuracy: .75,
+  traits: ['Equipable','StatModifierAttack']
+});
+
+Game.ItemGenerator.learn({
   name: 'Movement Apparatus',
   description: "it lets you move",
   chr: "L",
