@@ -60,9 +60,9 @@ Game.ItemTraits.Equipable = {
                 }
             },
             'destroyed': function(evtData) {
-                Game.Message.send(this.getName() + " has been destroyed.");
                 var id = this.getID();
                 var actor = evtData.equipper;
+                Game.Message.send(actor.getName() + "'s " + this.getName() + " has been destroyed.");
                 actor.removeEquipment(id);
                 if (ROT.RNG.getUniform() >= .5){
                 var scrap = Game.ItemGenerator.create('Scrap Metal', id);
@@ -80,7 +80,9 @@ Game.ItemTraits.Equipable = {
                 };
             },
             'isDamaged': function() {
-                if (this.isDamaged()) return {dmg:true};
+                if (this.isDamaged()) return {
+                    dmg: true
+                };
             }
         }
     },
