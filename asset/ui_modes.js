@@ -670,7 +670,7 @@ Game.UIMode.navigation = {
             var ship = {
                 name: Game.Util.randomShipName(),
                 starSystem: systemName,
-                mapType: 'ship_easy',
+                mapType: 'ship_1',
                 prefix: 'the GSV ',
                 navNum: '' + (i + 1)
             };
@@ -717,7 +717,7 @@ Game.UIMode.navigation = {
 
 Game.UIMode.helpScreen = {
     curPage: 1,
-    numPages: 3,
+    numPages: 2,
     enter: function() {
         this.curPage = 1;
     },
@@ -762,6 +762,10 @@ Game.UIMode.helpScreen = {
             display.drawText(1, 8, "a← s →d");
             display.drawText(2, 9, "↙ ↓ ↘");
             display.drawText(1, 10, "z   x   c");
+            display.drawText(1, 12, "Hold [Shift] to look around.");
+            display.drawText(1, 13, "[=] to open menu.");
+            display.drawText(1, 14, "[Enter] to pick up items.");
+            display.drawText(1, 15, "[Space] to interact in front.");
         } else if (page === 2) {
             display.drawText(1, 5, "Ship Navigation:");
             display.drawText(1, 7, "1   2   This map represents the locations of spacecraft");
