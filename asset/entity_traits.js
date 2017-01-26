@@ -819,12 +819,19 @@ Game.EntityTraits.DoorOpener = {
         listeners: {
             'doorOpenAttempt': function(evtData) {
                 this.openDoor(this.getMap(), evtData.targetPos);
+            },
+            'doorCloseAttempt': function(evtData) {
+                this.closeDoor(this.getMap(), evtData.targetPos);
             }
         },
 
     },
     openDoor: function(map, pos) {
         map.setTile(pos, Game.Tile.doorOpenTile);
+        Game.refresh();
+    },
+    closeDoor: function(map, pos) {
+        map.setTile(pos, Game.Tile.doorClosedTile);
         Game.refresh();
     }
 };

@@ -249,11 +249,22 @@ Game.UIMode.heist = {
                 var dir = ROT.DIRS[8][avatar.getDirection()];
                 var mapPos = avatar.getPos();
                 var targetPos = {x: mapPos.x + dir[0], y: mapPos.y + dir[1]}
-                console.log(targetPos);
                 var ent = this.getMap().getEntity(targetPos);
                 if (ent){
-                  avatar.setEntTowed(ent);
-                  Game.Message.send("Towing "+ ent.getName());
+                    if(ent.getFriendly()){
+                      avatar.setEntTowed(ent);
+                      Game.Message.send("Towing "+ ent.getName());
+                    }else{
+                      Game.Message.send("The enemy drone will not submit to being towed");
+                    }
+                }else if(avatar.getMap().getTile(targetPos).getName() == 'doorOpen'){
+                  avatar.raiseSymbolActiveEvent('doorCloseAttempt', {
+                      targetPos: targetPos
+                  });
+                }else if(avatar.getMap().getTile(targetPos).getName() == 'doorClosed'){
+                  avatar.raiseSymbolActiveEvent('doorOpenAttempt', {
+                      targetPos: targetPos
+                  });
                 }
                 break;
             case 'CONFIRM':

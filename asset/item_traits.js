@@ -64,8 +64,12 @@ Game.ItemTraits.Equipable = {
                 var id = this.getID();
                 var actor = evtData.equipper;
                 actor.removeEquipment(id);
+                if (ROT.RNG.getUniform() >= .5){
                 var scrap = Game.ItemGenerator.create('Scrap Metal', id);
                 Game.DATASTORE.ITEM[id] = scrap;
+              }else {
+                actor.extractInventoryItems(id);
+              }
             },
             'ensureEquip': function() {
                 this.attr._Equipable_attr.equipped = true;
