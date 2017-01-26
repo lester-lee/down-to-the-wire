@@ -234,7 +234,7 @@ Game.UIMode.shipScreen = {
         drones: [],
         fuel: 1
     },
-    shipOptions: ["Navigate", "Drone Status", "Outfit ship", "heist", "Operations Manual", "Save/Load"],
+    shipOptions: ["Navigate", "Drone Status", "Outfit ship", "Operations Manual", "Save/Load"],
     shipFunctions: {
         Navigate: function() {
             Game.addUIMode(Game.UIMode.navigation);
@@ -245,9 +245,6 @@ Game.UIMode.shipScreen = {
                 deploying: false
             });
         },
-        heist: function() {
-            Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
-        },
         "Operations Manual": function() {
             Game.addUIMode(Game.UIMode.helpScreen);
         },
@@ -257,6 +254,7 @@ Game.UIMode.shipScreen = {
     },
     enter: function() {
         this.attr._curOption = 0;
+        this.repairDrones();
     },
     exit: function() {},
     render: function(display) {
@@ -289,6 +287,12 @@ Game.UIMode.shipScreen = {
     },
     resetDrones: function() {
         this.attr.drones = [];
+    },
+    repairDrones: function(){
+        for (var i = 0; i < this.attr.drones.length; i++){
+          var drone = Game.DATASTORE.ENTITY[this.attr.drones[i]];
+          drone.setCurHP(drone.getMaxHP());
+        }
     },
     deployDroneID: function() {
         return this.attr.drones[0];
