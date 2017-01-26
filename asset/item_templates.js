@@ -27,7 +27,7 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: 'Wide Angle Camera',
-  description: "An optical sensor with a 180˚ feild-of-view",
+  description: "An improved optical sensor",
   chr: "W",
   fg: "#2f2",
   equipCategory: "head",
@@ -59,7 +59,7 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: 'Hydraulic Punch',
-  description: "A a spike on a hydralic piston, effective in comabt",
+  description: "A a spike on a hydralic piston",
   chr: "F",
   fg: "#333",
   equipCategory: "weapon",
@@ -70,7 +70,7 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: 'Pneumatic Punch',
-  description: "A spike on a Pneumatic piston, somewhat effective in combat",
+  description: "A spike on a Pneumatic piston",
   chr: "f",
   fg: "#333",
   equipCategory: "weapon",
@@ -97,7 +97,7 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: 'Grapple Arm',
-  description: "Aallows a drone to tow friendly drones out of danger",
+  description: "Aallows a drone to tow friendly drones",
   chr: "H",
   fg: "#eee",
   equipCategory: "arms",
