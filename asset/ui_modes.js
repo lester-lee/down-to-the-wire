@@ -494,6 +494,10 @@ Game.UIMode.shipDroneSelection = {
                     var drone = Game.DATASTORE.ENTITY[droneID];
                     if (drone.hasInventorySpace()) {
                         drone.addInventoryItems([this.curItem]);
+                        Game.UIMode.shipScreen.removeItem(this.curItem);
+                        Game.UIMode.shipInventory.curOption = 0;
+                        Game.removeUIMode();
+                        Game.removeUIMode();
                     } else {
                         Game.Message.send(drone.getName() + " has a full inventory.");
                     }
