@@ -6,8 +6,8 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
-    name: 'Repair Kit',
-    description: 'a basic drone repair kit',
+    name: 'Equipment Equipment Repair Kit',
+    description: 'A basic drone equipment repair kit',
     chr: "R",
     fg: '#f32',
     repairValue: 3,
@@ -15,8 +15,8 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
-  name: '90 Camera',
-  description: "it's a camera",
+  name: 'Basic Camera',
+  description: "A basic optical sensor",
   chr: "C",
   fg: "#f22",
   equipCategory: "head",
@@ -26,9 +26,9 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
-  name: '180 Camera',
-  description: "it's a camera",
-  chr: "C",
+  name: 'Wide Angle Camera',
+  description: "An optical sensor with a 180˚ feild-of-view",
+  chr: "W",
   fg: "#2f2",
   equipCategory: "head",
   newSightRadius: 4,
@@ -37,8 +37,8 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
-  name: '360 Camera',
-  description: "it's a camera",
+  name: '360˚ Camera Array',
+  description: "An array of optical sensors that give 380˚ vision",
   chr: "C",
   fg: "#22f",
   equipCategory: "head",
@@ -50,16 +50,16 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: 'Scrap Metal',
-  description: "maybe you'll be able to use it",
+  description: "Maybe you'll be able to use it",
   chr: "S",
   fg: "#333",
-  fabrications: ["Repair Kit","90 Camera","Movement Apparatus","Big Fist"],
+  fabrications: ["Repair Kit","Basic Camera","Movement Apparatus","Hydraulic Punch"],
   traits: ['Fabricator']
 });
 
 Game.ItemGenerator.learn({
-  name: 'Big Fist',
-  description: "you can punch now",
+  name: 'Hydraulic Punch',
+  description: "A a spike on a hydralic piston, effective in comabt",
   chr: "F",
   fg: "#333",
   equipCategory: "weapon",
@@ -69,8 +69,8 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
-  name: 'Small Fist',
-  description: "you can kinda punch now",
+  name: 'Pneumatic Punch',
+  description: "A spike on a Pneumatic piston, somewhat effective in combat",
   chr: "f",
   fg: "#333",
   equipCategory: "weapon",
@@ -80,8 +80,8 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
-  name: 'Movement Apparatus',
-  description: "it lets you move",
+  name: 'Wheeled Chasis',
+  description: "Allows a drone to navigate under gravity",
   chr: "L",
   fg: "#eee",
   equipCategory: "legs",
@@ -90,14 +90,14 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: 'Fuel Rod',
-  description: "it is a Plutonium dowl to power your ship",
+  description: "A Plutonium dowl to power your ship's warp drive",
   chr: "!",
   fg: "#F80"
 });
 
 Game.ItemGenerator.learn({
-  name: 'Tow Hook',
-  description: "it allows you to tow friendly and enemy drones",
+  name: 'Grapple Arm',
+  description: "Aallows a drone to tow friendly drones out of danger",
   chr: "H",
   fg: "#eee",
   equipCategory: "arms",

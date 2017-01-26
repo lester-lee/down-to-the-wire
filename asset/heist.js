@@ -58,12 +58,19 @@ Game.UIMode.heist = {
         this.getAvatar().rememberCoords(seenCells);
     },
     renderAvatarInfo: function(display) {
-        display.drawText(1, 2, "avatar x:" + this.getAvatar().getX(), fg, bg); // DEV
-        display.drawText(1, 3, "avatar y:" + this.getAvatar().getY(), fg, bg); // DEV
-        display.drawText(1, 4, "camera x:" + this.attr._cameraX, fg, bg); // DEVdisplay.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEV
-        display.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEVdisplay.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEV
-        display.drawText(1, 1, "HP: " + this.getAvatar().getCurHP() + "/" + this.getAvatar().getMaxHP());
-        display.drawText(1, 6, "Turns taken: " + this.getAvatar().getTurns());
+        // display.drawText(1, 2, "avatar x:" + this.getAvatar().getX(), fg, bg); // DEV
+        // display.drawText(1, 3, "avatar y:" + this.getAvatar().getY(), fg, bg); // DEV
+        // display.drawText(1, 4, "camera x:" + this.attr._cameraX, fg, bg); // DEVdisplay.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEV
+        // display.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEVdisplay.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEV
+        // display.drawText(1, 1, "HP: " + this.getAvatar().getCurHP() + "/" + this.getAvatar().getMaxHP());
+        //display.drawText(1, 6, "Turns taken: " + this.getAvatar().getTurns());
+        var drone = this.getAvatar();
+        display.drawText(1, 1, drone.getName());
+        var status = drone.getCoreStatus();
+        var fg = Game.Util.getStatusColor(status);
+        display.drawText(1, 3, "%c{" + fg + "}Core: " + drone.getCoreStatus());
+        display.drawText(1, 5, "Equipment:");
+        Game.UIMode.droneScreen.renderDroneEquip(display, drone);
     },
     moveAvatar: function(dx, dy, dir) {
         Game.Message.ageMessages();
