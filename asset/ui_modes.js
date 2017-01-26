@@ -232,9 +232,10 @@ Game.UIMode.shipScreen = {
         playerName: null,
         _curOption: 0,
         drones: [],
-        fuel: 1
+        fuel: 0,
+        inventory: []
     },
-    shipOptions: ["Navigate", "Drone Status", "Outfit ship", "Operations Manual", "Save/Load"],
+    shipOptions: ["Navigate", "Drone Status", "Ship Inventory", "Operations Manual", "Save/Load"],
     shipFunctions: {
         Navigate: function() {
             Game.addUIMode(Game.UIMode.navigation);
@@ -243,6 +244,12 @@ Game.UIMode.shipScreen = {
             Game.addUIMode(Game.UIMode.droneScreen, {
                 drones: Game.UIMode.shipScreen.attr.drones,
                 deploying: false
+            });
+        },
+        "Ship Inventory": function() {
+            Game.addUIMode(Game.UIMode.shipInventory, {
+                drones: Game.UIMode.shipScreen.attr.drones,
+                inventory: Game.UIMode.shipScreen.attr.inventory
             });
         },
         "Operations Manual": function() {
@@ -285,17 +292,21 @@ Game.UIMode.shipScreen = {
         }
         return true;
     },
+    addItem: function(itemID) {
+        this.attr.inventory.push(itemID);
+    },
+    removeItem: function(itemID) {
+        var idx = this.attr.inventory.indexOf(id);
+        this.attr.inventory.splice(idx, 1);
+    },
     resetDrones: function() {
         this.attr.drones = [];
     },
-    repairDrones: function(){
-        for (var i = 0; i < this.attr.drones.length; i++){
-          var drone = Game.DATASTORE.ENTITY[this.attr.drones[i]];
-          drone.setCurHP(drone.getMaxHP());
+    repairDrones: function() {
+        for (var i = 0; i < this.attr.drones.length; i++) {
+            var drone = Game.DATASTORE.ENTITY[this.attr.drones[i]];
+            drone.setCurHP(drone.getMaxHP());
         }
-    },
-    deployDroneID: function() {
-        return this.attr.drones[0];
     },
     hasFuel: function() {
         return (this.attr.fuel > 0);
@@ -328,6 +339,55 @@ Game.UIMode.shipScreen = {
     fromJSON: function(json) {
         return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
     }
+};
+
+Game.UIMode.shipInventory = {
+    drones: [],
+    inventory: [],
+    curOption: 0,
+    enter: function(invArgs) {
+        this.drones = invArgs.drones;
+        this.inventory = invArgs.inventory;
+    },
+    exit: function() {
+        this.curOption = 0;
+    },
+    render: function(display) {
+        display.drawText(0, 1, "Ship Inventory");
+        if (this.inventory.length > 0) {
+            for (var i = 0; i < this.inventory.length; i++) {
+                var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+                var item = Game.DATASTORE.ITEM[this.inventory[i]];
+                var status = item.raiseSymbolActiveEvent('getStatus').st;
+                var fg = Game.Util.getStatusColor(status);
+                display.drawText(0, i + 3, '%c{' + fg + '}%b{' + bg + '}> ' + item.getName() + ' - ' + item.getDescription());
+            }
+        } else {
+            display.drawText(0, 3, "Cargo hold empty.");
+        }
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'MOVE_DOWN':
+                this.curOption++;
+                this.curOption %= this.inventory.length;
+                break;
+            case 'MOVE_UP':
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.inventory.length - 1 : this.curOption;
+                break;
+            case 'CONFIRM':
+                this.itemFunctions[this.inventory[this.curOption]]({
+                    itemID: this.curItem.getID(),
+                    actor: Game.UIMode.inventory.avatar
+                });
+                break;
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+        }
+    },
 };
 
 Game.UIMode.navigation = {
@@ -437,19 +497,19 @@ Game.UIMode.navigation = {
         }
         this.navOptions.push('Warp to another star system');
         this.navFunctions['Warp to another star system'] = function() {
-        Game.UIMode.navigation.createStarSystem();
+            Game.UIMode.navigation.createStarSystem();
 
         };
     },
     travelToTarget: function(targetNode) {
-      if (Game.UIMode.shipScreen.hasFuel()) {
-          Game.UIMode.shipScreen.useFuel();
-          this.attr._curNode = targetNode || this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption - 1]); //changes current location to target location
-          this.setupNavOptions();
-          this.renderShipLocation();
-      }else {
-          Game.Message.send("Fuel rods depleted. Scavenge more from ships.");
-      }
+        if (Game.UIMode.shipScreen.hasFuel()) {
+            Game.UIMode.shipScreen.useFuel();
+            this.attr._curNode = targetNode || this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption - 1]); //changes current location to target location
+            this.setupNavOptions();
+            this.renderShipLocation();
+        } else {
+            Game.Message.send("Fuel rods depleted. Scavenge more from ships.");
+        }
     },
     setupNavMap: function() {
         this.attr._navMap = new Graph();
