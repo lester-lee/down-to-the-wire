@@ -70,6 +70,9 @@ Game.EntityTraits.PlayerMessager = {
             },
             'itemsDropped': function(evtData) {
                 Game.Message.send('Dropped the ' + evtData.lastItemDroppedName + '.');
+            },
+            'walkOverItem': function(evtData) {
+                Game.Message.send('Walked over ' + evtData.item + '.');
             }
         }
     }
@@ -198,6 +201,12 @@ Game.EntityTraits.WalkerCorporeal = {
                 'oldPos': oldPos,
                 'posWalked': newPos
             });
+            var items = map.getItems(newPos);
+            if (items.length > 0){
+              this.raiseSymbolActiveEvent('walkOverItem', {
+                item: items[0].getName()
+              });
+            }
             var self = this;
             setTimeout(function() {
                 self.raiseSymbolActiveEvent('actionDone');

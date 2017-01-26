@@ -121,8 +121,8 @@ Game.Map.prototype.getItems = function(pos) {
     var useY = pos.y;
     var itemIDs = this.attr._itemsByLocation[useX + ',' + useY];
     if (itemIDs) {
-        return itemIDs.map(function(iid) {
-            return Game.DATASTORE.ITEM[iid];
+        return itemIDs.map(function(id) {
+            return Game.DATASTORE.ITEM[id];
         });
     }
     return [];
