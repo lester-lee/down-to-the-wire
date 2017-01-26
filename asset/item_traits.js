@@ -110,7 +110,7 @@ Game.ItemTraits.Equipable = {
     },
     isDamaged: function() {
         return this.getCurHP() < this.getMaxHP();
-    }
+    },
     getEquipCategory: function() {
         return this.attr._Equipable_attr.equipCategory;
     },
