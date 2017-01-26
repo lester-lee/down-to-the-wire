@@ -356,7 +356,7 @@ Game.UIMode.shipInventory = {
         display.drawText(0, 1, "Ship Inventory");
         if (this.inventory.length > 0) {
             for (var i = 0; i < this.inventory.length; i++) {
-                var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+                var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
                 var item = Game.DATASTORE.ITEM[this.inventory[i]];
                 var status = item.raiseSymbolActiveEvent('getStatus').st;
                 var fg = Game.Util.getStatusColor(status);
@@ -378,16 +378,60 @@ Game.UIMode.shipInventory = {
                 this.curOption = (this.curOption < 0) ? this.inventory.length - 1 : this.curOption;
                 break;
             case 'CONFIRM':
-                this.itemFunctions[this.inventory[this.curOption]]({
-                    itemID: this.curItem.getID(),
-                    actor: Game.UIMode.inventory.avatar
-                });
+                if (this.inventory.length > 0) {
+                    Game.addUIMode(Game.UIMode.shipInventoryMenu, this.inventory[this._curOption]);
+                }
                 break;
             case 'CANCEL':
                 Game.removeUIMode();
                 break;
         }
     },
+};
+
+Game.UIMode.shipInventoryMenu = {
+  curItem: null,
+  curOption: 0,
+  itemOptions: null,
+  itemFunctions: null,
+  enter: function(itemID) {
+      this.curItem = Game.DATASTORE.ITEM[itemID];
+      this.itemOptions = this.curItem.getOptions();
+      this.itemFunctions = this.curItem.getFunctions();
+      this.curOption = 0;
+  },
+  exit: function() {},
+  render: function(display) {
+      Game.UIMode.shipInventory.render(display);
+  },
+  renderAvatarInfo: function(display) {
+      for (var i = 0; i < this.itemOptions.length; i++) {
+          var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+          display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.itemOptions[i]);
+      }
+  },
+  handleInput: function(inputType, inputData) {
+      var action = Game.KeyBinding.getInput(inputType, inputData).key;
+      switch (action) {
+          case 'MOVE_DOWN':
+              this.curOption++;
+              this.curOption %= this.itemOptions.length;
+              break;
+          case 'MOVE_UP':
+              this.curOption--;
+              this.curOption = (this.curOption < 0) ? this.itemOptions.length - 1 : this.curOption;
+              break;
+          case 'CONFIRM':
+              this.itemFunctions[this.itemOptions[this.curOption]]({
+                  itemID: this.curItem.getID(),
+                  actor: Game.UIMode.inventory.avatar
+              });
+              break;
+          case 'CANCEL':
+              Game.removeUIMode();
+              break;
+      }
+  }
 };
 
 Game.UIMode.navigation = {
@@ -755,6 +799,9 @@ Game.UIMode.itemMenu = {
         if (Game._UIStack[Game._UIStack.length - 1] == Game.UIMode.heist) {
             this.setupDrop();
         }
+        if (Game._UIStack[Game._UIStack.length - 1] == Game.UIMode.shipScreen) {
+            this.setupStow();
+        }
     },
     setupDrop: function() {
         var opt = this.itemOptions.slice();
@@ -766,6 +813,23 @@ Game.UIMode.itemMenu = {
             var avatar = Game.UIMode.heist.getAvatar();
             avatar.dropItems(Game.UIMode.itemMenu.curItem.getID());
             Game.removeUIMode();
+            Game.UIMode.inventory.refreshItemIDs();
+        };
+    },
+    setupStow: function() {
+        var opt = this.itemOptions.slice();
+        opt.pop(); // remove CANCEL
+        opt.push('Stow');
+        opt.push('Cancel');
+        this.itemOptions = opt;
+        this.itemFunctions['Stow'] = function() {
+            var avatar = Game.UIMode.inventory.avatar;
+            var itemID = Game.UIMode.itemMenu.curItem.getID();
+            if (!avatar._getContainer().extractItems(itemID)) {
+                avatar.extractEquipment(itemID);
+            }
+            Game.removeUIMode();
+            Game.UIMode.shipScreen.addItem(itemID);
             Game.UIMode.inventory.refreshItemIDs();
         };
     },
