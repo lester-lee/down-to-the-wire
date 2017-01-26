@@ -279,8 +279,9 @@ Game.UIMode.heist = {
                             Game.UIMode.shipScreen.attr.fuel++;
                           }
                         }
+                        Game.UIMode.shipScreen.addDrone(avatar.entTowed());
+                        avatar.setEntTowed(null);
                   }
-                    Game.UIMode.shipScreen.addDrone(avatar.entTowed());
                     Game.switchUIMode(Game.UIMode.shipScreen);
                 } else {
                     var itemList = Game.Util.arrayObjectToID(avatar.getMap().getItems(avatar.getPos()));

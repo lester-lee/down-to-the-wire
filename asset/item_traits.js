@@ -288,6 +288,7 @@ Game.ItemTraits.StatModifierTow = {
             'unequip': function(evtData) {
                 var actor = evtData.actor;
                 actor.toggleTow();
+                actor.setEntTowed(null);
             }
         }
     }

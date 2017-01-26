@@ -270,7 +270,7 @@ Game.UIMode.shipScreen = {
         }
     },
     setupShipStatus: function() {
-        this.attr.fuel = 1;
+        this.attr.fuel = 4;
         var firstDrone = Game.EntityGenerator.create('initial_drone');
         this.addDrone(firstDrone);
         this.addDrone(Game.EntityGenerator.create('initial_drone'));
@@ -433,18 +433,19 @@ Game.UIMode.navigation = {
         }
         this.navOptions.push('Warp to another star system');
         this.navFunctions['Warp to another star system'] = function() {
-            if (Game.UIMode.shipScreen.hasFuel()) {
-                Game.UIMode.shipScreen.useFuel();
-                Game.UIMode.navigation.createStarSystem();
-            } else {
-                Game.Message.send("Fuel rods depleted. Scavenge more to warp.");
-            }
+        Game.UIMode.navigation.createStarSystem();
+
         };
     },
     travelToTarget: function(targetNode) {
-        this.attr._curNode = targetNode || this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption - 1]); //changes current location to target location
-        this.setupNavOptions();
-        this.renderShipLocation();
+      if (Game.UIMode.shipScreen.hasFuel()) {
+          Game.UIMode.shipScreen.useFuel();
+          this.attr._curNode = targetNode || this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption - 1]); //changes current location to target location
+          this.setupNavOptions();
+          this.renderShipLocation();
+      }else {
+          Game.Message.send("Fuel rods depleted. Scavenge more from ships.");
+      }
     },
     setupNavMap: function() {
         this.attr._navMap = new Graph();
