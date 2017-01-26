@@ -6,7 +6,7 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
-    name: 'Equipment Equipment Repair Kit',
+    name: 'Equipment Repair Kit',
     description: 'A basic drone equipment repair kit',
     chr: "R",
     fg: '#f32',
@@ -38,7 +38,7 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: '360˚ Camera Array',
-  description: "An array of optical sensors that give 380˚ vision",
+  description: "An array of optical sensors",
   chr: "C",
   fg: "#22f",
   equipCategory: "head",
@@ -53,7 +53,7 @@ Game.ItemGenerator.learn({
   description: "Maybe you'll be able to use it",
   chr: "S",
   fg: "#333",
-  fabrications: ["Repair Kit","Basic Camera","Movement Apparatus","Hydraulic Punch"],
+  fabrications: ["Equipment Repair Kit","Basic Camera","Wheeled Chasis","Hydraulic Punch"],
   traits: ['Fabricator']
 });
 

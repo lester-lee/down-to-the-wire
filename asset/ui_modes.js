@@ -545,7 +545,7 @@ Game.UIMode.navigation = {
             plural = 's';
         }
         display.drawText(0, 1, "NAVIGATION MODE ");
-        display.drawText(0, 3, (+1) + " hyperspace gates" + plural + " open");
+        display.drawText(0, 3, (+1) + " hyperspace gate" + plural + " open");
         this.renderNavOptions(display);
     },
     renderNavOptions: function(display) {
