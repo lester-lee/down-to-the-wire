@@ -903,7 +903,7 @@ Game.UIMode.heistMenu = {
         _curOption: 0,
         _abort: false,
     },
-    menuOptions: ["Inventory", "Equipment", "Operations Manual", "Options", "Abort Heist", "Close Menu"],
+    menuOptions: ["Inventory", "Equipment", "Operations Manual", "Options", "Abandon Drone", "Close Menu"],
     menuFunctions: {
         'Inventory': function() {
             Game.addUIMode(Game.UIMode.inventory);
@@ -917,10 +917,11 @@ Game.UIMode.heistMenu = {
         'Options': function() {
             console.log("options");
         },
-        'Abort Heist': function() {
+        'Abandon Drone': function() {
             if (Game.UIMode.heistMenu.attr._abort) {
                 Game.UIMode.heistMenu.attr._abort = false;
                 var curDrone = Game.UIMode.heist.getAvatar();
+                Game.UIMode.heist.getAvatar().setEntTowed(null); // Stop towing anything
                 if (Game.UIMode.shipScreen.removeDrone(curDrone)) {
                     Game.Message.clear();
                     Game.switchUIMode(Game.UIMode.continue);
@@ -930,8 +931,8 @@ Game.UIMode.heistMenu = {
                 }
             } else {
                 Game.UIMode.heistMenu.attr._abort = true;
-                Game.Message.send("Press [Abort Heist] again to leave.");
-                Game.Message.send("If you abort, you will lose this drone.");
+                Game.Message.send("Press [Abandon Drone] again to leave.");
+                Game.Message.send("If you do, you will lose control of this drone.");
             }
         },
         'Close Menu': function() {
