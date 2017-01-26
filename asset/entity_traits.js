@@ -14,32 +14,36 @@ Game.EntityTraits.PlayerMessager = {
         traitGroup: 'PlayerMessager',
         listeners: {
             'walkForbidden': function(evtData) {
-                Game.Message.send("Unable to move there.");
+                Game.Message.send("Unable to move.");
             },
             // Combat messages
             'attackAvoided': function(evtData) {
-                Game.Message.send(evtData.attacker.getName() + " tried to hit you but failed");
+                Game.Message.send(evtData.attacker.getName() + " missed.");
             },
             'attackMiss': function(evtData) {
-                Game.Message.send("You miss your attack on " + evtData.target.getName());
+                Game.Message.send("Attack on " + evtData.target.getName() + " missed.");
             },
             'madeKill': function(evtData) {
-                Game.Message.send("You destroy " + evtData.dead.getName());
+                Game.Message.send("Destroyed " + evtData.dead.getName() + ".");
             },
             'dealtDamage': function(evtData) {
-                Game.Message.send("You deal " + evtData.damage + " damage to the " + evtData.attacked.getName());
+                if (evtData.equip) {
+                    Game.Message.send("Damaged " + evtData.target.getName() + "'s " + evtData.attacked.getName() + ".");
+                } else {
+                    Game.Message.send("Damaged " + evtData.attacked.getName() + "'s core.");
+                }
             },
             'damagedBy': function(evtData) {
-                Game.Message.send(evtData.damager.getName() + " hit you for " + evtData.damage + " damage");
+                Game.Message.send("Core damaged by " + evtData.damager.getName() + ".");
             },
             'damagedEquipment': function(evtData) {
-                Game.Message.send(evtData.damager.getName() + " hit " + evtData.equipment + " for " + evtData.damage + " damage");
+                Game.Message.send(evtData.actor.getName() + "'s " + evtData.equipment + " damaged.")
             },
             'recoverHP': function(evtData) {
-                Game.Message.send("You recovered " + evtData.hp + "HP");
+                Game.Message.send("Recovered " + evtData.hp + "HP");
             },
             'killed': function(evtData) {
-                Game.Message.send("You were destroyed by " + evtData.killer.getName());
+                Game.Message.send("Destroyed by " + evtData.killer.getName() + '.');
                 Game.renderMessage();
             },
             'passAirlock': function() {
@@ -47,10 +51,10 @@ Game.EntityTraits.PlayerMessager = {
             },
             // Inventory messages
             'noItemsToPickup': function(evtData) {
-                Game.Message.send('There is nothing to pickup');
+                Game.Message.send('Nothing to pick up.');
             },
             'inventoryFull': function(evtData) {
-                Game.Message.send('Your inventory is full');
+                Game.Message.send('Inventory full.');
             },
             'inventoryEmpty': function(evtData) {
                 Game.Message.send('You are not carrying anything');
@@ -59,13 +63,13 @@ Game.EntityTraits.PlayerMessager = {
                 Game.Message.send('You could not pick up any items');
             },
             'someItemsPickedUp': function(evtData) {
-                Game.Message.send('You picked up ' + evtData.lastItemPickedUpName);
+                Game.Message.send('Picked up ' + evtData.lastItemPickedUpName + '.');
             },
             'allItemsPickedUp': function(evtData) {
-                Game.Message.send('You picked up ' + evtData.lastItemPickedUpName);
+                Game.Message.send('Picked up ' + evtData.lastItemPickedUpName + '.');
             },
             'itemsDropped': function(evtData) {
-                Game.Message.send('You dropped the ' + evtData.lastItemDroppedName);
+                Game.Message.send('Dropped the ' + evtData.lastItemDroppedName + '.');
             }
         }
     }
@@ -478,6 +482,7 @@ Game.EntityTraits.StatHitPoints = {
                     var equipment = Game.DATASTORE.ITEM[equipID];
                     this.raiseSymbolActiveEvent('damagedEquipment', {
                         damager: evtData.attacker,
+                        actor: this,
                         equipment: equipment.getName(),
                         damage: dmg
                     });
@@ -488,7 +493,9 @@ Game.EntityTraits.StatHitPoints = {
                     });
                     evtData.attacker.raiseSymbolActiveEvent('dealtDamage', {
                         attacked: equipment,
-                        damage: dmg
+                        target: this,
+                        damage: dmg,
+                        equip: true
                     });
                 } else {
                     this.takeDamage(dmg);
@@ -498,7 +505,8 @@ Game.EntityTraits.StatHitPoints = {
                     });
                     evtData.attacker.raiseSymbolActiveEvent('dealtDamage', {
                         attacked: this,
-                        damage: dmg
+                        damage: dmg,
+                        equip: false
                     });
                     if (this.getCurHP() <= 0) {
                         this.raiseSymbolActiveEvent('killed', {
