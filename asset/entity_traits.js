@@ -345,9 +345,13 @@ Game.EntityTraits.EquipmentHolder = {
     getRandomEquipmentID: function() {
         var equipped = this.attr._EquipmentHolder_attr.equipped;
         var keys = Object.keys(equipped);
-        var cat = keys.random();
-        var equipID = this.attr._EquipmentHolder_attr.equipped[cat];
-        return equipID;
+        var equipIDs = [null];
+        for (var i = 0; i < keys.length; i++) {
+            if (equipped[keys[i]] != null) {
+                equipIDs.push(equipped[keys[i]]);
+            }
+        }
+        return equipIDs.random();
     }
 };
 

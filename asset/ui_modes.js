@@ -234,7 +234,7 @@ Game.UIMode.shipScreen = {
         drones: [],
         fuel: 1
     },
-    shipOptions: ["Navigate", "Drone Status", "Outfit ship", "heist", "Operations Manual", "Save/Load"],
+    shipOptions: ["Navigate", "Drone Status", "Outfit ship", "Operations Manual", "Save/Load"],
     shipFunctions: {
         Navigate: function() {
             Game.addUIMode(Game.UIMode.navigation);
@@ -245,9 +245,6 @@ Game.UIMode.shipScreen = {
                 deploying: false
             });
         },
-        heist: function() {
-            Game.switchUIMode(Game.UIMode.heist, 'ship_easy');
-        },
         "Operations Manual": function() {
             Game.addUIMode(Game.UIMode.helpScreen);
         },
@@ -257,6 +254,7 @@ Game.UIMode.shipScreen = {
     },
     enter: function() {
         this.attr._curOption = 0;
+        this.repairDrones();
     },
     exit: function() {},
     render: function(display) {
@@ -287,8 +285,14 @@ Game.UIMode.shipScreen = {
         }
         return true;
     },
-    resetDrones: function(){
+    resetDrones: function() {
         this.attr.drones = [];
+    },
+    repairDrones: function(){
+        for (var i = 0; i < this.attr.drones.length; i++){
+          var drone = Game.DATASTORE.ENTITY[this.attr.drones[i]];
+          drone.setCurHP(drone.getMaxHP());
+        }
     },
     deployDroneID: function() {
         return this.attr.drones[0];
@@ -633,7 +637,7 @@ Game.UIMode.inventory = {
                 var item = Game.DATASTORE.ITEM[this.itemIDs[i]];
                 var status = item.raiseSymbolActiveEvent('getStatus').st;
                 var fg = Game.Util.getStatusColor(status);
-                display.drawText(0, i + 3, '%c{'+fg+'}%b{' + bg + '}> ' + item.getName() + ' - ' + item.getDescription());
+                display.drawText(0, i + 3, '%c{' + fg + '}%b{' + bg + '}> ' + item.getName() + ' - ' + item.getDescription());
             }
         } else {
             var str = (this.equip) ? "anything equipped." : "any items.";
@@ -753,9 +757,9 @@ Game.UIMode.fabricateMenu = {
         this.avatar = itemArgs.actor;
         this.curItem = Game.DATASTORE.ITEM[itemArgs.itemID];
         var opt = this.curItem.getFabrications().slice();
-        opt.push('Cancel');
         this.options = opt;
         this.setupFunctions();
+        opt.push('Cancel');
     },
     setupFunctions: function() {
         for (var i = 0; i < this.options.length; i++) {
@@ -795,6 +799,97 @@ Game.UIMode.fabricateMenu = {
             case 'CONFIRM':
                 var name = this.options[this.curOption];
                 this.functions[name](name);
+                break;
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+        }
+    }
+};
+
+Game.UIMode.repairMenu = {
+    avatar: null,
+    repItem: null,
+    items: [],
+    options: [],
+    curOption: 0,
+    enter: function(itemArgs) {
+        this.avatar = itemArgs.actor;
+        this.repItem = Game.DATASTORE.ITEM[itemArgs.itemID];
+        this.setupItems();
+    },
+    setupItems: function() {
+        var invItems = this.avatar.getInventoryItemIDs();
+        var eqItems = this.avatar.getEquipmentItemIDs();
+        var i, item;
+        for (i = 0; i < invItems.length; i++) {
+            item = Game.DATASTORE.ITEM[invItems[i]];
+            var status = item.raiseSymbolActiveEvent('isDamaged');
+            if (status.dmg) {
+                this.items.push(invItems[i]);
+            }
+        }
+        for (i = 0; i < eqItems.length; i++) {
+            item = Game.DATASTORE.ITEM[eqItems[i]];
+            var status = item.raiseSymbolActiveEvent('isDamaged');
+            if (status.dmg) {
+                this.items.push(eqItems[i]);
+            }
+        }
+        for (i = 0; i < this.items.length; i++) {
+            item = Game.DATASTORE.ITEM[this.items[i]];
+            this.options.push(item.getName());
+        }
+        this.options.push('Cancel');
+    },
+    exit: function() {
+        this.curOption = 0;
+        this.items = [];
+        this.options = [];
+    },
+    render: function(display) {
+        Game.UIMode.inventory.render(display);
+    },
+    renderAvatarInfo: function(display) {
+        display.drawText(0, 1, "Repair an item:");
+        for (var i = 0; i < this.options.length; i++) {
+            var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            var fg = Game.UIMode.DEFAULT_FG;
+            if (i < this.items.length) {
+                var item = Game.DATASTORE.ITEM[this.items[i]];
+                var status = item.raiseSymbolActiveEvent('getStatus').st;
+                fg = Game.Util.getStatusColor(status);
+            }
+            display.drawText(0, i + 3, '%c{' + fg + '}%b{' + bg + '}> ' + this.options[i]);
+        }
+    },
+    repairSelectedItem: function() {
+        var repVal = this.repItem.getRepairValue();
+        var itemID = this.items[this.curOption];
+        var item = Game.DATASTORE.ITEM[itemID];
+        item.repair(repVal);
+        Game.Message.send(item.getName() + " has been repaired.");
+        this.avatar.extractInventoryItems(this.repItem.getID());
+        Game.removeUIMode();
+        Game.removeUIMode();
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'MOVE_DOWN':
+                this.curOption++;
+                this.curOption %= this.options.length;
+                break;
+            case 'MOVE_UP':
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.options.length - 1 : this.curOption;
+                break;
+            case 'CONFIRM':
+                if (this.curOption >= this.items.length) {
+                    Game.removeUIMode();
+                } else {
+                    this.repairSelectedItem();
+                }
                 break;
             case 'CANCEL':
                 Game.removeUIMode();
