@@ -296,7 +296,7 @@ Game.UIMode.shipScreen = {
         this.attr.inventory.push(itemID);
     },
     removeItem: function(itemID) {
-        var idx = this.attr.inventory.indexOf(id);
+        var idx = this.attr.inventory.indexOf(itemID);
         this.attr.inventory.splice(idx, 1);
     },
     resetDrones: function() {
@@ -366,6 +366,9 @@ Game.UIMode.shipInventory = {
             display.drawText(0, 3, "Cargo hold empty.");
         }
     },
+    refreshInventory: function() {
+        this.inventory = Game.UIMode.shipScreen.attr.inventory;
+    },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
         switch (action) {
@@ -379,7 +382,7 @@ Game.UIMode.shipInventory = {
                 break;
             case 'CONFIRM':
                 if (this.inventory.length > 0) {
-                    Game.addUIMode(Game.UIMode.shipInventoryMenu, this.inventory[this._curOption]);
+                    Game.addUIMode(Game.UIMode.shipInventoryMenu, this.inventory[this.curOption]);
                 }
                 break;
             case 'CANCEL':
@@ -390,48 +393,59 @@ Game.UIMode.shipInventory = {
 };
 
 Game.UIMode.shipInventoryMenu = {
-  curItem: null,
-  curOption: 0,
-  itemOptions: null,
-  itemFunctions: null,
-  enter: function(itemID) {
-      this.curItem = Game.DATASTORE.ITEM[itemID];
-      this.itemOptions = this.curItem.getOptions();
-      this.itemFunctions = this.curItem.getFunctions();
-      this.curOption = 0;
-  },
-  exit: function() {},
-  render: function(display) {
-      Game.UIMode.shipInventory.render(display);
-  },
-  renderAvatarInfo: function(display) {
-      for (var i = 0; i < this.itemOptions.length; i++) {
-          var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
-          display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.itemOptions[i]);
-      }
-  },
-  handleInput: function(inputType, inputData) {
-      var action = Game.KeyBinding.getInput(inputType, inputData).key;
-      switch (action) {
-          case 'MOVE_DOWN':
-              this.curOption++;
-              this.curOption %= this.itemOptions.length;
-              break;
-          case 'MOVE_UP':
-              this.curOption--;
-              this.curOption = (this.curOption < 0) ? this.itemOptions.length - 1 : this.curOption;
-              break;
-          case 'CONFIRM':
-              this.itemFunctions[this.itemOptions[this.curOption]]({
-                  itemID: this.curItem.getID(),
-                  actor: Game.UIMode.inventory.avatar
-              });
-              break;
-          case 'CANCEL':
-              Game.removeUIMode();
-              break;
-      }
-  }
+    curItem: null,
+    curOption: 0,
+    itemOptions: ["Give to Drone", "Vent", "Cancel"],
+    itemFunctions: {
+        "Give to Drone": function(itemID) {
+          Game.addUIMode(Game.UIMode.shipDroneSelection,itemID);
+        },
+        "Vent": function(itemID) {
+          var item = Game.DATASTORE.ITEM[itemID];
+          Game.Message.send(item.getName() + " was destroyed.");
+          Game.UIMode.shipScreen.removeItem(itemID);
+          delete Game.DATASTORE.ITEM[itemID];
+          Game.removeUIMode();
+          Game.UIMode.shipInventory.curOption = 0;
+        },
+        "Cancel": function() {
+          Game.removeUIMode();
+        }
+    },
+    enter: function(itemID) {
+        this.curItem = itemID;
+    },
+    exit: function() {
+        this.curOption = 0;
+    },
+    render: function(display) {
+        Game.UIMode.shipInventory.render(display);
+    },
+    renderAvatarInfo: function(display) {
+        for (var i = 0; i < this.itemOptions.length; i++) {
+            var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.itemOptions[i]);
+        }
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'MOVE_DOWN':
+                this.curOption++;
+                this.curOption %= this.itemOptions.length;
+                break;
+            case 'MOVE_UP':
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.itemOptions.length - 1 : this.curOption;
+                break;
+            case 'CONFIRM':
+                this.itemFunctions[this.itemOptions[this.curOption]](this.curItem);
+                break;
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+        }
+    }
 };
 
 Game.UIMode.navigation = {
