@@ -360,7 +360,7 @@ Game.UIMode.shipInventory = {
                 var item = Game.DATASTORE.ITEM[this.inventory[i]];
                 var status = item.raiseSymbolActiveEvent('getStatus').st;
                 var fg = Game.Util.getStatusColor(status);
-                display.drawText(0, i + 3, '%c{' + fg + '}%b{' + bg + '}> ' + item.getName() + ' - ' + item.getDescription());
+                display.drawText(0, i + 3, '%c{' + fg + '}%b{' + bg + '}> ' + item.getName() + ' - ' + item.getShortDesc());
             }
         } else {
             display.drawText(0, 3, "Cargo hold empty.");
@@ -784,9 +784,7 @@ Game.UIMode.helpScreen = {
 };
 
 Game.UIMode.inventory = {
-    attr: {
-        _curOption: 0
-    },
+    curOption: 0,
     equip: false,
     avatar: null,
     itemIDs: null,
@@ -803,7 +801,8 @@ Game.UIMode.inventory = {
     },
     exit: function() {
         this.equip = false;
-        this.attr._curOption = 0;
+        this.curOption = 0;
+        Game.Message.clear();
     },
     render: function(display) {
         var str = (this.equip) ? "Inventory %b{#333}Equipment%b{}" : "%b{#333}Inventory%b{} Equipment";
@@ -813,12 +812,13 @@ Game.UIMode.inventory = {
     renderInventory: function(display) {
         if (this.itemIDs.length > 0) {
             for (var i = 0; i < this.itemIDs.length; i++) {
-                var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+                var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
                 var item = Game.DATASTORE.ITEM[this.itemIDs[i]];
                 var status = item.raiseSymbolActiveEvent('getStatus').st;
                 var fg = Game.Util.getStatusColor(status);
-                display.drawText(0, i + 3, '%c{' + fg + '}%b{' + bg + '}> ' + item.getName() + ' - ' + item.getDescription());
+                display.drawText(0, i + 3, '%c{' + fg + '}%b{' + bg + '}> ' + item.getName() + ' - ' + item.getShortDesc());
             }
+            this.renderItemDesc();
         } else {
             var str = (this.equip) ? "anything equipped." : "any items.";
             display.drawText(0, 3, "You do not have " + str);
@@ -826,6 +826,11 @@ Game.UIMode.inventory = {
     },
     refreshItemIDs: function() {
         this.itemIDs = (this.equip) ? this.avatar.getEquipmentItemIDs() : this.avatar.getInventoryItemIDs();
+    },
+    renderItemDesc: function() {
+        var item = Game.DATASTORE.ITEM[this.itemIDs[this.curOption]];
+        Game.Message.clear();
+        Game.Message.send(item.getLongDesc());
     },
     toggleEquipment: function() {
         this.equip = !this.equip;
@@ -835,21 +840,21 @@ Game.UIMode.inventory = {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
         switch (action) {
             case 'MOVE_DOWN':
-                this.attr._curOption++;
-                this.attr._curOption %= this.itemIDs.length;
+                this.curOption++;
+                this.curOption %= this.itemIDs.length;
                 break;
             case 'MOVE_UP':
-                this.attr._curOption--;
-                this.attr._curOption = (this.attr._curOption < 0) ? this.itemIDs.length - 1 : this.attr._curOption;
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.itemIDs.length - 1 : this.curOption;
                 break;
             case 'MOVE_LEFT':
             case 'MOVE_RIGHT':
-                this.attr._curOption = 0;
+                this.curOption = 0;
                 this.toggleEquipment();
                 break;
             case 'CONFIRM':
                 if (this.itemIDs.length > 0) {
-                    Game.addUIMode(Game.UIMode.itemMenu, this.itemIDs[this.attr._curOption]);
+                    Game.addUIMode(Game.UIMode.itemMenu, this.itemIDs[this.curOption]);
                 }
                 break;
             case 'CANCEL':
@@ -970,6 +975,7 @@ Game.UIMode.fabricateMenu = {
                 Game.removeUIMode();
                 Game.removeUIMode();
                 Game.UIMode.inventory.refreshItemIDs();
+                Game.UIMode.inventory.curOption = 0;
             };
         }
     },
@@ -980,6 +986,7 @@ Game.UIMode.fabricateMenu = {
         Game.UIMode.inventory.render(display);
     },
     renderAvatarInfo: function(display) {
+        display.drawText(0, 1, "Fabricate:");
         for (var i = 0; i < this.options.length; i++) {
             var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
             display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.options[i]);
@@ -1244,13 +1251,14 @@ Game.UIMode.droneScreen = {
     continue: false,
     airlockPos: null,
     enter: function(droneArgs) {
+        this.curDrone = 0;
         this.drones = droneArgs.drones;
         this.deploying = droneArgs.deploying;
         this.continue = droneArgs.continue || false;
         this.airlockPos = droneArgs.airlockPos || null;
     },
     exit: function() {
-        this.curDrone = 0;
+      Game.Message.clear();
     },
     render: function(display) {
         var str = (this.deploying) ? "Choose a drone to deploy: " : "Drones";
@@ -1262,6 +1270,11 @@ Game.UIMode.droneScreen = {
             var bg = (this.curDrone == i) ? '#333' : Game.UIMode.DEFAULT_BG;
             display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.getDrone(this.drones[i]).getName());
         }
+        this.renderDroneDesc();
+    },
+    renderDroneDesc: function(){
+        Game.Message.clear();
+        Game.Message.send(this.getDrone(this.drones[this.curDrone]).getLongDesc());
     },
     renderAvatarInfo: function(display) {
         var drone = this.getCurDrone();

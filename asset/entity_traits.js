@@ -480,6 +480,12 @@ Game.EntityTraits.StatHitPoints = {
                 var equipID = this.getRandomEquipmentID();
                 if (equipID) { // still has equipment left
                     var equipment = Game.DATASTORE.ITEM[equipID];
+                    evtData.attacker.raiseSymbolActiveEvent('dealtDamage', {
+                        attacked: equipment,
+                        target: this,
+                        damage: dmg,
+                        equip: true
+                    });
                     this.raiseSymbolActiveEvent('damagedEquipment', {
                         damager: evtData.attacker,
                         actor: this,
@@ -491,22 +497,16 @@ Game.EntityTraits.StatHitPoints = {
                         damager: evtData.attacker,
                         damage: dmg
                     });
-                    evtData.attacker.raiseSymbolActiveEvent('dealtDamage', {
-                        attacked: equipment,
-                        target: this,
-                        damage: dmg,
-                        equip: true
-                    });
                 } else {
                     this.takeDamage(dmg);
-                    this.raiseSymbolActiveEvent('damagedBy', {
-                        damager: evtData.attacker,
-                        damage: dmg
-                    });
                     evtData.attacker.raiseSymbolActiveEvent('dealtDamage', {
                         attacked: this,
                         damage: dmg,
                         equip: false
+                    });
+                    this.raiseSymbolActiveEvent('damagedBy', {
+                        damager: evtData.attacker,
+                        damage: dmg
                     });
                     if (this.getCurHP() <= 0) {
                         this.raiseSymbolActiveEvent('killed', {
@@ -580,7 +580,7 @@ Game.EntityTraits.MeleeAttacker = {
                         if (ROT.RNG.getUniform() <= Math.max(0, hit - dodge)) {
                             evtData.target.raiseSymbolActiveEvent('attacked', {
                                 attacker: evtData.actor,
-                                attack: this.getAttack()
+                                attack: Game.Util.calcDamage(this.getAttack())
                             });
                         } else {
                             this.raiseSymbolActiveEvent('attackMiss', {

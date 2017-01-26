@@ -60,10 +60,9 @@ Game.Util = {
             " " + Game.Util.Nouns[Math.floor(ROT.RNG.getUniform() * Game.Util.Nouns.length)];
     },
 
-    calcDamage: function(attack, defense){
+    calcDamage: function(attack){
         var mod = ROT.RNG.getUniform()*.5 + 0.5;
-        var dmg = (attack/defense);
-        return Math.floor(dmg*mod);
+        return Math.ceil(attack*mod);
     },
     getStatusColor: function(status) {
         switch (status) {
