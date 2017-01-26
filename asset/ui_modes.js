@@ -204,7 +204,7 @@ Game.UIMode.gameIntro = {
     },
     exit: function() {},
     render: function(display) {
-        display.drawText(1, 4, "You remember dying in the year S+979 — nearly 1000 years after the rise of artificial intelligence. Your consciousness was recorded in the moments before your death and has now been downloaded onto the Strategic Command Computer of an aeon-dead warship.");
+        display.drawText(1, 4, "You remember dying in the year S+979 — nearly 1000 years after artificial intelligence firt passed the Turing test. Your consciousness was recorded in the moments before your death and has now been downloaded onto the Strategic Command Computer of an aeon-dead warship.");
         display.drawText(1, 10, "What were you called in your past life?");
     },
     handleInput: function(inputType, inputData) {
