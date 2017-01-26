@@ -24,20 +24,20 @@ Game.EntityTraits.PlayerMessager = {
                 Game.Message.send("Attack on " + evtData.target.getName() + " missed.");
             },
             'madeKill': function(evtData) {
-                Game.Message.send("Destroyed " + evtData.dead.getName() + ".");
+                Game.Message.send("%c{"+evtData.dead.getFg()+"}Destroyed " + evtData.dead.getName() + ".");
             },
             'dealtDamage': function(evtData) {
                 if (evtData.equip) {
-                    Game.Message.send("Damaged " + evtData.target.getName() + "'s " + evtData.attacked.getName() + ".");
+                    Game.Message.send("%c{"+evtData.target.getFg()+"}Damaged " + evtData.target.getName() + "'s " + evtData.attacked.getName() + ".");
                 } else {
-                    Game.Message.send("Damaged " + evtData.attacked.getName() + "'s core.");
+                    Game.Message.send("%c{"+evtData.attacked.getFg()+"}Damaged " + evtData.attacked.getName() + "'s core.");
                 }
             },
             'damagedBy': function(evtData) {
                 Game.Message.send("Core damaged by " + evtData.damager.getName() + ".");
             },
             'damagedEquipment': function(evtData) {
-                Game.Message.send(evtData.actor.getName() + "'s " + evtData.equipment + " damaged.")
+                Game.Message.send("%c{"+evtData.actor.getFg()+"}"+evtData.actor.getName() + "'s " + evtData.equipment + " damaged.")
             },
             'recoverHP': function(evtData) {
                 Game.Message.send("Recovered " + evtData.hp + "HP");

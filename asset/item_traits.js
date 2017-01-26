@@ -26,9 +26,11 @@ Game.ItemTraits.Equipable = {
                 var actor = equipArgs.actor;
                 if (!item.isEquipped() && actor.checkEquipmentCategory(cat)) {
                     actor.addEquipment(itemID);
+                    Game.UIMode.inventory.curOption = 0;
                     Game.removeUIMode();
                 } else if (!item.isEquipped() && !actor.checkEquipmentCategory(cat)) {
                     actor.swapEquipment(itemID);
+                    Game.UIMode.inventory.curOption = 0;
                     Game.removeUIMode();
                 } else {
                     Game.Message.send("Yer already wearin that.");
@@ -41,6 +43,7 @@ Game.ItemTraits.Equipable = {
                     var actor = equipArgs.actor;
                     actor.removeEquipment(itemID);
                     Game.UIMode.inventory.refreshItemIDs();
+                    Game.UIMode.inventory.curOption = 0;
                     Game.removeUIMode();
                 } else {
                     Game.Message.send("You'd have to equip that first.");
@@ -62,7 +65,7 @@ Game.ItemTraits.Equipable = {
             'destroyed': function(evtData) {
                 var id = this.getID();
                 var actor = evtData.equipper;
-                Game.Message.send(actor.getName() + "'s " + this.getName() + " has been destroyed.");
+                Game.Message.send("%c{"+actor.getFg()+"}"+actor.getName() + "'s " + this.getName() + " has been destroyed.");
                 actor.removeEquipment(id);
                 if (ROT.RNG.getUniform() >= .5){
                 var scrap = Game.ItemGenerator.create('Scrap Metal', id);

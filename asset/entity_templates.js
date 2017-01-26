@@ -33,7 +33,7 @@ Game.EntityGenerator.learn({
 Game.EntityGenerator.learn({
     name: 'Ancient Security Drone',
     chr: 'a',
-    fg: '#0bf',
+    fg: '#850',
     maxHP: 3,
     dodge: 0,
     defaultEquipment: ["Wide Angle Camera", "Wheeled Chasis", "Pneumatic Punch"],

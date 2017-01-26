@@ -5,9 +5,7 @@ var fg = Game.UIMode.DEFAULT_FG;
 var bg = Game.UIMode.DEFAULT_BG;
 
 Game.UIMode.titleScreen = {
-    attr: {
-        _curOption: 0
-    },
+    curOption: 0,
     enter: function() {},
     exit: function() {},
     titleOptions: ['New', 'Load'],
@@ -35,7 +33,7 @@ Game.UIMode.titleScreen = {
     },
     renderTitleOptions: function(display) {
         for (var i = 0; i < this.titleOptions.length; i++) {
-            var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
             display.drawText(0, i + 15, '%b{' + bg + '}> ' + this.titleOptions[i]);
         }
     },
@@ -43,15 +41,15 @@ Game.UIMode.titleScreen = {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
         switch (action) {
             case 'MOVE_DOWN':
-                this.attr._curOption++;
-                this.attr._curOption %= this.titleOptions.length;
+                this.curOption++;
+                this.curOption %= this.titleOptions.length;
                 break;
             case 'MOVE_UP':
-                this.attr._curOption--;
-                this.attr._curOption = (this.attr._curOption < 0) ? this.titleOptions.length - 1 : this.attr._curOption;
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.titleOptions.length - 1 : this.curOption;
                 break;
             case 'CONFIRM':
-                this.titleFunctions[this.titleOptions[this.attr._curOption]]();
+                this.titleFunctions[this.titleOptions[this.curOption]]();
                 break;
         }
     }
@@ -59,9 +57,7 @@ Game.UIMode.titleScreen = {
 
 Game.UIMode.persistence = {
     RANDOM_SEED_KEY: 'gameRandomSeed',
-    attr: {
-        _curOption: 0
-    },
+    curOption: 0,
     persistOptions: ["Save", "Load", "Title Screen"],
     persistFunctions: {
         "Save": function() {
@@ -81,7 +77,7 @@ Game.UIMode.persistence = {
     },
     renderPersistenceOptions: function(display) {
         for (var i = 0; i < this.persistOptions.length; i++) {
-            var bg = (this.attr._curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
             display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.persistOptions[i]);
         }
     },
@@ -89,15 +85,15 @@ Game.UIMode.persistence = {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
         switch (action) {
             case 'MOVE_DOWN':
-                this.attr._curOption++;
-                this.attr._curOption %= this.persistOptions.length;
+                this.curOption++;
+                this.curOption %= this.persistOptions.length;
                 break;
             case 'MOVE_UP':
-                this.attr._curOption--;
-                this.attr._curOption = (this.attr._curOption < 0) ? this.persistOptions.length - 1 : this.attr._curOption;
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.persistOptions.length - 1 : this.curOption;
                 break;
             case 'CONFIRM':
-                this.persistFunctions[this.persistOptions[this.attr._curOption]]();
+                this.persistFunctions[this.persistOptions[this.curOption]]();
                 break;
             case 'CANCEL':
                 Game.removeUIMode();
@@ -204,8 +200,7 @@ Game.UIMode.gameIntro = {
     },
     exit: function() {},
     render: function(display) {
-        display.drawText(1, 4, "You remember dying in the year S+979 — nearly 1000 years after artificial intelligence firt passed the Turing test. Your consciousness was recorded in the moments before your death and has now been downloaded onto the Strategic Command Computer of an aeon-dead warship.");
-        display.drawText(1, 10, "What were you called in your past life?");
+        display.drawText(1, 4, "You remember dying in the year S+979 — nearly 1000 years after artificial intelligence first passed the Turing test. The last thing you remember is your consciousness being uploaded onto SERVER, but your attempts at making contact with the database have failed. All you know is that you are currently drifting through space as the commander of a General Systems Vehicle.\n\n And your name... what did you call yourself?");
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
@@ -1110,7 +1105,7 @@ Game.UIMode.heistMenu = {
         _curOption: 0,
         _abort: false,
     },
-    menuOptions: ["Inventory", "Equipment", "Operations Manual", "Options", "Abandon Drone", "Close Menu"],
+    menuOptions: ["Inventory", "Equipment", "Operations Manual", "Abandon Drone", "Close Menu"],
     menuFunctions: {
         'Inventory': function() {
             Game.addUIMode(Game.UIMode.inventory);
@@ -1344,6 +1339,7 @@ Game.UIMode.droneMenu = {
             Game.removeUIMode();
         },
         "Deploy": function() {
+            Game.Message.clear();
             Game.switchUIMode(Game.UIMode.heist, {
                 map: Game.UIMode.navigation.attr._curNode.mapType,
                 drone: Game.UIMode.droneMenu.drone,

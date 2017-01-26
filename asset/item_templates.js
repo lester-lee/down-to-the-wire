@@ -69,7 +69,7 @@ Game.ItemGenerator.learn({
   chr: "F",
   fg: "#333",
   equipCategory: "weapon",
-  attack: 3,
+  attack: 2,
   accuracy: .95,
   traits: ['Equipable','StatModifierAttack']
 });
