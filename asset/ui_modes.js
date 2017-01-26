@@ -232,9 +232,10 @@ Game.UIMode.shipScreen = {
         playerName: null,
         _curOption: 0,
         drones: [],
-        fuel: 1
+        fuel: 0,
+        inventory: []
     },
-    shipOptions: ["Navigate", "Drone Status", "Outfit ship", "Operations Manual", "Save/Load"],
+    shipOptions: ["Navigate", "Drone Status", "Ship Inventory", "Operations Manual", "Save/Load"],
     shipFunctions: {
         Navigate: function() {
             Game.addUIMode(Game.UIMode.navigation);
@@ -243,6 +244,12 @@ Game.UIMode.shipScreen = {
             Game.addUIMode(Game.UIMode.droneScreen, {
                 drones: Game.UIMode.shipScreen.attr.drones,
                 deploying: false
+            });
+        },
+        "Ship Inventory": function() {
+            Game.addUIMode(Game.UIMode.shipInventory, {
+                drones: Game.UIMode.shipScreen.attr.drones,
+                inventory: Game.UIMode.shipScreen.attr.inventory
             });
         },
         "Operations Manual": function() {
@@ -285,17 +292,21 @@ Game.UIMode.shipScreen = {
         }
         return true;
     },
+    addItem: function(itemID) {
+        this.attr.inventory.push(itemID);
+    },
+    removeItem: function(itemID) {
+        var idx = this.attr.inventory.indexOf(itemID);
+        this.attr.inventory.splice(idx, 1);
+    },
     resetDrones: function() {
         this.attr.drones = [];
     },
-    repairDrones: function(){
-        for (var i = 0; i < this.attr.drones.length; i++){
-          var drone = Game.DATASTORE.ENTITY[this.attr.drones[i]];
-          drone.setCurHP(drone.getMaxHP());
+    repairDrones: function() {
+        for (var i = 0; i < this.attr.drones.length; i++) {
+            var drone = Game.DATASTORE.ENTITY[this.attr.drones[i]];
+            drone.setCurHP(drone.getMaxHP());
         }
-    },
-    deployDroneID: function() {
-        return this.attr.drones[0];
     },
     hasFuel: function() {
         return (this.attr.fuel > 0);
@@ -327,6 +338,175 @@ Game.UIMode.shipScreen = {
     },
     fromJSON: function(json) {
         return Game.UIMode.persistence.BASE_fromJSON.call(this, json);
+    }
+};
+
+Game.UIMode.shipInventory = {
+    drones: [],
+    inventory: [],
+    curOption: 0,
+    enter: function(invArgs) {
+        this.drones = invArgs.drones;
+        this.inventory = invArgs.inventory;
+    },
+    exit: function() {
+        this.curOption = 0;
+    },
+    render: function(display) {
+        display.drawText(0, 1, "Ship Inventory");
+        if (this.inventory.length > 0) {
+            for (var i = 0; i < this.inventory.length; i++) {
+                var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+                var item = Game.DATASTORE.ITEM[this.inventory[i]];
+                var status = item.raiseSymbolActiveEvent('getStatus').st;
+                var fg = Game.Util.getStatusColor(status);
+                display.drawText(0, i + 3, '%c{' + fg + '}%b{' + bg + '}> ' + item.getName() + ' - ' + item.getDescription());
+            }
+        } else {
+            display.drawText(0, 3, "Cargo hold empty.");
+        }
+    },
+    refreshInventory: function() {
+        this.inventory = Game.UIMode.shipScreen.attr.inventory;
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'MOVE_DOWN':
+                this.curOption++;
+                this.curOption %= this.inventory.length;
+                break;
+            case 'MOVE_UP':
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.inventory.length - 1 : this.curOption;
+                break;
+            case 'CONFIRM':
+                if (this.inventory.length > 0) {
+                    Game.addUIMode(Game.UIMode.shipInventoryMenu, this.inventory[this.curOption]);
+                }
+                break;
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+        }
+    },
+};
+
+Game.UIMode.shipInventoryMenu = {
+    curItem: null,
+    curOption: 0,
+    itemOptions: ["Give to Drone", "Vent", "Cancel"],
+    itemFunctions: {
+        "Give to Drone": function(itemID) {
+            Game.addUIMode(Game.UIMode.shipDroneSelection, itemID);
+        },
+        "Vent": function(itemID) {
+            var item = Game.DATASTORE.ITEM[itemID];
+            Game.Message.send(item.getName() + " was destroyed.");
+            Game.UIMode.shipScreen.removeItem(itemID);
+            delete Game.DATASTORE.ITEM[itemID];
+            Game.removeUIMode();
+            Game.UIMode.shipInventory.curOption = 0;
+        },
+        "Cancel": function() {
+            Game.removeUIMode();
+        }
+    },
+    enter: function(itemID) {
+        this.curItem = itemID;
+    },
+    exit: function() {
+        this.curOption = 0;
+    },
+    render: function(display) {
+        Game.UIMode.shipInventory.render(display);
+    },
+    renderAvatarInfo: function(display) {
+        for (var i = 0; i < this.itemOptions.length; i++) {
+            var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.itemOptions[i]);
+        }
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'MOVE_DOWN':
+                this.curOption++;
+                this.curOption %= this.itemOptions.length;
+                break;
+            case 'MOVE_UP':
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.itemOptions.length - 1 : this.curOption;
+                break;
+            case 'CONFIRM':
+                this.itemFunctions[this.itemOptions[this.curOption]](this.curItem);
+                break;
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+        }
+    }
+};
+
+Game.UIMode.shipDroneSelection = {
+    curItem: null,
+    curOption: 0,
+    drones: [],
+    droneNames: [],
+    enter: function(itemID) {
+        this.curItem = itemID;
+        this.drones = Game.UIMode.shipScreen.attr.drones;
+        for (var i = 0; i < this.drones.length; i++) {
+            this.droneNames.push(Game.DATASTORE.ENTITY[this.drones[i]].getName());
+        }
+        this.droneNames.push('Cancel');
+    },
+    exit: function() {
+        this.curOption = 0;
+        this.droneNames = [];
+    },
+    render: function(display) {
+        Game.UIMode.shipInventory.render(display);
+    },
+    renderAvatarInfo: function(display) {
+        display.drawText(0, 1, "Give to:");
+        for (var i = 0; i < this.droneNames.length; i++) {
+            var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
+            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.droneNames[i]);
+        }
+    },
+    handleInput: function(inputType, inputData) {
+        var action = Game.KeyBinding.getInput(inputType, inputData).key;
+        switch (action) {
+            case 'MOVE_DOWN':
+                this.curOption++;
+                this.curOption %= this.droneNames.length;
+                break;
+            case 'MOVE_UP':
+                this.curOption--;
+                this.curOption = (this.curOption < 0) ? this.droneNames.length - 1 : this.curOption;
+                break;
+            case 'CONFIRM':
+                if (this.curOption >= this.drones.length) {
+                    Game.removeUIMode();
+                } else {
+                    var droneID = this.drones[this.curOption];
+                    var drone = Game.DATASTORE.ENTITY[droneID];
+                    if (drone.hasInventorySpace()) {
+                        drone.addInventoryItems([this.curItem]);
+                        Game.UIMode.shipScreen.removeItem(this.curItem);
+                        Game.UIMode.shipInventory.curOption = 0;
+                        Game.removeUIMode();
+                        Game.removeUIMode();
+                    } else {
+                        Game.Message.send(drone.getName() + " has a full inventory.");
+                    }
+                }
+                break;
+            case 'CANCEL':
+                Game.removeUIMode();
+                break;
+        }
     }
 };
 
@@ -437,19 +617,19 @@ Game.UIMode.navigation = {
         }
         this.navOptions.push('Warp to another star system');
         this.navFunctions['Warp to another star system'] = function() {
-        Game.UIMode.navigation.createStarSystem();
+            Game.UIMode.navigation.createStarSystem();
 
         };
     },
     travelToTarget: function(targetNode) {
-      if (Game.UIMode.shipScreen.hasFuel()) {
-          Game.UIMode.shipScreen.useFuel();
-          this.attr._curNode = targetNode || this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption - 1]); //changes current location to target location
-          this.setupNavOptions();
-          this.renderShipLocation();
-      }else {
-          Game.Message.send("Fuel rods depleted. Scavenge more from ships.");
-      }
+        if (Game.UIMode.shipScreen.hasFuel()) {
+            Game.UIMode.shipScreen.useFuel();
+            this.attr._curNode = targetNode || this.attr._navMap.getNode(this.attr._curNode.edge_list[this.attr._curOption - 1]); //changes current location to target location
+            this.setupNavOptions();
+            this.renderShipLocation();
+        } else {
+            Game.Message.send("Fuel rods depleted. Scavenge more from ships.");
+        }
     },
     setupNavMap: function() {
         this.attr._navMap = new Graph();
@@ -695,6 +875,9 @@ Game.UIMode.itemMenu = {
         if (Game._UIStack[Game._UIStack.length - 1] == Game.UIMode.heist) {
             this.setupDrop();
         }
+        if (Game._UIStack[Game._UIStack.length - 1] == Game.UIMode.shipScreen) {
+            this.setupStow();
+        }
     },
     setupDrop: function() {
         var opt = this.itemOptions.slice();
@@ -706,6 +889,23 @@ Game.UIMode.itemMenu = {
             var avatar = Game.UIMode.heist.getAvatar();
             avatar.dropItems(Game.UIMode.itemMenu.curItem.getID());
             Game.removeUIMode();
+            Game.UIMode.inventory.refreshItemIDs();
+        };
+    },
+    setupStow: function() {
+        var opt = this.itemOptions.slice();
+        opt.pop(); // remove CANCEL
+        opt.push('Stow');
+        opt.push('Cancel');
+        this.itemOptions = opt;
+        this.itemFunctions['Stow'] = function() {
+            var avatar = Game.UIMode.inventory.avatar;
+            var itemID = Game.UIMode.itemMenu.curItem.getID();
+            if (!avatar._getContainer().extractItems(itemID)) {
+                avatar.extractEquipment(itemID);
+            }
+            Game.removeUIMode();
+            Game.UIMode.shipScreen.addItem(itemID);
             Game.UIMode.inventory.refreshItemIDs();
         };
     },
