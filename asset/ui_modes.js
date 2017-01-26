@@ -804,18 +804,13 @@ Game.UIMode.fabricateMenu = {
 
 Game.UIMode.repairMenu = {
     avatar: null,
-    repairVal: 0,
+    repItem: null,
     items: [],
     options: [],
-    functions: {
-        'Cancel': function() {
-            Game.removeUIMode();
-        }
-    },
     curOption: 0,
     enter: function(itemArgs) {
         this.avatar = itemArgs.actor;
-        this.repairVal = Game.DATASTORE.ITEM[itemArgs.itemID].getRepairValue();
+        this.repItem = Game.DATASTORE.ITEM[itemArgs.itemID];
         this.setupItems();
     },
     setupItems: function() {
@@ -825,14 +820,14 @@ Game.UIMode.repairMenu = {
         for (i = 0; i < invItems.length; i++) {
             item = Game.DATASTORE.ITEM[invItems[i]];
             var status = item.raiseSymbolActiveEvent('isDamaged');
-            if (status) {
+            if (status.dmg) {
                 this.items.push(invItems[i]);
             }
         }
         for (i = 0; i < eqItems.length; i++) {
             item = Game.DATASTORE.ITEM[eqItems[i]];
             var status = item.raiseSymbolActiveEvent('isDamaged');
-            if (status) {
+            if (status.dmg) {
                 this.items.push(eqItems[i]);
             }
         }
@@ -851,11 +846,27 @@ Game.UIMode.repairMenu = {
         Game.UIMode.inventory.render(display);
     },
     renderAvatarInfo: function(display) {
-        display.drawText(0, 1, "Choose item to repair:");
+        display.drawText(0, 1, "Repair an item:");
         for (var i = 0; i < this.options.length; i++) {
             var bg = (this.curOption == i) ? '#333' : Game.UIMode.DEFAULT_BG;
-            display.drawText(0, i + 3, '%b{' + bg + '}> ' + this.options[i]);
+            var fg = Game.UIMode.DEFAULT_FG;
+            if (i < this.items.length) {
+                var item = Game.DATASTORE.ITEM[this.items[i]];
+                var status = item.raiseSymbolActiveEvent('getStatus').st;
+                fg = Game.Util.getStatusColor(status);
+            }
+            display.drawText(0, i + 3, '%c{' + fg + '}%b{' + bg + '}> ' + this.options[i]);
         }
+    },
+    repairSelectedItem: function() {
+        var repVal = this.repItem.getRepairValue();
+        var itemID = this.items[this.curOption];
+        var item = Game.DATASTORE.ITEM[itemID];
+        item.repair(repVal);
+        Game.Message.send(item.getName() + " has been repaired.");
+        this.avatar.extractInventoryItems(this.repItem.getID());
+        Game.removeUIMode();
+        Game.removeUIMode();
     },
     handleInput: function(inputType, inputData) {
         var action = Game.KeyBinding.getInput(inputType, inputData).key;
@@ -872,8 +883,7 @@ Game.UIMode.repairMenu = {
                 if (this.curOption >= this.items.length) {
                     Game.removeUIMode();
                 } else {
-                    var item = Game.DATASTORE.ITEM[this.items[this.curOption]];
-                    item.repair(this.repairVal);
+                    this.repairSelectedItem();
                 }
                 break;
             case 'CANCEL':
