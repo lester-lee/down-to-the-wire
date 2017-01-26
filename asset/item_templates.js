@@ -7,7 +7,8 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
     name: 'Equipment Repair Kit',
-    description: 'A basic drone equipment repair kit',
+    short_desc: 'A basic drone equipment repair kit',
+    long_desc: 'Can a repair kit repair itself?',
     chr: "R",
     fg: '#f32',
     repairValue: 3,
@@ -16,7 +17,8 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: 'Basic Camera',
-  description: "A basic optical sensor",
+  short_desc: "A basic optical sensor",
+  long_desc: "Better than not seeing anything.",
   chr: "C",
   fg: "#f22",
   equipCategory: "head",
@@ -27,7 +29,8 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: 'Wide Angle Camera',
-  description: "An improved optical sensor",
+  short_desc: "An improved optical sensor",
+  long_desc: "But still unable to see behind.",
   chr: "W",
   fg: "#2f2",
   equipCategory: "head",
@@ -38,7 +41,8 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: '360˚ Camera Array',
-  description: "An array of optical sensors",
+  short_desc: "An array of optical sensors",
+  long_desc: "Now we're talking. Watch yourself.",
   chr: "C",
   fg: "#22f",
   equipCategory: "head",
@@ -50,28 +54,31 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: 'Scrap Metal',
-  description: "Maybe you'll be able to use it",
+  short_desc: "It's metal",
+  long_desc: "Maybe you'll be able to use it.",
   chr: "S",
-  fg: "#333",
+  fg: "#eee",
   fabrications: ["Equipment Repair Kit","Basic Camera","Wheeled Chasis","Hydraulic Punch"],
   traits: ['Fabricator']
 });
 
 Game.ItemGenerator.learn({
   name: 'Hydraulic Punch',
-  description: "A a spike on a hydralic piston",
+  short_desc: "A spike on a hydralic piston",
+  long_desc: "Is violence the answer? Only if powered by hydraulics!",
   chr: "F",
   fg: "#333",
   equipCategory: "weapon",
-  attack: 1,
+  attack: 3,
   accuracy: .95,
   traits: ['Equipable','StatModifierAttack']
 });
 
 Game.ItemGenerator.learn({
   name: 'Pneumatic Punch',
-  description: "A spike on a Pneumatic piston",
-  chr: "f",
+  short_desc: "A spike on a Pneumatic piston",
+  long_desc: "Haven't seen one of these in ages.",
+  chr: "p",
   fg: "#333",
   equipCategory: "weapon",
   attack: 1,
@@ -81,7 +88,8 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: 'Wheeled Chasis',
-  description: "Allows a drone to navigate under gravity",
+  short_desc: "Allows a drone to navigate under gravity",
+  long_desc: "It's exactly what it says it is.",
   chr: "L",
   fg: "#eee",
   equipCategory: "legs",
@@ -90,16 +98,45 @@ Game.ItemGenerator.learn({
 
 Game.ItemGenerator.learn({
   name: 'Fuel Rod',
-  description: "A Plutonium dowl to power your ship's warp drive",
+  short_desc: "A Plutonium dowl",
+  long_desc: "Seems like the ship'll need this.",
   chr: "!",
   fg: "#F80"
 });
 
 Game.ItemGenerator.learn({
   name: 'Grapple Arm',
-  description: "Aallows a drone to tow friendly drones",
+  short_desc: "Allows a drone to tow friendly drones",
+  long_desc: "Hey! Come here!",
   chr: "H",
   fg: "#eee",
   equipCategory: "arms",
   traits: ['Equipable','StatModifierTow']
+});
+
+/* ================= Misc ================== */
+
+Game.ItemGenerator.learn({
+  name: 'Necklace',
+  short_desc: "A chain of beads",
+  long_desc: "What is this used for?",
+  chr: "n",
+  fg: "#eee"
+});
+
+Game.ItemGenerator.learn({
+  name: 'Broken Glass Jar',
+  short_desc: "An empty container",
+  long_desc: "What will all the other glass jars say?",
+  chr: "b",
+  fg: "#eee"
+});
+
+
+Game.ItemGenerator.learn({
+  name: 'Bundle of Wires',
+  short_desc: "A bundle of wires",
+  long_desc: "All these connections to be made, nothing to make them with.",
+  chr: "w",
+  fg: "#eee"
 });

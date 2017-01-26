@@ -2,7 +2,8 @@ Game.SymbolActive = function(template) {
     template = template || {};
     Game.Symbol.call(this, template);
     this.attr._name = template.name || '';
-    this.attr._description = template.description || '';
+    this.attr._short_desc = template.short_desc || '';
+    this.attr._long_desc = template.long_desc || '';
     this.attr._ID = template.presetID || Game.Util.randomString(16);
     // mixins/traits
     this._traitNames = template.traits || {};
@@ -51,9 +52,13 @@ Game.SymbolActive.prototype.setName = function(name) {
     this.attr._name = name;
 };
 
-Game.SymbolActive.prototype.getDescription = function() {
-    return this.attr._description;
-}
+Game.SymbolActive.prototype.getShortDesc = function() {
+    return this.attr._short_desc;
+};
+
+Game.SymbolActive.prototype.getLongDesc = function() {
+    return this.attr._long_desc;
+};
 
 Game.SymbolActive.prototype.hasTrait = function(check) {
     if (typeof check == 'object') {

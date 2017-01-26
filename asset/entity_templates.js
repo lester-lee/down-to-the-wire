@@ -1,23 +1,9 @@
 Game.EntityGenerator = new Game.Generator('entities', Game.Entity);
 
-// Game.EntityGenerator.learn({
-//     name: 'avatar',
-//     chr: 'D',
-//     fg: '#fff',
-//     maxHP: 10,
-//     dodge: .1,
-//     defaultEquipment: ["Basic Camera", "Wheeled Chasis", "Hydraulic Punch"],
-//     traits: [
-//         "PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
-//         "PlayerActor", "StatHitPoints", "MeleeAttacker", "DoorOpener",
-//         "InventoryHolder", "EquipmentHolder"
-//     ]
-// });
-
-
 Game.EntityGenerator.learn({
     name: '',
     type: 'initial_drone',
+    long_desc: "A rustic drone from aeons past. Surprised it's still functional.",
     chr: 'D',
     fg: '#fff',
     maxHP: 10,
