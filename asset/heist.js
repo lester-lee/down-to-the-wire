@@ -58,12 +58,19 @@ Game.UIMode.heist = {
         this.getAvatar().rememberCoords(seenCells);
     },
     renderAvatarInfo: function(display) {
-        display.drawText(1, 2, "avatar x:" + this.getAvatar().getX(), fg, bg); // DEV
-        display.drawText(1, 3, "avatar y:" + this.getAvatar().getY(), fg, bg); // DEV
-        display.drawText(1, 4, "camera x:" + this.attr._cameraX, fg, bg); // DEVdisplay.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEV
-        display.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEVdisplay.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEV
-        display.drawText(1, 1, "HP: " + this.getAvatar().getCurHP() + "/" + this.getAvatar().getMaxHP());
-        display.drawText(1, 6, "Turns taken: " + this.getAvatar().getTurns());
+        // display.drawText(1, 2, "avatar x:" + this.getAvatar().getX(), fg, bg); // DEV
+        // display.drawText(1, 3, "avatar y:" + this.getAvatar().getY(), fg, bg); // DEV
+        // display.drawText(1, 4, "camera x:" + this.attr._cameraX, fg, bg); // DEVdisplay.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEV
+        // display.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEVdisplay.drawText(1, 5, "camera y:" + this.attr._cameraY, fg, bg); // DEV
+        // display.drawText(1, 1, "HP: " + this.getAvatar().getCurHP() + "/" + this.getAvatar().getMaxHP());
+        //display.drawText(1, 6, "Turns taken: " + this.getAvatar().getTurns());
+        var drone = this.getAvatar();
+        display.drawText(1, 1, drone.getName());
+        var status = drone.getCoreStatus();
+        var fg = Game.Util.getStatusColor(status);
+        display.drawText(1, 3, "%c{" + fg + "}Core: " + drone.getCoreStatus());
+        display.drawText(1, 5, "Equipment:");
+        Game.UIMode.droneScreen.renderDroneEquip(display, drone);
     },
     moveAvatar: function(dx, dy, dir) {
         Game.Message.ageMessages();
@@ -249,11 +256,22 @@ Game.UIMode.heist = {
                 var dir = ROT.DIRS[8][avatar.getDirection()];
                 var mapPos = avatar.getPos();
                 var targetPos = {x: mapPos.x + dir[0], y: mapPos.y + dir[1]}
-                console.log(targetPos);
                 var ent = this.getMap().getEntity(targetPos);
                 if (ent){
-                  avatar.setEntTowed(ent);
-                  Game.Message.send("Towing "+ ent.getName());
+                    if(ent.getFriendly()){
+                      avatar.setEntTowed(ent);
+                      Game.Message.send("Towing "+ ent.getName());
+                    }else{
+                      Game.Message.send("The enemy drone will not submit to being towed");
+                    }
+                }else if(avatar.getMap().getTile(targetPos).getName() == 'doorOpen'){
+                  avatar.raiseSymbolActiveEvent('doorCloseAttempt', {
+                      targetPos: targetPos
+                  });
+                }else if(avatar.getMap().getTile(targetPos).getName() == 'doorClosed'){
+                  avatar.raiseSymbolActiveEvent('doorOpenAttempt', {
+                      targetPos: targetPos
+                  });
                 }
                 break;
             case 'CONFIRM':

@@ -39,10 +39,10 @@ Game.HeistPresets = {
                 map.addItem(Game.ItemGenerator.create('Repair Kit'), map.getRandomTileWalkable());
             }
             for (var icount = 0; icount < 4; icount++) {
-                map.addItem(Game.ItemGenerator.create('180 Camera'), map.getRandomTileWalkable());
+                map.addItem(Game.ItemGenerator.create('Wide Angle Camera'), map.getRandomTileWalkable());
             }
             for (var icount = 0; icount < 4; icount++) {
-                map.addItem(Game.ItemGenerator.create('360 Camera'), map.getRandomTileWalkable());
+                map.addItem(Game.ItemGenerator.create('360˚ Camera Array'), map.getRandomTileWalkable());
             }
             for (var icount = 0; icount < 4; icount++) {
                 map.addItem(Game.ItemGenerator.create('Fuel Rod'), map.getRandomTileWalkable());

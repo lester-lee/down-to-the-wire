@@ -6,7 +6,7 @@ Game.EntityGenerator = new Game.Generator('entities', Game.Entity);
 //     fg: '#fff',
 //     maxHP: 10,
 //     dodge: .1,
-//     defaultEquipment: ["90 Camera", "Movement Apparatus", "Big Fist"],
+//     defaultEquipment: ["Basic Camera", "Wheeled Chasis", "Hydraulic Punch"],
 //     traits: [
 //         "PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
 //         "PlayerActor", "StatHitPoints", "MeleeAttacker", "DoorOpener",
@@ -23,7 +23,7 @@ Game.EntityGenerator.learn({
     maxHP: 10,
     dodge: .1,
     friendly: true,
-    defaultEquipment: ["90 Camera", "Movement Apparatus", "Big Fist", "Tow Hook"],
+    defaultEquipment: ["Basic Camera", "Wheeled Chasis", "Hydraulic Punch", "Grapple Arm"],
     traits: [
         "PlayerMessager", "Chronicle", "MapMemory", "Sight", "WalkerCorporeal",
         "PlayerActor", "StatHitPoints", "MeleeAttacker", "Tower", "DoorOpener",
@@ -37,7 +37,7 @@ Game.EntityGenerator.learn({
     fg: '#0bf',
     maxHP: 5,
     dodge: .1,
-    defaultEquipment: ["180 Camera", "Movement Apparatus", "Big Fist"],
+    defaultEquipment: ["Wide Angle Camera", "Wheeled Chasis", "Hydraulic Punch"],
     traits: [
         "Sight", "WanderChaserActor", "WalkerCorporeal", "StatHitPoints",
         "MeleeAttacker", "InventoryHolder", "EquipmentHolder"
@@ -50,7 +50,7 @@ Game.EntityGenerator.learn({
     fg: '#0bf',
     maxHP: 3,
     dodge: 0,
-    defaultEquipment: ["180 Camera", "Movement Apparatus", "Small Fist"],
+    defaultEquipment: ["Wide Angle Camera", "Wheeled Chasis", "Pneumatic Punch"],
     traits: [
         "Sight", "WanderChaserActor", "WalkerCorporeal", "StatHitPoints",
         "MeleeAttacker", "InventoryHolder", "EquipmentHolder"
