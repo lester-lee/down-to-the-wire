@@ -892,6 +892,7 @@ Game.UIMode.itemMenu = {
         this.itemFunctions['Drop'] = function() {
             var avatar = Game.UIMode.heist.getAvatar();
             avatar.dropItems(Game.UIMode.itemMenu.curItem.getID());
+            Game.UIMode.inventory.curOption = 0;
             Game.removeUIMode();
             Game.UIMode.inventory.refreshItemIDs();
         };
@@ -908,6 +909,7 @@ Game.UIMode.itemMenu = {
             if (!avatar._getContainer().extractItems(itemID)) {
                 avatar.extractEquipment(itemID);
             }
+            Game.UIMode.inventory.curOption = 0;
             Game.removeUIMode();
             Game.UIMode.shipScreen.addItem(itemID);
             Game.UIMode.inventory.refreshItemIDs();

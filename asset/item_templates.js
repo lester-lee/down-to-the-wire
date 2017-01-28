@@ -28,13 +28,25 @@ Game.ItemGenerator.learn({
 });
 
 Game.ItemGenerator.learn({
+  name: 'Long Ranged Sensor',
+  short_desc: "An upgraded optical sensor",
+  long_desc: "What's that at the end of the hallway? Now you know.",
+  chr: "C",
+  fg: "#ff2",
+  equipCategory: "head",
+  newSightRadius: 8,
+  newSightAngle: 90,
+  traits: ['Equipable','StatModifierSight']
+});
+
+Game.ItemGenerator.learn({
   name: 'Wide Angle Camera',
   short_desc: "An improved optical sensor",
   long_desc: "But still unable to see behind.",
   chr: "W",
   fg: "#2f2",
   equipCategory: "head",
-  newSightRadius: 4,
+  newSightRadius: 5,
   newSightAngle: 180,
   traits: ['Equipable','StatModifierSight']
 });
@@ -53,6 +65,18 @@ Game.ItemGenerator.learn({
 
 
 Game.ItemGenerator.learn({
+  name: 'Spherical Lens',
+  short_desc: "Top tier vision",
+  long_desc: "Almost like a crystal ball, but it can't see the future.",
+  chr: "C",
+  fg: "#22f",
+  equipCategory: "head",
+  newSightRadius: 4,
+  newSightAngle: 360,
+  traits: ['Equipable','StatModifierSight']
+});
+
+Game.ItemGenerator.learn({
   name: 'Scrap Metal',
   short_desc: "It's metal",
   long_desc: "Maybe you'll be able to use it.",
@@ -60,6 +84,19 @@ Game.ItemGenerator.learn({
   fg: "#eee",
   fabrications: ["Equipment Repair Kit","Basic Camera","Wheeled Chasis","Hydraulic Punch"],
   traits: ['Fabricator']
+});
+
+
+Game.ItemGenerator.learn({
+  name: 'Sledgehammer',
+  short_desc: "A mauling device",
+  long_desc: "Perfect for scrapping old drones.",
+  chr: "F",
+  fg: "#333",
+  equipCategory: "weapon",
+  attack: 5,
+  accuracy: .95,
+  traits: ['Equipable','StatModifierAttack']
 });
 
 Game.ItemGenerator.learn({
